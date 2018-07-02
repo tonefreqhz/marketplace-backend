@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app/server.js --exec babel-node",
     "clean": "rm -rf dist && mkdir dist",
-    "build": "npm run -s clean && babel app -s -D -d dist --presets es2015,stage-2",
+    "build": "babel app -s -D -d dist --presets es2015,stage-2",
     "serve": "npm run -s build && node ./dist/server.js",
     "test": "mocha --timeout 10000 --require babel-core/register"
   },
