@@ -1,0 +1,8 @@
+SECRET=2qe2e21e31
+API_KEY=nam$dpoaisjpo
+JWT_SECRET=6674766676WGDTWDGT62358E7
+JWT_EXPIRES=3600s
+IP=127.0.0.1
+PORT=4000
+DB_HOST_TEST=mongodb://localhost:27017/marketplace
+DB_HOST=mongodb://scott:pass1234@ds149138.mlab.com:49138/marketplace

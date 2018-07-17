@@ -9,7 +9,7 @@ import 	vendorRoute from "./vendor";
 import 	arbitrationRoute from "./arbitration";
 import 	blogRoute from "./blog";
 import 	messageRoute from "./message";
-import 	subscribeRoute from "./subscribe";
+import 	subscriberRoute from "./subscriber";
 import 	reviewRoute from "./review";
 import 	couponRoute from "./coupon";
 import 	productRoute from "./product";
@@ -26,6 +26,7 @@ import 	languageRoute from "./language";
 import 	languageListRoute from "./languageList";
 import 	mailRoute from "./mail";
 import 	templateRoute from "./template";
+import 	wishlistRoute from "./wishlist";
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.use(vendorRoute);
 router.use(arbitrationRoute);
 router.use(blogRoute);
 router.use(messageRoute);
-router.use(subscribeRoute);
+router.use(subscriberRoute);
 router.use(reviewRoute);
 router.use(couponRoute);
 router.use(productRoute);
@@ -56,5 +57,6 @@ router.use(languageRoute);
 router.use(languageListRoute);
 router.use(mailRoute);
 router.use(templateRoute);
+router.use(wishlistRoute);
 
 export default router;

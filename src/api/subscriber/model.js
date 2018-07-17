@@ -4,7 +4,7 @@
 
 import mongoose from "mongoose";
 
-const SubscribeSchema = new mongoose.Schema({
+const SubscriberSchema = new mongoose.Schema({
   email: { type: String },
   frequency: {
     type: String,
@@ -12,7 +12,7 @@ const SubscribeSchema = new mongoose.Schema({
     default: "weekly",
     required: [true, "Why no sender?"],
   },
-  interest: { type: [] },
+  interest: { type: [], default: [] },
   standing: {
     type: String,
     enum: ["subscribed", "unsubscribed", "trashed"],
@@ -23,5 +23,5 @@ const SubscribeSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const Subscribe = mongoose.model("Subscribe", SubscribeSchema);
-export default Subscribe;
+const Subscriber = mongoose.model("Subscriber", SubscriberSchema);
+export default Subscriber;

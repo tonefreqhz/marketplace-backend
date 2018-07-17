@@ -4,7 +4,7 @@ import Wishlist from "./model";
 // Create and Save a new Wishlist
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.name || !req.body.customer || !req.body.kind) {
+  if (!req.body.name || !req.body.customer_id) {
     res.status(400).send({
       message: "Wishlist list name, type and customer can not be empty",
     });
@@ -13,10 +13,8 @@ exports.create = (req, res) => {
   // Create a Wishlist
   const wishlist = new Wishlist({
     name: req.body.name,
-    product: req.body.product,
-    customer: req.body.customer,
-    kind: req.body.kind,
-    standing: req.body.standing,
+    product_array: req.body.product_array,
+    customer_id: req.body.customer_id,
   });
 
   // Save Wishlist in the database
@@ -67,7 +65,7 @@ exports.findOne = (req, res) => {
 // Update a wishlist identified by the wishlistId in the request
 exports.update = (req, res) => {
   // Validate Request
-  if (!req.body.name || !req.body.customer || !req.body.kind) {
+  if (!req.body.name || !req.body.customer_id || !req.body.kind) {
     res.status(400).send({
       message: "Wishlist name can not be empty",
     });
@@ -76,10 +74,8 @@ exports.update = (req, res) => {
   // Find wishlist and update it with the request body
   Wishlist.findByIdAndUpdate(req.params.wishlistId, {
     name: req.body.name,
-    product: req.body.product,
-    customer: req.body.customer,
-    kind: req.body.kind,
-    standing: req.body.standing,
+    product_array: req.body.product_array,
+    customer_id: req.body.customer_id,
   }, { new: true })
     .then((wishlist) => {
       if (!wishlist) {

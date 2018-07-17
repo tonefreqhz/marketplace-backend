@@ -19,7 +19,6 @@ exports.create = (req, res) => {
     place: req.body.place,
     title: req.body.title,
     style: req.body.style,
-    standing: req.body.standing,
   });
 
   // Save Slider in the database

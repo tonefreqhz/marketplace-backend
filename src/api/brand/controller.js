@@ -14,7 +14,7 @@ exports.create = (req, res) => {
   const brand = new Brand({
     title: req.body.title || "Untitled Brand",
     description: req.body.description,
-    logo: req.body.logo,
+    icon: req.body.icon,
     banner: req.body.banner,
   });
 
@@ -76,7 +76,7 @@ exports.update = (req, res) => {
   Brand.findByIdAndUpdate(req.params.brandId, {
     title: req.body.title || "Untitled Brand",
     description: req.body.description,
-    logo: req.body.logo,
+    icon: req.body.icon,
     banner: req.body.banner,
   }, { new: true })
     .then((brand) => {

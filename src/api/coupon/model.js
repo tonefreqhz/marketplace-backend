@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 const CouponSchema = new mongoose.Schema({
   title: { type: String },
   code: { type: String },
-  spec: { type: [] },
+  spec_array: { type: [] },
   vendor_id: { type: Number, required: [true, "Why no Vendor of coupon?"] },
   till: { type: Date },
   standing: {

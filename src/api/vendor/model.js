@@ -19,13 +19,13 @@ const VendorSchema = new mongoose.Schema({
     required: [true, "Why no MetaMask address?"],
     default: "",
   },
-  shop_name: {
+  business_name: {
     type: String,
     unique: true,
     required: [true, "What is your unique Shop name?"],
     default: "",
   },
-  company: { type: String, required: [true, "Why no Company?"], default: "" },
+  currency_id: { type: String, required: [true, "Why no Company?"], default: "" },
   language: { type: String, default: "" },
   fullname: { type: String, default: "" },
   email: {

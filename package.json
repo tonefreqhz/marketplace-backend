@@ -4,10 +4,10 @@
   "description": "Bezop Marketplace API",
   "main": "dist",
   "scripts": {
-    "start": "nodemon src --exec babel-node",
+    "start": "NODE_ENV=development nodemon src --exec babel-node",
     "clean": "rm -rf dist && mkdir dist",
     "build": "babel src -s -D -d dist --presets es2015,stage-2",
-    "serve": "npm run -s build && node ./dist",
+    "serve": "npm run -s build && NODE_ENV=production node ./dist",
     "test": "mocha --timeout 10000 --require babel-core/register",
     "kill": "lsof -n -iTCP:4000  -sTCP:LISTEN -n -l -P | grep 'LISTEN' | awk '{print $2}' | xargs kill -9",
     "doc": "rm -rf apidoc && apidoc -i src/ -o apidoc/ && opn apidoc/index.html"

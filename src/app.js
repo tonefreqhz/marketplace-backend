@@ -11,6 +11,7 @@ import cors from "cors";
 import api from "./api";
 
 dotenv.config();
+// process.env.NODE_ENV = "production";
 
 const app = express();
 
@@ -19,14 +20,19 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(cors());
 
+const env = process.env.NODE_ENV;
 const PORT = process.env.PORT || 5000;
-const DB_HOST = process.env.DB_HOST_TEST || "mongodb://localhost:27017/marketplace";
+let database = process.env.DB_HOST;
+
+if (env === "development") {
+  database = process.env.DB_HOST_TEST;
+}
 
 // Configuring the database
 mongoose.Promise = global.Promise;
 
 // Connecting to the database
-mongoose.connect(DB_HOST)
+mongoose.connect(database)
   .then(() => {
     console.log("Successfully connected to the database!");
   }).catch((err) => {
@@ -37,7 +43,7 @@ mongoose.connect(DB_HOST)
 
 // define a simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to BezopShop application." });
+  res.json({ message: "Welcome to Bezop Marketplace API." });
 });
 
 // Use Routes

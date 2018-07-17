@@ -7,19 +7,85 @@ import * as media from "./controller";
 
 const router = express.Router();
 
-// Create a new media
-router.post("/medias", media.create);
+/**
+ * @api {post} /media Create media
+ * @apiName CreateMedia
+ * @apiGroup Media
+ * @apiParam {String} access_token master access token.
+ * @apiParam title Media's title.
+ * @apiParam description Media's description.
+ * @apiParam media_type Media's media_type.
+ * @apiParam vendor_id Media's vendor_id.
+ * @apiParam purpose Media's purpose.
+ * @apiParam subject Media's subject.
+ * @apiParam page Media's page.
+ * @apiParam place Media's place.
+ * @apiParam num Media's sort num or position.
+ * @apiParam status Media's status.
+ * @apiParam url Media's url.
+ * @apiParam style Media's style.
+ * @apiSuccess {Object} Media Media's data.
+ * @apiError {Object} 400 Some parameters may contain invalid values.
+ * @apiError 404 Media not found.
+ * @apiError 401 master access only.
+ */
+router.post("/media", media.create);
 
-// Retrieve all Notes
-router.get("/medias", media.findAll);
+/**
+ * @api {get} /media Retrieve media
+ * @apiName RetrieveMedias
+ * @apiGroup Media
+ * @apiSuccess {Object[]} rows List of Medias.
+ * @apiError {Object} 400 Some parameters may contain invalid values.
+ */
+router.get("/media", media.findAll);
 
-// Retrieve a single media with mediaId
-router.get("/medias/:mediaId", media.findOne);
 
-// Update a media with mediaId
-router.put("/medias/:mediaId", media.update);
+/**
+ * @api {get} /media/:id Retrieve media
+ * @apiName RetrieveMedia
+ * @apiGroup Media
+ * @apiSuccess {Object} media Media's data.
+ * @apiError {Object} 400 Some parameters may contain invalid values.
+ * @apiError 404 Media not found.
+ */
+router.get("/media/:mediaId", media.findOne);
 
-// Delete a media with mediaId
-router.delete("/medias/:mediaId", media.delete);
+/**
+ * @api {put} /media/:id Update media
+ * @apiName UpdateMedia
+ * @apiGroup Media
+ * @apiPermission master
+ * @apiParam {String} access_token master access token.
+ * @apiParam title Media's title.
+ * @apiParam description Media's description.
+ * @apiParam media_type Media's media_type.
+ * @apiParam vendor_id Media's vendor_id.
+ * @apiParam purpose Media's purpose.
+ * @apiParam subject Media's subject.
+ * @apiParam page Media's page.
+ * @apiParam place Media's place.
+ * @apiParam num Media's sort num or position.
+ * @apiParam status Media's status.
+ * @apiParam url Media's url.
+ * @apiParam style Media's style.
+ * @apiSuccess {Object} media Media's data.
+ * @apiError {Object} 400 Some parameters may contain invalid values.
+ * @apiError 404 Media not found.
+ * @apiError 401 master access only.
+ */
+router.put("/media/:mediaId", media.update);
+
+/**
+ * @api {delete} /media/:id Delete media
+ * @apiName DeleteMedia
+ * @apiGroup Media
+ * @apiPermission master
+ * @apiParam {String} access_token master access token.
+ * @apiSuccess (Success 204) 204 No Content.
+ * @apiError 404 Media not found.
+ * @apiError 401 master access only.
+ */
+router.delete("/media/:mediaId", media.delete);
 
 export default router;

@@ -6,8 +6,8 @@ import mongoose from "mongoose";
 
 const WishlistSchema = new mongoose.Schema({
   name: { type: String, required: [true, "Why no Name?"] },
-  customer: { type: String, required: [true, "Why no Customer?"] },
-  product: { type: [], default: [] },
+  customer_id: { type: String, required: [true, "Why no Customer?"] },
+  product_array: { type: [], default: [] },
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],

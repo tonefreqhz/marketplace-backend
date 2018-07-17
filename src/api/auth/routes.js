@@ -1,13 +1,5 @@
 /**
- * @api {post} /:userType/auth/:authType Authenticate
- * @apiName Authenticate
- * @apiGroup Auth
- * @apiHeader {String} Authorization Basic authorization contentType = application/json.
- * @apiParams {String} url parameters with userType and authType.
- * @apiBody {String} form with signature and publicAddress.
- * @apiSuccess (Success 201) {String} token User `access_token` to be passed to other requests.
- * @apiSuccess (Success 201) {Object} user Current user's data.
- * @apiError 401 Valid users access only or invalid credentials.
+ * @author 4Decoder
  */
 
 import express from "express";
@@ -16,9 +8,37 @@ import * as authentication from "./controller";
 
 const router = express.Router();
 
-// Retrieve a single admin with publicAddress ^(0x)?[0-9a-fA-F]{40}$
+/**
+* @api {get} /:userType/:authType/publicaddress/:publicAddress Authenticate
+* @apiName RetrieveNonce
+* @apiGroup Authenticate
+* @apiPermission master
+* @apiParam {String} access_token master access token.
+* @apiParam userType User’s user type (Customer | Vendor | Admin).
+* @apiParam authType User’s authentication type.
+* @apiParam publicaddress User’s publicaddress.
+* @apiSuccess {Object} user User's data.
+* @apiError {Object} 400 Some parameters may contain invalid values.
+* @apiError 404 User not found.
+* @apiError 401 master access only.
+*/
+// Retrieve a single user with publicAddress ^(0x)?[0-9a-fA-F]{40}$
 router.get("/:userType/:authType/publicaddress/:publicAddress", authentication.find);
 
+/**
+* @api {post} /:userType/auth/:authType Authenticate
+* @apiName Authenticate
+* @apiGroup Authenticate
+* @apiPermission master
+* @apiParam {String} access_token master access token.
+* @apiParam userType User’s user type (Customer | Vendor | Admin).
+* @apiParam authType User’s authentication type.
+* @apiParam publicaddress User’s publicaddress.
+* @apiSuccess {Object} user User's data.
+* @apiError {Object} 400 Some parameters may contain invalid values.
+* @apiError 404 User not found.
+* @apiError 401 master access only.
+*/
 router.post("/:userType/auth/:authType", authentication.auth);
 
 export default router;

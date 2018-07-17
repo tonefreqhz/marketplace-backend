@@ -14,7 +14,7 @@ exports.create = (req, res) => {
   const category = new Category({
     name: req.body.name || "Untitled Category",
     description: req.body.description,
-    logo: req.body.logo,
+    icon: req.body.icon,
     banner: req.body.banner,
   });
 
@@ -76,7 +76,7 @@ exports.update = (req, res) => {
   Category.findByIdAndUpdate(req.params.categoryId, {
     name: req.body.name || "Untitled Category",
     description: req.body.description,
-    logo: req.body.logo,
+    icon: req.body.icon,
     banner: req.body.banner,
   }, { new: true })
     .then((category) => {

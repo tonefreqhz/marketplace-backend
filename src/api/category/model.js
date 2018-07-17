@@ -8,7 +8,7 @@ const CategorySchema = new mongoose.Schema({
   name: { type: String, required: [true, "Why no name?"] },
   description: { type: String, required: [true, "Why no description?"] },
   kind: { type: String, enum: ["digital", "physical"], required: [true, "Why no category type?"] },
-  logo: { type: String, required: [true, "Why no logo?"] },
+  icon: { type: String, required: [true, "Why no icon?"] },
   banner: { type: String, required: [true, "Why no banner?"] },
   parent: { type: String, default: 0 },
   created_by: { type: Number, required: [true, "Why no Vendor?"] },

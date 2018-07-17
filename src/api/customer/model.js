@@ -19,7 +19,7 @@ const CustomerSchema = new mongoose.Schema({
     required: [true, "Why no MetaMask address?"],
   },
   username: { type: String, default: "" },
-  currency: { type: String, default: "" },
+  currency_id: { type: String, default: "" },
   wishlist: { type: [] },
   cart: { type: [] },
   language: { type: String, default: "" },

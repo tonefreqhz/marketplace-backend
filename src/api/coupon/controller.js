@@ -14,7 +14,7 @@ exports.create = (req, res) => {
   const coupon = new Coupon({
     title: req.body.title || "Untitled Coupon",
     code: req.body.code,
-    spec: req.body.spec,
+    spec_array: req.body.spec_array,
     vendor_id: req.body.vendor_id,
     till: new Date(req.body.till),
   });
@@ -77,7 +77,7 @@ exports.update = (req, res) => {
   Coupon.findByIdAndUpdate(req.params.couponId, {
     title: req.body.title || "Untitled Coupon",
     code: req.body.code,
-    spec: req.body.spec,
+    spec_array: req.body.spec_array,
     vendor_id: req.body.vendor_id,
     till: new Date(req.body.till),
   }, { new: true })
