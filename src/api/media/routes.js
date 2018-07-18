@@ -24,6 +24,16 @@ const router = express.Router();
  * @apiParam status Media's status.
  * @apiParam url Media's url.
  * @apiParam style Media's style.
+ * @apiParam {String} image_sm Product’s small image.
+ * @apiParam {String} image_md Product’s medium image.
+ * @apiParam {String} image_lg Product’s large image.
+ * @apiParam {String} image_front Product’s front view image.
+ * @apiParam {String} image_back Product’s back view image.
+ * @apiParam {String} image_top Product’s top view image.
+ * @apiParam {String} image_bottom Product’s bottom view image.
+ * @apiParam {String} image_rightProduct’s right view image.
+ * @apiParam {String} image_left Product’s left view image.
+ * @apiParam {String} icon Product’s (required) icon url.
  * @apiSuccess {Object} Media Media's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Media not found.

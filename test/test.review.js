@@ -6,11 +6,7 @@ import assert from "assert";
 import app from "./../src/app";
 import Review from "./../src/api/review/model";
 
-
-const { expect } = chai.expect;
 chai.use(chaiHttp);
-
-
 const URL = "http://localhost:4000/api/v1";
 
 describe("Parent ", () => {
@@ -43,7 +39,7 @@ describe("Parent ", () => {
 
 
     describe("/POST Create Review ", () => {
-      it("should create with valid attributes at POST /posts", (done) => {
+      it("should create with valid attributes at POST /reviews", (done) => {
         const newReview = {
           customer_id: "1234",
           subject: "product",

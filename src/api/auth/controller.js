@@ -17,8 +17,10 @@ import { randomNonce } from "./../../services/helpers";
 const SECRET = process.env.SECRET || "some funny secret password";
 let User = null;
 
-// 1. First of all, find the record with public Address
+// ///////////////////////////////////////////////////
+// 1. First, find the record with public Address
 // /:userType/:authType/publicaddress/:publicAddress
+// //////////////////////////////////////////////////
 exports.find = (req, res, next) => {
   const { userType, authType, publicAddress } = req.params;
   console.log(`User Type: ${userType} Auth Type: ${authType} publicAddress: ${publicAddress}`);
@@ -95,7 +97,12 @@ exports.find = (req, res, next) => {
     .catch(next);
 };
 
-
+// ///////////////////////////////////////////////////
+// 2. Secondly, the signed message is posted with publicAddress
+// /{post} /:userType/auth/:authType Authenticate
+// body { signature, publicAddress }
+// returns the accessToken if Authentication is successful
+// //////////////////////////////////////////////////
 exports.auth = (req, res, next) => {
   const { signature, publicAddress } = req.body;
   const { userType, authType } = req.params;
