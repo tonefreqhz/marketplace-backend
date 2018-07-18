@@ -5,13 +5,16 @@ import Review from "./model";
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.subject) {
-    res.status(400).send({
-      message: "Review content can not be empty",
-    });
+    res.status(404)
+      .json({
+        success: false,
+        data: [],
+        message: "Review content can not be empty",
+      });
   }
 
   // Create a Review
-  const review = new Review({
+  const newReview = new Review({
     customer_id: req.body.customer_id,
     subject: req.body.subject,
     subject_id: req.body.subject_id,
@@ -20,13 +23,21 @@ exports.create = (req, res) => {
   });
 
   // Save Review in the database
-  review.save()
-    .then((data) => {
-      res.send(data);
+  newReview.save()
+    .then((review) => {
+      res.status(200)
+        .json({
+          success: true,
+          data: review,
+          message: "Record(s)",
+        });
     }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Review.",
-      });
+      res.status(500)
+        .json({
+          success: false,
+          data: [],
+          message: err.message || "Some error occurred while creating the Review.",
+        });
     });
 };
 
@@ -34,11 +45,19 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   Review.find()
     .then((reviews) => {
-      res.send(reviews);
+      res.status(200)
+        .json({
+          success: true,
+          data: reviews,
+          message: "Record(s)",
+        });
     }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving reviews.",
-      });
+      res.status(500)
+        .json({
+          success: false,
+          data: [],
+          message: err.message || "Some error occurred while retrieving the Review.",
+        });
     });
 };
 
@@ -47,30 +66,37 @@ exports.findOne = (req, res) => {
   Review.findById(req.params.reviewId)
     .then((review) => {
       if (!review) {
-        res.status(404).send({
-          message: `Review not found with id ${req.params.reviewId}`,
-        });
+        return res.status(404)
+          .json({
+            success: false,
+            data: [],
+            message: `Review not found with id ${req.params.reviewId}`,
+          });
       }
-      res.send(review);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Review not found with id ${req.params.reviewId}`,
+      return res.status(200)
+        .json({
+          success: true,
+          data: review,
+          message: "Record(s)",
         });
-      }
-      res.status(500).send({
-        message: `Error retrieving review with id ${req.params.reviewId}`,
-      });
-    });
+    }).catch(err => res.status(404)
+      .json({
+        success: false,
+        data: [],
+        message: err.message || `Review not found with id ${req.params.reviewId}`,
+      }));
 };
 
 // Update a review identified by the reviewId in the request
 exports.update = (req, res) => {
   // Validate Request
   if (!req.body.subject) {
-    res.status(400).send({
-      message: "Review subject can not be empty",
-    });
+    res.status(400)
+      .json({
+        success: false,
+        data: [],
+        message: "Review subject can not be empty",
+      });
   }
 
   // Find review and update it with the request body
@@ -83,16 +109,22 @@ exports.update = (req, res) => {
   }, { new: true })
     .then((review) => {
       if (!review) {
-        res.status(404).send({
-          message: `Review not found with id ${req.params.reviewId}`,
-        });
+        res.status(404)
+          .json({
+            success: false,
+            data: [],
+            message: `Review not found with id ${req.params.reviewId}`,
+          });
       }
       res.send(review);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Review not found with id ${req.params.reviewId}`,
-        });
+        res.status(404)
+          .json({
+            success: false,
+            data: [],
+            message: err.message || `Review not found with id ${req.params.reviewId}`,
+          });
       }
       res.status(500).send({
         message: `Error updating review with id ${req.params.reviewId}`,
@@ -105,19 +137,33 @@ exports.delete = (req, res) => {
   Review.findByIdAndRemove(req.params.reviewId)
     .then((review) => {
       if (!review) {
-        res.status(404).send({
-          message: `Review not found with id ${req.params.reviewId}`,
-        });
+        res.status(404)
+          .json({
+            success: false,
+            data: [],
+            message: `Review not found with id ${req.params.reviewId}`,
+          });
       }
-      res.send({ message: "Review deleted successfully!" });
+      res.status(200)
+        .json({
+          success: true,
+          data: [],
+          message: "Review deleted successfully!",
+        });
     }).catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Review not found with id ${req.params.reviewId}`,
-        });
+        res.status(404)
+          .json({
+            success: false,
+            data: [],
+            message: err.message || `Review not found with id ${req.params.reviewId}`,
+          });
       }
-      res.status(500).send({
-        message: `Could not delete review with id ${req.params.reviewId}`,
-      });
+      res.status(500)
+        .json({
+          success: false,
+          data: [],
+          message: `Could not delete review with id ${req.params.reviewId}`,
+        });
     });
 };

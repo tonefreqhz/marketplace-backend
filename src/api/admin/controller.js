@@ -9,12 +9,17 @@ import Admin from "./model";
 export function findAll(req, res) {
   Admin.find()
     .then((admins) => {
-      res.send(admins);
+      res.status(200)
+        .json({
+          success: true,
+          data: admins,
+          message: "Record(s)",
+        });
     }).catch((err) => {
       res.status(500)
         .json({
           success: false,
-          data: {},
+          data: [],
           message: err.message || "Some error occurred while retrieving admins.",
         });
     });
@@ -28,7 +33,7 @@ export function findOne(req, res) {
         res.status(404)
           .json({
             success: false,
-            data: {},
+            data: [],
             message: `Admin not found with id ${req.params.adminId}`,
           });
       }
@@ -43,14 +48,14 @@ export function findOne(req, res) {
         res.status(404)
           .json({
             success: false,
-            data: {},
+            data: [],
             message: `Admin not found with id ${req.params.adminId}`,
           });
       }
       res.status(500)
         .json({
           success: false,
-          data: {},
+          data: [],
           message: `Error retrieving admin with id ${req.params.adminId}`,
         });
     });
@@ -63,7 +68,7 @@ export function update(req, res) {
     res.status(400)
       .json({
         success: false,
-        data: {},
+        data: [],
         message: "Admin publicAddress can not be empty",
       });
   }
@@ -82,7 +87,7 @@ export function update(req, res) {
         res.status(404)
           .json({
             success: false,
-            data: {},
+            data: [],
             message: `Admin not found with id ${req.params.adminId}`,
           });
       }
@@ -98,14 +103,14 @@ export function update(req, res) {
         res.status(404)
           .json({
             success: false,
-            data: {},
+            data: [],
             message: `${err.message} Admin not found with id ${req.params.adminId}`,
           });
       }
       res.status(500)
         .json({
           success: false,
-          data: {},
+          data: [],
           message: `${err.message} Error updating admin with id ${req.params.adminId}`,
         });
     });

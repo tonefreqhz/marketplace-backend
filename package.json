@@ -8,7 +8,7 @@
     "clean": "rm -rf dist && mkdir dist",
     "build": "babel src -s -D -d dist --presets es2015,stage-2",
     "serve": "npm run -s build && NODE_ENV=production node ./dist",
-    "test": "mocha --timeout 10000 --require babel-core/register",
+    "test": "NODE_ENV=development  mocha --timeout 10000 --require babel-core/register",
     "kill": "lsof -n -iTCP:4000  -sTCP:LISTEN -n -l -P | grep 'LISTEN' | awk '{print $2}' | xargs kill -9",
     "doc": "rm -rf apidoc && apidoc -i src/ -o apidoc/ && opn apidoc/index.html"
   },
@@ -54,6 +54,8 @@
     "validator": "^10.4.0"
   },
   "devDependencies": {
+    "apidoc": "^0.17.6",
+    "apidoc-markdown2": "^0.2.0",
     "babel-cli": "^6.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
@@ -67,12 +69,16 @@
     "eslint-plugin-import": "^2.7.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.17.5",
-    "supertest": "^3.1.0",
-    "apidoc": "^0.17.6",
-    "apidoc-markdown2": "^0.2.0",
-    "opn-cli":"^3.1.0"
+    "opn-cli": "^3.1.0",
+    "should": "^13.2.1",
+    "supertest": "^3.1.0"
   },
   "engines": {
     "node": "8.11.3"
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
   }
 }

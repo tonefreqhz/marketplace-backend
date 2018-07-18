@@ -22,7 +22,6 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     enum: ["show", "trashed"],
     default: "show",
-    required: [true, "Why no status?"],
   },
   updated: { type: Date, default: Date.now },
 }, {
