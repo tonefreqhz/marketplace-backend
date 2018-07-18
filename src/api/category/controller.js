@@ -12,8 +12,10 @@ exports.create = (req, res) => {
 
   // Create a Category
   const category = new Category({
-    name: req.body.name || "Untitled Category",
+    name: req.body.name,
     description: req.body.description,
+    kind: req.body.kind,
+    parent: req.body.parent,
   });
 
   // Save Category in the database
@@ -72,8 +74,10 @@ exports.update = (req, res) => {
 
   // Find category and update it with the request body
   Category.findByIdAndUpdate(req.params.categoryId, {
-    name: req.body.name || "Untitled Category",
+    name: req.body.name,
     description: req.body.description,
+    kind: req.body.kind,
+    parent: req.body.parent,
   }, { new: true })
     .then((category) => {
       if (!category) {

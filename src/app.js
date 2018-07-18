@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 5000;
 let database = process.env.DB_HOST;
 
 if (env === "development") {
-  database = process.env.DB_HOST_TEST;
+  database = process.env.DB_HOST;
 }
 
 // Configuring the database
