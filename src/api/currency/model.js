@@ -11,6 +11,7 @@ const CurrencySchema = new mongoose.Schema({
   kind: { type: String, enum: ["digital", "fiat"], required: [true, "Why no currency type?"] },
   symbol: { type: String, required: [true, "Why no symbol?"] },
   exchange: { type: Number, required: [true, "Why no exchange rate?"] },
+  icon: { type: String, default: "" },
   view_count: { type: Number, default: 1 },
   standing: {
     type: String,
