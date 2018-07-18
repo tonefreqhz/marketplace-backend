@@ -35,8 +35,6 @@ const router = express.Router();
  * @apiParam zip Vendor's zip.
  * @apiParam state Vendor's state.
  * @apiParam theme Vendor's theme.
- * @apiParam logo Vendor's logo.
- * @apiParam banner Vendor's banner.
  * @apiParam homepage Vendor's homepage.
  * @apiParam product_page_style Vendor's product_page_style.
  * @apiParam product_detail_page_style Vendor's product_detail_page_style.
@@ -102,8 +100,6 @@ router.get("/vendors/:vendorId", vendor.findOne);
  * @apiParam zip Vendor's zip.
  * @apiParam state Vendor's state.
  * @apiParam theme Vendor's theme.
- * @apiParam logo Vendor's logo.
- * @apiParam banner Vendor's banner.
  * @apiParam homepage Vendor's homepage.
  * @apiParam product_page_style Vendor's product_page_style.
  * @apiParam product_detail_page_style Vendor's product_detail_page_style.

@@ -14,8 +14,6 @@ const router = express.Router();
  * @apiParam {String} access_token master access token.
  * @apiParam name Category’s name.
  * @apiParam description Category’s description.
- * @apiParam icon Category’s icon.
- * @apiParam banner Category’s banner.
  * @apiSuccess {Object} Category Category's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Category not found.
@@ -51,8 +49,6 @@ router.get("/categories/:categoryId", category.findOne);
  * @apiParam {String} access_token master access token.
  * @apiParam name Category’s name.
  * @apiParam description Category’s description.
- * @apiParam icon Category’s icon.
- * @apiParam banner Category’s banner.
  * @apiSuccess {Object} category Category's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Category not found.

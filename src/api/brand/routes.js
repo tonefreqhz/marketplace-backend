@@ -14,8 +14,6 @@ const router = express.Router();
  * @apiParam {String} access_token master access token.
  * @apiParam title Brand’s title.
  * @apiParam description Brand’s description.
- * @apiParam icon Brand’s icon.
- * @apiParam banner Brand’s banner.
  * @apiSuccess {Object} Brand Brand's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Brand not found.
@@ -51,8 +49,6 @@ router.get("/brands/:brandId", brand.findOne);
  * @apiParam {String} access_token master access token.
  * @apiParam title Brand’s title.
  * @apiParam description Brand’s description.
- * @apiParam icon Brand’s icon.
- * @apiParam banner Brand’s banner.
  * @apiSuccess {Object} brand Brand's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Brand not found.

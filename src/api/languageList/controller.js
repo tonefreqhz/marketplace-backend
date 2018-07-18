@@ -14,7 +14,6 @@ exports.create = (req, res) => {
   const languageList = new LanguageList({
     name: req.body.name || "Untitled LanguageList",
     db_field: req.body.db_field,
-    image: req.body.image,
   });
 
   // Save LanguageList in the database
@@ -75,7 +74,6 @@ exports.update = (req, res) => {
   LanguageList.findByIdAndUpdate(req.params.languageListId, {
     name: req.body.name || "Untitled LanguageList",
     db_field: req.body.db_field,
-    image: req.body.image,
   }, { new: true })
     .then((languageList) => {
       if (!languageList) {

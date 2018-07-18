@@ -14,7 +14,6 @@ const router = express.Router();
  * @apiParam {String} access_token master access token.
  * @apiParam name language-list's name.
  * @apiParam db_field language-list's db_field.
- * @apiParam icon language-list's icon.
  * @apiSuccess {Object} languageList languageList's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 languageList not found.
@@ -50,7 +49,6 @@ router.get("/language-lists/:languageListId", languageList.findOne);
  * @apiParam {String} access_token master access token.
  * @apiParam name language-list's name.
  * @apiParam db_field language-list's db_field.
- * @apiParam icon language-list's icon.
  * @apiSuccess {Object} language-list languageList's data.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 languageList not found.

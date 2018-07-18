@@ -7,8 +7,8 @@ import mongoose from "mongoose";
 const BrandSchema = new mongoose.Schema({
   name: { type: String, required: [true, "Why no name?"] },
   description: { type: String, required: [true, "Why no description?"] },
-  icon: { type: String, required: [true, "Why no logo?"] },
-  banner: { type: String, required: [true, "Why no banner?"] },
+  icon: { type: String, required: [false, "Why no logo?"] },
+  banner: { type: String, required: [false, "Why no banner?"] },
   view_count: { type: Number, default: 1 },
   standing: {
     type: String,

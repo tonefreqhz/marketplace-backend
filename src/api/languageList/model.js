@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 const LanguageListSchema = new mongoose.Schema({
   name: { type: String, required: [true, "Why no name?"] },
   db_field: { type: String, required: [true, "Why no langauge table field name?"] },
-  icon: { type: String, required: [true, "Why no image?"] },
+  icon: { type: String, required: [false, "Why no image?"] },
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],
