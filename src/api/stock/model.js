@@ -3,10 +3,13 @@
 */
 
 import mongoose from "mongoose";
+import Product from "../vendor/model";
 
-const StockSchema = new mongoose.Schema({
+const { Schema } = mongoose.Schema;
+
+const StockSchema = new Schema({
   vendor_id: { type: String, required: [true, "Why no vendor id?"] },
-  product_id: { type: String, required: [true, "Why no product id?"] },
+  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   order_num: { type: String, required: [true, "Why no order number?"] },
   kind: { type: String, enum: ["add", "destroy"], required: [true, "Why no kind?"] },
   quantity: { type: Number, required: [true, "Why no quantity?"] },

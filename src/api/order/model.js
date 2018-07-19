@@ -3,14 +3,18 @@
 */
 
 import mongoose from "mongoose";
+import Product from "../product/model";
+import Vendor from "../vendor/model";
+import Customer from "../customer/model";
 
-const OrderSchema = new mongoose.Schema({
+const { Schema } = mongoose.Schema;
+
+const OrderSchema = new Schema({
   order_num: { type: String, required: [true, "Why no Order Number?"] },
   kind: { type: String, required: [true, "Why no Product type?"] },
-  customer_id: { type: String, required: [true, "Why no Customer?"] },
-  vendor_id: { type: String, required: [true, "Why no Vendor?"] },
-  product_array: { type: String, required: [true, "Why no Products?"] },
-  payment_array: { type: String, required: [true, "Why no Payment details?"] },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  customer: { type: Schema.Types.ObjectId, ref: "Customer" },
+  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   shipment_array: { type: String, required: [true, "Why no Shipment details?"] },
   delivery_array: { type: String, required: [true, "Why no Delivery details?"] },
   tracking_num: { type: String, required: [true, "Why no Tracking Number?"] },

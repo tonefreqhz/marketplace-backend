@@ -3,18 +3,20 @@
 */
 
 import mongoose from "mongoose";
+import Vendor from "../vendor/model";
 
-const CouponSchema = new mongoose.Schema({
-  title: { type: String },
-  code: { type: String },
-  spec_array: { type: [] },
-  vendor_id: { type: Number, required: [true, "Why no Vendor of coupon?"] },
-  till: { type: Date },
+const { Schema } = mongoose.Schema;
+
+const CouponSchema = new Schema({
+  title: { type: String, required: [true, "Why no title of coupon?"] },
+  code: { type: String, required: [true, "Why no code of coupon?"] },
+  spec_array: { type: [], default: [] },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  till: { type: Date, required: [true, "Why no expiry date of coupon?"] },
   standing: {
     type: String,
     enum: ["active", "expired", "trashed"],
     default: "active",
-    required: [true, "Why no status?"],
   },
   updated: { type: Date, default: Date.now },
 }, {

@@ -3,10 +3,14 @@
 */
 
 import mongoose from "mongoose";
+import Wishlist from "../wishlist/model";
+import Currency from "../currency/model";
+import LanguageList from "../languageList/model";
+import { randomNonce } from "./../../services/helpers";
 
-const randomNonce = () => Math.floor(Math.random() * 1000000);
+const { Schema } = mongoose.Schema;
 
-const CustomerSchema = new mongoose.Schema({
+const CustomerSchema = new Schema({
   nonce: {
     type: Number,
     default: randomNonce(),
@@ -19,11 +23,11 @@ const CustomerSchema = new mongoose.Schema({
     required: [true, "Why no MetaMask address?"],
   },
   username: { type: String, default: "" },
-  currency_id: { type: String, default: "" },
-  wishlist: { type: [] },
-  cart: { type: [] },
-  language: { type: String, default: "" },
-  gender: { type: String, default: "" },
+  currency: { type: Schema.Types.ObjectId, ref: "Currency" },
+  wishlist: [{ type: Schema.Types.ObjectId, ref: "Wishlist" }],
+  cart: { type: Array, default: [] },
+  languageList: { type: Schema.Types.ObjectId, ref: "LanguageList" },
+  gender: { type: String, enum: ["m", "f"] },
   password: { type: String, default: "" },
   photo: { type: String, default: "" },
   profile: { type: String, default: "" },
@@ -35,12 +39,14 @@ const CustomerSchema = new mongoose.Schema({
   country: { type: String, default: "" },
   phone: { type: String, default: "" },
   email: { type: String, unique: true, default: "" },
-  last_access: { type: [] },
+  last_access: {
+    type: Array,
+    default: [{ accessDate: "", ipAddress: "" }],
+  },
   standing: {
     type: String,
     enum: ["active", "unverified", "suspended", "trashed"],
     default: "active",
-    required: [true, "Why no status?"],
   },
   updated: { type: Date, default: Date.now },
 

@@ -36,7 +36,6 @@ const AdminSchema = new mongoose.Schema({
     type: String,
     enum: ["active", "suspended", "trashed"],
     default: "active",
-    required: [true, "Why no status?"],
   },
   updated: { type: Date, default: Date.now },
 }, { timestamps: true });

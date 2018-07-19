@@ -3,10 +3,12 @@
 */
 
 import mongoose from "mongoose";
+import Product from "../vendor/model";
+import { randomNonce } from "./../../services/helpers";
 
-const randomNonce = () => Math.floor(Math.random() * 1000000);
+const { Schema } = mongoose.Schema;
 
-const VendorSchema = new mongoose.Schema({
+const VendorSchema = new Schema({
   nonce: {
     type: Number,
     default: randomNonce(),
@@ -35,9 +37,9 @@ const VendorSchema = new mongoose.Schema({
     required: [true, "Why no email?"],
     default: "",
   },
-  password: { type: String, required: [true, "Why no Password?"], default: "" },
+  password: { type: String, required: [true, "Why no Password?"] },
   tagline: { type: String, default: "" },
-  address: { type: String, required: [true, "Why no Address?"], default: "" },
+  address: { type: String, required: [true, "Why no Address?"] },
   details: { type: [], default: [] },
   facebook: { type: String, default: "" },
   skype: { type: String, default: "" },
@@ -56,6 +58,7 @@ const VendorSchema = new mongoose.Schema({
   theme: { type: String, default: "" },
   logo: { type: String, default: "default-vendor-logo.png" },
   banner: { type: String, default: "default-vendor-banner.png" },
+  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   home_page_style: { type: String, default: "" },
   product_page_style: { type: String, default: "" },
   product_detail_page_style: { type: String, default: "" },
@@ -65,7 +68,10 @@ const VendorSchema = new mongoose.Schema({
   invoice_page_style: { type: String, default: "" },
   ticket_page_style: { type: String, default: "" },
   view_count: { type: Number, default: 1 },
-  last_access: { type: [{ date: { type: Date }, ip: { type: String } }] },
+  last_access: {
+    type: Array,
+    default: [{ accessDate: "", ipAddress: "" }],
+  },
   standing: {
     type: String,
     enum: ["active", "unverified", "suspended", "trashed"],

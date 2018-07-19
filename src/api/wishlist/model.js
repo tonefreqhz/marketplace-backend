@@ -3,11 +3,14 @@
 */
 
 import mongoose from "mongoose";
+import Product from "../vendor/model";
 
-const WishlistSchema = new mongoose.Schema({
+const { Schema } = mongoose.Schema;
+
+const WishlistSchema = new Schema({
   name: { type: String, required: [true, "Why no Name?"] },
   customer_id: { type: String, required: [true, "Why no Customer?"] },
-  product_array: { type: [], default: [] },
+  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],

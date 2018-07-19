@@ -3,16 +3,21 @@
 */
 
 import mongoose from "mongoose";
+import Category from "../category/model";
+import Vendor from "../vendor/model";
+import Brand from "../brand/model";
 
-const ProductSchema = new mongoose.Schema({
+const { Schema } = mongoose.Schema;
+
+const ProductSchema = new Schema({
   code: { type: String, unique: true, required: [false, "Why no Code?"], default: "" },
   sku: { type: String, required: [false, "Why no Sku?"], default: "" },
   upc: { type: String, required: [false, "Why no Upc?"], default: "" },
   name: { type: String, required: [true, "Why no Name?"] },
-  tag: { type: [], default: [] },
-  vendor_id: { type: String, required: [true, "Why no Vendor?"] },
-  category_id: { type: String, required: [true, "Why no Category?"] },
-  brand_id: { type: String },
+  tag: { type: Array, default: [] },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  category: { type: Schema.Types.ObjectId, ref: "Category" },
+  brand: { type: Schema.Types.ObjectId, ref: "Brand" },
   description: { type: String, required: [true, "Why no Description?"] },
   short_description: { type: String, required: [true, "Why no Short description?"] },
   unit_cost: { type: Number, required: [true, "Why no Unit cost?"] },

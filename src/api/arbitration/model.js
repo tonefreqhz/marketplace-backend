@@ -3,11 +3,16 @@
 */
 
 import mongoose from "mongoose";
+import Vendor from "../vendor/model";
+import Customer from "../customer/model";
+import Order from "../order/model";
 
-const ArbitrationSchema = new mongoose.Schema({
-  order_id: { type: Number, required: [true, "Why no sales order?"] },
-  vendor_id: { type: Number, required: [true, "Why no Vendor?"] },
-  customer_id: { type: Number, required: [true, "Why no Customer?"] },
+const { Schema } = mongoose.Schema;
+
+const ArbitrationSchema = new Schema({
+  order: { type: Schema.Types.ObjectId, ref: "Order" },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  customer: { type: Schema.Types.ObjectId, ref: "Customer" },
   amount: { type: Number, required: [true, "Why no Amount?"] },
   customer_complaint: { type: String, required: [true, "Why no Customer complaint?"] },
   vendor_complaint: { type: String, required: [true, "Why no Vendor complaint?"] },
