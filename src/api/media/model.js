@@ -10,7 +10,6 @@ import Vendor from "../vendor/model";
 const MediaSchema = new Schema({
   media_type: { type: String, required: [true, "Why no media type?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  vendor_id: { type: String, required: [true, "Why no vendor ?"] },
   purpose: {
     type: String,
     enum: ["slide", "picture", "banner", "background"],

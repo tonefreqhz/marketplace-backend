@@ -11,7 +11,7 @@ const BlogSchema = new Schema({
   summary: { type: String, required: [true, "Why no Summary?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   content: { type: String, required: [true, "Why no content?"] },
-  tag: { type: String, required: [true, "Why no Tag?"] },
+  tag: { type: Array, required: [true, "Why no Tag?"] },
   image: { type: [] },
   view_count: { type: Number, default: 1 },
   standing: {

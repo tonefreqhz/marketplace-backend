@@ -20,8 +20,8 @@ const MessageSchema = new Schema({
   visitor_email: { type: String },
   subject: { type: String },
   message: { type: String },
-  customer_id: { type: String },
-  vendor_id: { type: String },
+  customer: { type: String },
+  vendor: { type: String },
   sent_by: {
     type: String,
     enum: ["visitor", "customer", "vendor", "admin"],

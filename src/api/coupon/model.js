@@ -7,11 +7,11 @@ import Vendor from "../vendor/model";
 
 const CouponSchema = new Schema({
   title: { type: String, required: [true, "Why no title of coupon?"] },
-  code: { type: String, required: [true, "Why no code of coupon?"] },
+  code: { type: String, required: [true, "Why no code of code?"] },
   amount: { type: Number, required: [true, "Why no dollar amount waiver of coupon?"] },
+  currency: { type: Schema.Types.ObjectId, ref: "Currency" },
   spec_array: { type: [], default: [] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   till: { type: Date, required: [true, "Why no expiry date of coupon?"] },
   standing: {
     type: String,
