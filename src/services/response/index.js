@@ -1,26 +1,24 @@
-export const success = (res, status) => (entity) => {
-  if (entity) {
-    res.status(status || 200).json(entity)
-  }
-  return null
-}
+export const success = (res, status, entity, msg) => res
+  .status(status || 200)
+  .json({
+    success: true,
+    data: entity || [],
+    message: msg || "Record(s)",
+  });
 
-export const notFound = (res) => (entity) => {
-  if (entity) {
-    return entity
-  }
-  res.status(404).end()
-  return null
-}
+export const fail = (res, status, msg) => res
+  .status(status || 500)
+  .json({
+    success: false,
+    data: [],
+    message: msg || "Operation failed!",
+  });
 
-export const authorOrAdmin = (res, user, userField) => (entity) => {
-  if (entity) {
-    const isAdmin = user.role === 'admin'
-    const isAuthor = entity[userField] && entity[userField].equals(user.id)
-    if (isAuthor || isAdmin) {
-      return entity
-    }
-    res.status(401).end()
-  }
-  return null
-}
+
+export const notFound = (res, msg) => res
+  .status(404)
+  .json({
+    success: false,
+    data: [],
+    message: msg || "Record not found!",
+  });

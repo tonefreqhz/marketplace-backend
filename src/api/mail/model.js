@@ -2,11 +2,11 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const MailSchema = new mongoose.Schema({
+const MailSchema = new Schema({
   name: { type: String, required: [true, "Why no name?"] },
-  mail_title: { type: String, required: [true, "Why no mail title?"] },
+  language: { type: String, required: [true, "Why no mail language?"] },
   mail_subject: { type: String, required: [true, "Why no mail subject?"] },
   mail_body: { type: String, required: [true, "Why no mail body?"] },
   standing: {

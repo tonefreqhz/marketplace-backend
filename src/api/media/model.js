@@ -1,25 +1,27 @@
-/*
+/**
 * @author 4Dcoder
+* @description Multimedia files that cut across every vendor page
+* It adds to the design on the page look and feel
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import Vendor from "../vendor/model";
 
-const MediaSchema = new mongoose.Schema({
+const MediaSchema = new Schema({
   media_type: { type: String, required: [true, "Why no media type?"] },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   vendor_id: { type: String, required: [true, "Why no vendor ?"] },
   purpose: {
     type: String,
-    enum: ["product", "banner", "slide", "profile", "background"],
+    enum: ["slide", "picture", "banner", "background"],
     required: [true, "Why no purpose?"],
   },
-  subject: {
-    type: [{ product: [] }, { stock: [] }, { vendor: [] }, { brand: [] }, { category: [] }],
-    required: [true, "Why no purpose?"],
+  page: {
+    type: Array,
+    default: { product: false, stock: false, vendor: false, brand: false, category: false, blog: false },
   },
-  page: { type: String, required: [true, "Why no page?"] },
   place: { type: String, required: [true, "Why no place?"] },
   num: { type: String, required: [true, "Why no num?"] },
-  status: { type: String, required: [true, "Why no status?"] },
   url: { type: String, required: [true, "Why no url?"] },
   title: { type: String, required: [true, "Why no title?"] },
   description: { type: String, required: [true, "Why no description?"] },

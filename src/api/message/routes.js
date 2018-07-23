@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as message from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ const router = express.Router();
  * @apiError 404 Message not found.
  * @apiError 401 master access only.
  */
-router.post("/messages", message.create);
+router.post("/messages", isValidAdmin, message.create);
 
 /**
  * @api {get} /messages Retrieve messages
@@ -37,7 +38,7 @@ router.post("/messages", message.create);
  * @apiSuccess {Object[]} rows List of Messages.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/messages", message.findAll);
+router.get("/messages", isValidAdmin, message.findAll);
 
 
 /**
@@ -48,7 +49,7 @@ router.get("/messages", message.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Message not found.
  */
-router.get("/messages/:messageId", message.findOne);
+router.get("/messages/:messageId", isValidAdmin, message.findOne);
 
 /**
  * @api {put} /messages/:id Update message
@@ -72,7 +73,7 @@ router.get("/messages/:messageId", message.findOne);
  * @apiError 404 Message not found.
  * @apiError 401 master access only.
  */
-router.put("/messages/:messageId", message.update);
+router.put("/messages/:messageId", isValidAdmin, message.update);
 
 /**
  * @api {delete} /messages/:id Delete message
@@ -84,6 +85,6 @@ router.put("/messages/:messageId", message.update);
  * @apiError 404 Message not found.
  * @apiError 401 master access only.
  */
-router.delete("/messages/:messageId", message.delete);
+router.delete("/messages/:messageId", isValidAdmin, message.delete);
 
 export default router;

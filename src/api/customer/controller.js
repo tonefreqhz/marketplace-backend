@@ -1,47 +1,6 @@
 
 import Customer from "./model";
 
-// Create and Save a new Customer
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.publicAddress) {
-    res.status(400).send({
-      message: "Customer publicAddress can not be empty",
-    });
-  }
-
-  // Create a Customer
-  const customer = new Customer({
-    publicAddress: req.body.publicAddress,
-    username: req.body.username || "",
-    language: req.body.language || "",
-    currency_id: req.body.currency_id || "",
-    cart: req.body.cart || "",
-    gender: req.body.gender || "",
-    password: req.body.password || "",
-    photo: req.body.photo || "",
-    profile: req.body.profile || "",
-    fullname: req.body.fullname || "",
-    address: req.body.address || "",
-    city: req.body.city || "",
-    zip: req.body.zip || "",
-    state: req.body.state || "",
-    country: req.body.country || "",
-    phone: req.body.phone || "",
-    email: req.body.email || "",
-  });
-
-  // Save Customer in the database
-  customer.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Customer.",
-      });
-    });
-};
-
 // Retrieve and return all customers from the database.
 exports.findAll = (req, res) => {
   Customer.find()

@@ -1,36 +1,48 @@
 
-import Category from "./model";
+import { success, notFound } from "./../../services/response/";
+import { Category } from ".";
 
 // Create and Save a new Category
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Category name can not be empty",
-    });
-  }
+export const create = ({ bodymen: { body } }, res, next) =>
+  Category.create(body)
+    .then(category => category.view(true))
+    .then(success(res, 201))
+    .catch(next);
 
-  // Create a Category
-  const category = new Category({
-    name: req.body.name,
-    description: req.body.description,
-    kind: req.body.kind,
-    parent: req.body.parent,
-  });
+export const index = ({ querymen: { query, select, cursor } }, res, next) =>
+  Category.count(query)
+    .then(count => Category.find(query, select, cursor)
+      .then(categorys => ({
+        count,
+        rows: categorys.map(category => category.view()),
+      })), )
+    .then(success(res))
+    .catch(next);
 
-  // Save Category in the database
-  category.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Category.",
-      });
-    });
-};
+export const show = ({ params }, res, next) =>
+  Category.findById(params.id)
+    .then(notFound(res))
+    .then(category => (category ? category.view() : null))
+    .then(success(res))
+    .catch(next);
+
+export const update = ({ bodymen: { body }, params }, res, next) =>
+  Category.findById(params.id)
+    .then(notFound(res))
+    .then(category => (category ? Object.assign(category, body).save() : null))
+    .then(category => (category ? category.view(true) : null))
+    .then(success(res))
+    .catch(next);
+
+export const destroy = ({ params }, res, next) =>
+  Category.findById(params.id)
+    .then(notFound(res))
+    .then(category => (category ? category.remove() : null))
+    .then(success(res, 204))
+    .catch(next);
 
 // Retrieve and return all categorys from the database.
-exports.findAll = (req, res) => {
+export const findAll = (req, res) => {
   Category.find()
     .then((categorys) => {
       res.send(categorys);

@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as order from "./controller";
+import { isValidAdmin, isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ const router = express.Router();
  * @apiError 404 Order not found.
  * @apiError 401 master access only.
  */
-router.post("/orders", order.create);
+router.post("/orders", isValidAdmin, order.create);
 
 /**
  * @api {get} /orders Retrieve orders
@@ -48,7 +49,7 @@ router.post("/orders", order.create);
  * @apiSuccess {Object[]} rows List of Orders.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/orders", order.findAll);
+router.get("/orders", isValidAdmin, order.findAll);
 
 
 /**
@@ -59,7 +60,7 @@ router.get("/orders", order.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Order not found.
  */
-router.get("/orders/:orderId", order.findOne);
+router.get("/orders/:orderId", isValidVendor, order.findOne);
 
 /**
  * @api {put} /orders/:id Update order
@@ -94,7 +95,7 @@ router.get("/orders/:orderId", order.findOne);
  * @apiError 404 Order not found.
  * @apiError 401 master access only.
  */
-router.put("/orders/:orderId", order.update);
+router.put("/orders/:orderId", isValidVendor, order.update);
 
 /**
  * @api {delete} /orders/:id Delete order
@@ -106,6 +107,6 @@ router.put("/orders/:orderId", order.update);
  * @apiError 404 Order not found.
  * @apiError 401 master access only.
  */
-router.delete("/orders/:orderId", order.delete);
+router.delete("/orders/:orderId", isValidAdmin, order.delete);
 
 export default router;

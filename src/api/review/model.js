@@ -2,16 +2,21 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import Vendor from "../vendor/model";
+import Customer from "../customer/model";
 
-const ReviewSchema = new mongoose.Schema({
-  customer_id: { type: Number, required: [true, "Why no Customer?"] },
+const ReviewSchema = new Schema({
+  customer_id: { type: String, required: [true, "Why no Customer?"] },
+  customer: { type: Schema.Types.ObjectId, ref: "Customer" },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   subject: {
     type: String,
     enum: ["product", "category", "brand", "vendor", "stock", "order"],
     required: [true, "Why no subject?"],
   },
-  subject_id: { type: Number, required: [true, "Why no subject of review?"] },
+  subject_id: { type: String, required: [true, "Why no subject of review?"] },
   comment: { type: String },
   rating: {
     type: String,

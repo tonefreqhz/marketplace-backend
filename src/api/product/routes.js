@@ -5,6 +5,7 @@
 
 import express from "express";
 import * as product from "./controller";
+import { isValidAdmin, isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -49,7 +50,7 @@ const router = express.Router();
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.post("/products", product.create);
+router.post("/products", isValidVendor, product.create);
 
 /**
  * @api {get} /products Retrieve products
@@ -58,7 +59,7 @@ router.post("/products", product.create);
  * @apiSuccess {Object[]} rows List of products.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/products", product.findAll);
+router.get("/products", isValidAdmin, product.findAll);
 
 /**
  * @api {get} /products/:id Retrieve product
@@ -111,7 +112,7 @@ router.get("/products/:productId", product.findOne);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.put("/products/:productId", product.update);
+router.put("/products/:productId", isValidVendor, product.update);
 
 /**
  * @api {delete} /products/:id Delete product
@@ -123,6 +124,6 @@ router.put("/products/:productId", product.update);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.delete("/products/:productId", product.delete);
+router.delete("/products/:productId", isValidAdmin, product.delete);
 
 export default router;

@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as review from "./controller";
+import { isValidAdmin, isValidCustomer } from "../auth/controller";
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ const router = express.Router();
  * @apiError 404 Review not found.
  * @apiError 401 master access only.
  */
-router.post("/reviews", review.create);
+router.post("/reviews", isValidCustomer, review.create);
 
 /**
  * @api {get} /reviews Retrieve reviews
@@ -31,7 +32,7 @@ router.post("/reviews", review.create);
  * @apiSuccess {Object[]} rows List of Reviews.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/reviews", review.findAll);
+router.get("/reviews", isValidCustomer, review.findAll);
 
 /**
  * @api {get} /reviews/:id Retrieve review
@@ -41,7 +42,7 @@ router.get("/reviews", review.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Review not found.
  */
-router.get("/reviews/:reviewId", review.findOne);
+router.get("/reviews/:reviewId", isValidCustomer, review.findOne);
 
 /**
  * @api {put} /reviews/:id Update review
@@ -59,7 +60,7 @@ router.get("/reviews/:reviewId", review.findOne);
  * @apiError 404 Review not found.
  * @apiError 401 master access only.
  */
-router.put("/reviews/:reviewId", review.update);
+router.put("/reviews/:reviewId", isValidCustomer, review.update);
 
 /**
  * @api {delete} /reviews/:id Delete review
@@ -71,6 +72,6 @@ router.put("/reviews/:reviewId", review.update);
  * @apiError 404 Review not found.
  * @apiError 401 master access only.
  */
-router.delete("/reviews/:reviewId", review.delete);
+router.delete("/reviews/:reviewId", isValidCustomer, review.delete);
 
 export default router;

@@ -2,9 +2,9 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const TemplateSchema = new mongoose.Schema({
+const TemplateSchema = new Schema({
   name: { type: String, required: [true, "Why no template name"] },
   page: {
     type: String,

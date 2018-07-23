@@ -2,9 +2,9 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const SubscriberSchema = new mongoose.Schema({
+const SubscriberSchema = new Schema({
   email: { type: String },
   frequency: {
     type: String,

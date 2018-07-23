@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as language from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ const router = express.Router();
  * @apiError 404 Language not found.
  * @apiError 401 master access only.
  */
-router.post("/languages", language.create);
+router.post("/languages", isValidAdmin, language.create);
 
 /**
  * @api {get} /languages Retrieve languages
@@ -64,7 +65,7 @@ router.get("/languages/:languageId", language.findOne);
  * @apiError 404 Language not found.
  * @apiError 401 master access only.
  */
-router.put("/languages/:languageId", language.update);
+router.put("/languages/:languageId", isValidAdmin, language.update);
 
 /**
  * @api {delete} /languages/:id Delete language
@@ -76,6 +77,6 @@ router.put("/languages/:languageId", language.update);
  * @apiError 404 Language not found.
  * @apiError 401 master access only.
  */
-router.delete("/languages/:languageId", language.delete);
+router.delete("/languages/:languageId", isValidAdmin, language.delete);
 
 export default router;

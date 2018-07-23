@@ -12,7 +12,7 @@ exports.create = (req, res) => {
 
   // Create a Brand
   const brand = new Brand({
-    title: req.body.title || "Untitled Brand",
+    name: req.body.name || "Untitled Brand",
     description: req.body.description,
   });
 
@@ -72,7 +72,7 @@ exports.update = (req, res) => {
 
   // Find brand and update it with the request body
   Brand.findByIdAndUpdate(req.params.brandId, {
-    title: req.body.title || "Untitled Brand",
+    name: req.body.name || "Untitled Brand",
     description: req.body.description,
   }, { new: true })
     .then((brand) => {

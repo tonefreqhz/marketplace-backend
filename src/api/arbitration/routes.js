@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as arbitration from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ const router = express.Router();
  * @apiError 404 Arbitration not found.
  * @apiError 401 master access only.
  */
-router.post("/arbitrations", arbitration.create);
+router.post("/arbitrations", isValidAdmin, arbitration.create);
 
 /**
  * @api {get} /arbitrations Retrieve arbitrations
@@ -35,7 +36,7 @@ router.post("/arbitrations", arbitration.create);
  * @apiSuccess {Object[]} rows List of Arbitrations.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/arbitrations", arbitration.findAll);
+router.get("/arbitrations", isValidAdmin, arbitration.findAll);
 
 
 /**
@@ -46,7 +47,7 @@ router.get("/arbitrations", arbitration.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Arbitration not found.
  */
-router.get("/arbitrations/:arbitrationId", arbitration.findOne);
+router.get("/arbitrations/:arbitrationId", isValidAdmin, arbitration.findOne);
 
 /**
  * @api {put} /arbitrations/:id Update arbitration
@@ -68,7 +69,7 @@ router.get("/arbitrations/:arbitrationId", arbitration.findOne);
  * @apiError 404 Arbitration not found.
  * @apiError 401 master access only.
  */
-router.put("/arbitrations/:arbitrationId", arbitration.update);
+router.put("/arbitrations/:arbitrationId", isValidAdmin, arbitration.update);
 
 /**
  * @api {delete} /arbitrations/:id Delete arbitration
@@ -80,6 +81,6 @@ router.put("/arbitrations/:arbitrationId", arbitration.update);
  * @apiError 404 Arbitration not found.
  * @apiError 401 master access only.
  */
-router.delete("/arbitrations/:arbitrationId", arbitration.delete);
+router.delete("/arbitrations/:arbitrationId", isValidAdmin, arbitration.delete);
 
 export default router;

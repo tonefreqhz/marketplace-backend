@@ -2,13 +2,11 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
-import Wishlist from "../wishlist/model";
+import mongoose, { Schema } from "mongoose";
 import Currency from "../currency/model";
 import LanguageList from "../languageList/model";
 import { randomNonce } from "./../../services/helpers";
 
-const { Schema } = mongoose.Schema;
 
 const CustomerSchema = new Schema({
   nonce: {
@@ -23,9 +21,10 @@ const CustomerSchema = new Schema({
     required: [true, "Why no MetaMask address?"],
   },
   username: { type: String, default: "" },
+  wallet: { type: String, default: "" },
   currency: { type: Schema.Types.ObjectId, ref: "Currency" },
-  wishlist: [{ type: Schema.Types.ObjectId, ref: "Wishlist" }],
   cart: { type: Array, default: [] },
+  wishlist: { type: Array, default: [] },
   languageList: { type: Schema.Types.ObjectId, ref: "LanguageList" },
   gender: { type: String, enum: ["m", "f"] },
   password: { type: String, default: "" },

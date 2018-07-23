@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as setting from "./controller";
+import { isValidAdmin, isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ const router = express.Router();
  * @apiError 404 Setting not found.
  * @apiError 401 master access only.
  */
-router.post("/settings", setting.create);
+router.post("/settings", isValidVendor, setting.create);
 
 /**
  * @api {get} /settings Retrieve settings
@@ -59,7 +60,7 @@ router.get("/settings/:settingId", setting.findOne);
  * @apiError 404 Setting not found.
  * @apiError 401 master access only.
  */
-router.put("/settings/:settingId", setting.update);
+router.put("/settings/:settingId", isValidVendor, setting.update);
 
 /**
  * @api {delete} /settings/:id Delete setting
@@ -71,6 +72,6 @@ router.put("/settings/:settingId", setting.update);
  * @apiError 404 Setting not found.
  * @apiError 401 master access only.
  */
-router.delete("/settings/:settingId", setting.delete);
+router.delete("/settings/:settingId", isValidAdmin, setting.delete);
 
 export default router;

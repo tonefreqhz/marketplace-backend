@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as slider from "./controller";
+import { isValidVendor } from "../auth/controller";
 
 const sliderRoute = express.Router();
 
@@ -24,7 +25,7 @@ const sliderRoute = express.Router();
  * @apiError 404 Slider not found.
  * @apiError 401 master access only.
  */
-sliderRoute.post("/sliders", slider.create);
+sliderRoute.post("/sliders", isValidVendor, slider.create);
 
 /**
  * @api {get} /sliders Retrieve sliders
@@ -33,7 +34,7 @@ sliderRoute.post("/sliders", slider.create);
  * @apiSuccess {Object[]} rows List of Sliders.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-sliderRoute.get("/sliders", slider.findAll);
+sliderRoute.get("/sliders", isValidVendor, slider.findAll);
 
 /**
  * @api {get} /sliders/:id Retrieve slider
@@ -43,7 +44,7 @@ sliderRoute.get("/sliders", slider.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Slider not found.
  */
-sliderRoute.get("/sliders/:sliderId", slider.findOne);
+sliderRoute.get("/sliders/:sliderId", isValidVendor, slider.findOne);
 
 /**
  * @api {put} /sliders/:id Update slider
@@ -63,7 +64,7 @@ sliderRoute.get("/sliders/:sliderId", slider.findOne);
  * @apiError 404 Slider not found.
  * @apiError 401 master access only.
  */
-sliderRoute.put("/sliders/:sliderId", slider.update);
+sliderRoute.put("/sliders/:sliderId", isValidVendor, slider.update);
 
 /**
  * @api {delete} /sliders/:id Delete slider
@@ -75,6 +76,6 @@ sliderRoute.put("/sliders/:sliderId", slider.update);
  * @apiError 404 Slider not found.
  * @apiError 401 master access only.
  */
-sliderRoute.delete("/sliders/:sliderId", slider.delete);
+sliderRoute.delete("/sliders/:sliderId", isValidVendor, slider.delete);
 
 export default sliderRoute;

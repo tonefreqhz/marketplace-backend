@@ -2,13 +2,11 @@
 * @author Factman60
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import Vendor from "../vendor/model"; // Author.
 
-const { Schema } = mongoose.Schema;
-
 const BlogSchema = new Schema({
-  kind: { type: String, default: "blog" },
+  kind: { type: String, enum: ["news", "post"], default: "post" },
   title: { type: String, required: [true, "Why no Title?"] },
   summary: { type: String, required: [true, "Why no Summary?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },

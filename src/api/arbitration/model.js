@@ -2,12 +2,10 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import Vendor from "../vendor/model";
 import Customer from "../customer/model";
 import Order from "../order/model";
-
-const { Schema } = mongoose.Schema;
 
 const ArbitrationSchema = new Schema({
   order: { type: Schema.Types.ObjectId, ref: "Order" },

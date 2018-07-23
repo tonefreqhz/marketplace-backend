@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as stock from "./controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ const router = express.Router();
  * @apiError 404 Stock not found.
  * @apiError 401 master access only.
  */
-router.post("/stocks", stock.create);
+router.post("/stocks", isValidVendor, stock.create);
 
 /**
  * @api {get} /stocks Retrieve stocks
@@ -36,7 +37,7 @@ router.post("/stocks", stock.create);
  * @apiSuccess {Object[]} rows List of Stock.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/stocks", stock.findAll);
+router.get("/stocks", isValidVendor, stock.findAll);
 
 /**
  * @api {get} /stocks/:id Retrieve stock
@@ -46,7 +47,7 @@ router.get("/stocks", stock.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Product not found.
  */
-router.get("/stocks/:stockId", stock.findOne);
+router.get("/stocks/:stockId", isValidVendor, stock.findOne);
 
 /**
  * @api {put} /stocks/:id Update stock
@@ -69,7 +70,7 @@ router.get("/stocks/:stockId", stock.findOne);
  * @apiError 404 Stock not found.
  * @apiError 401 master access only.
  */
-router.put("/stocks/:stockId", stock.update);
+router.put("/stocks/:stockId", isValidVendor, stock.update);
 
 /**
  * @api {delete} /stocks/:id Delete stock
@@ -81,6 +82,6 @@ router.put("/stocks/:stockId", stock.update);
  * @apiError 404 Stock not found.
  * @apiError 401 master access only.
  */
-router.delete("/stocks/:stockId", stock.delete);
+router.delete("/stocks/:stockId", isValidVendor, stock.delete);
 
 export default router;

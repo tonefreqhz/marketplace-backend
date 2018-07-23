@@ -2,12 +2,11 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import Category from "../category/model";
 import Vendor from "../vendor/model";
 import Brand from "../brand/model";
-
-const { Schema } = mongoose.Schema;
+import ProductExtra from "../productExtra/model";
 
 const ProductSchema = new Schema({
   code: { type: String, unique: true, required: [false, "Why no Code?"], default: "" },
@@ -16,14 +15,16 @@ const ProductSchema = new Schema({
   name: { type: String, required: [true, "Why no Name?"] },
   tag: { type: Array, default: [] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   category: { type: Schema.Types.ObjectId, ref: "Category" },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
+  productExtra: { type: Schema.Types.ObjectId, ref: "ProductExtra" },
   description: { type: String, required: [true, "Why no Description?"] },
   short_description: { type: String, required: [true, "Why no Short description?"] },
   unit_cost: { type: Number, required: [true, "Why no Unit cost?"] },
   unit_price: { type: Number, required: [true, "Why no Unit price?"] },
   alt_price: { type: Number },
-  shipping_cost: { type: Number, efault: 0.0 },
+  shipping_cost: { type: Number, default: 0.0 },
   image_sm: { type: String, default: "default-product-sm-image.jpg" },
   image_md: { type: String, default: "default-product-md-image.jpg" },
   image_lg: { type: String, default: "default-product-lg-image.jpg" },

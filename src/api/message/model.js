@@ -2,9 +2,9 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const MessageSchema = new mongoose.Schema({
+const MessageSchema = new Schema({
   kind: {
     type: String,
     enum: ["arbitration", "chat", "contact", "ticket"],
@@ -22,16 +22,10 @@ const MessageSchema = new mongoose.Schema({
   message: { type: String },
   customer_id: { type: String },
   vendor_id: { type: String },
-  admin_id: { type: String },
   sent_by: {
     type: String,
     enum: ["visitor", "customer", "vendor", "admin"],
     required: [true, "Why no sender?"],
-  },
-  ticket_status: {
-    type: String,
-    enum: ["pending", "resolved", "arbitration"],
-    default: "pending",
   },
   standing: {
     type: String,

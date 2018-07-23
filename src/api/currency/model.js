@@ -7,11 +7,13 @@ import mongoose from "mongoose";
 const CurrencySchema = new mongoose.Schema({
   name: { type: String, required: [true, "Why no name?"] },
   code: { type: String, required: [true, "Why no code?"] },
-  description: { type: String },
+  description: { type: String, default: "" },
   kind: { type: String, enum: ["digital", "fiat"], required: [true, "Why no currency type?"] },
   symbol: { type: String, required: [true, "Why no symbol?"] },
-  exchange: { type: Number, required: [true, "Why no exchange rate?"] },
-  icon: { type: String, default: "" },
+  exchange: { type: Number, required: [true, "Why no dollar-based exchange rate?"] },
+  icon: { type: String, default: "default-currency-icon.png" },
+  approvedBy: { type: String },
+  approvedAt: { type: Date, default: Date.now },
   view_count: { type: Number, default: 1 },
   standing: {
     type: String,

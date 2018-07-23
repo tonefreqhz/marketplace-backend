@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as mail from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ const router = express.Router();
  * @apiError 404 Mail not found.
  * @apiError 401 master access only.
  */
-router.post("/mails", mail.create);
+router.post("/mails", isValidAdmin, mail.create);
 
 /**
  * @api {get} /mails Retrieve mails
@@ -30,7 +31,7 @@ router.post("/mails", mail.create);
  * @apiSuccess {Object[]} rows List of Mails.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/mails", mail.findAll);
+router.get("/mails", isValidAdmin, mail.findAll);
 
 
 /**
@@ -41,7 +42,7 @@ router.get("/mails", mail.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Mail not found.
  */
-router.get("/mails/:mailId", mail.findOne);
+router.get("/mails/:mailId", isValidAdmin, mail.findOne);
 
 /**
  * @api {put} /mails/:id Update mail
@@ -58,7 +59,7 @@ router.get("/mails/:mailId", mail.findOne);
  * @apiError 404 Mail not found.
  * @apiError 401 master access only.
  */
-router.put("/mails/:mailId", mail.update);
+router.put("/mails/:mailId", isValidAdmin, mail.update);
 
 /**
  * @api {delete} /mails/:id Delete mail
@@ -70,6 +71,6 @@ router.put("/mails/:mailId", mail.update);
  * @apiError 404 Mail not found.
  * @apiError 401 master access only.
  */
-router.delete("/mails/:mailId", mail.delete);
+router.delete("/mails/:mailId", isValidAdmin, mail.delete);
 
 export default router;

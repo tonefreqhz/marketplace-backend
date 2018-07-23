@@ -2,12 +2,12 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
-import Product from "../vendor/model";
-
-const { Schema } = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
+import Product from "../product/model";
+import Vendor from "../vendor/model";
 
 const StockSchema = new Schema({
+  vendor: [{ type: Schema.Types.ObjectId, ref: "Vendor" }],
   vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   order_num: { type: String, required: [true, "Why no order number?"] },

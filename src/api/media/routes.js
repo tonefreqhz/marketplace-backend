@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as media from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ const router = express.Router();
  * @apiError 404 Media not found.
  * @apiError 401 master access only.
  */
-router.post("/media", media.create);
+router.post("/media", isValidAdmin, media.create);
 
 /**
  * @api {get} /media Retrieve media
@@ -84,7 +85,7 @@ router.get("/media/:mediaId", media.findOne);
  * @apiError 404 Media not found.
  * @apiError 401 master access only.
  */
-router.put("/media/:mediaId", media.update);
+router.put("/media/:mediaId", isValidAdmin, media.update);
 
 /**
  * @api {delete} /media/:id Delete media
@@ -96,6 +97,6 @@ router.put("/media/:mediaId", media.update);
  * @apiError 404 Media not found.
  * @apiError 401 master access only.
  */
-router.delete("/media/:mediaId", media.delete);
+router.delete("/media/:mediaId", isValidAdmin, media.delete);
 
 export default router;

@@ -2,10 +2,14 @@
 * @author 4Dcoder
 */
 
-import express from "express";
+import { Router } from "express";
+import { middleware as query } from "querymen";
+import { middleware as body } from "bodymen";
+import { token } from "./../../services/jwt";
 import * as category from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
-const router = express.Router();
+const router = new Router();
 
 /**
  * @api {post} /categories Create category
@@ -19,7 +23,7 @@ const router = express.Router();
  * @apiError 404 Category not found.
  * @apiError 401 master access only.
  */
-router.post("/categories", category.create);
+router.post("/categories", isValidAdmin, category.create);
 
 /**
  * @api {get} /categories Retrieve categories
@@ -54,7 +58,7 @@ router.get("/categories/:categoryId", category.findOne);
  * @apiError 404 Category not found.
  * @apiError 401 master access only.
  */
-router.put("/categories/:categoryId", category.update);
+router.put("/categories/:categoryId", isValidAdmin, category.update);
 
 /**
  * @api {delete} /categories/:id Delete category
@@ -66,6 +70,6 @@ router.put("/categories/:categoryId", category.update);
  * @apiError 404 Category not found.
  * @apiError 401 master access only.
  */
-router.delete("/categories/:categoryId", category.delete);
+router.delete("/categories/:categoryId", isValidAdmin, category.delete);
 
 export default router;

@@ -45,4 +45,5 @@ router.get("/:userType/:authType/publicaddress/:publicAddress", authentication.f
 */
 router.post("/:userType/auth/:authType", authentication.auth);
 
+
 export default router;

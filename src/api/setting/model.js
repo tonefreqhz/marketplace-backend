@@ -2,11 +2,11 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const SettingSchema = new mongoose.Schema({
+const SettingSchema = new Schema({
   code: { type: String, required: [true, "Why no settings code?"] },
-  kind: { type: String, required: [true, "Why no king?"] },
+  kind: { type: String, enum: ["system", "users", "operations"], required: [true, "Why no type?"] },
   name: { type: String, required: [true, "Why no settings name?"] },
   value: { type: String, required: [true, "Why no settings value?"] },
   description: { type: String, required: [true, "Why no description?"] },

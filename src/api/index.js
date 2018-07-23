@@ -2,8 +2,6 @@ import express from "express";
 
 import auth from "./auth";
 import 	adminRoute from "./admin";
-import 	permissionRoute from "./permission";
-import 	roleRoute from "./role";
 import 	customerRoute from "./customer";
 import 	vendorRoute from "./vendor";
 import 	arbitrationRoute from "./arbitration";
@@ -26,15 +24,13 @@ import 	languageRoute from "./language";
 import 	languageListRoute from "./languageList";
 import 	mailRoute from "./mail";
 import 	templateRoute from "./template";
-import 	wishlistRoute from "./wishlist";
+import 	ticketRoute from "./ticket";
 
 const router = express.Router();
 
 // Use Routes
 router.use(auth);
 router.use(adminRoute);
-router.use(permissionRoute);
-router.use(roleRoute);
 router.use(customerRoute);
 router.use(vendorRoute);
 router.use(arbitrationRoute);
@@ -57,6 +53,6 @@ router.use(languageRoute);
 router.use(languageListRoute);
 router.use(mailRoute);
 router.use(templateRoute);
-router.use(wishlistRoute);
+router.use(ticketRoute);
 
 export default router;

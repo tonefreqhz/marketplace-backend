@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as brand from "./controller";
+import { isValidAdmin } from "../auth/controller";
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ const router = express.Router();
  * @apiError 404 Brand not found.
  * @apiError 401 master access only.
  */
-router.post("/brands", brand.create);
+router.post("/brands", isValidAdmin, brand.create);
 
 /**
  * @api {get} /brands Retrieve brands
@@ -54,7 +55,7 @@ router.get("/brands/:brandId", brand.findOne);
  * @apiError 404 Brand not found.
  * @apiError 401 master access only.
  */
-router.put("/brands/:brandId", brand.update);
+router.put("/brands/:brandId", isValidAdmin, brand.update);
 
 /**
  * @api {delete} /brands/:id Delete brand
@@ -66,6 +67,6 @@ router.put("/brands/:brandId", brand.update);
  * @apiError 404 Brand not found.
  * @apiError 401 master access only.
  */
-router.delete("/brands/:brandId", brand.delete);
+router.delete("/brands/:brandId", isValidAdmin, brand.delete);
 
 export default router;

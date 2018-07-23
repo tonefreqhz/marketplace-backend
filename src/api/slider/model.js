@@ -2,9 +2,9 @@
 * @author 4Dcoder
 */
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const SliderSchema = new mongoose.Schema({
+const SliderSchema = new Schema({
   name: { type: String, required: [true, "Why no slider name?"] },
   vendor_id: { type: String, required: [true, "Why no vendor?"] },
   kind: {
@@ -16,12 +16,13 @@ const SliderSchema = new mongoose.Schema({
   elements: {
     type: [],
   },
-  place: {
-    type: [],
-    required: [true, "Why no page and position?"],
+  page: {
+    type: Array,
+    default: { product: false, stock: false, vendor: false, brand: false, category: false, blog: false },
   },
+  place: "",
   title: { type: String, required: [true, "Why no title?"] },
-  style: { type: [] },
+  style: { type: String },
   standing: { type: String },
   updated: { type: Date, default: Date.now },
 }, {

@@ -4,6 +4,7 @@
 
 import express from "express";
 import * as productExtra from "./controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ const router = express.Router();
  * @apiError 404 ProductExtra not found.
  * @apiError 401 master access only.
  */
-router.post("/product-extras", productExtra.create);
+router.post("/product-extras", isValidVendor, productExtra.create);
 
 /**
  * @api {get} /product-extras Retrieve productExtras
@@ -30,7 +31,7 @@ router.post("/product-extras", productExtra.create);
  * @apiSuccess {Object[]} rows List of Product Extras.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/product-extras", productExtra.findAll);
+router.get("/product-extras", isValidVendor, productExtra.findAll);
 
 /**
  * @api {get} /product-extras/:id Retrieve product-extras
@@ -40,7 +41,7 @@ router.get("/product-extras", productExtra.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Product not found.
  */
-router.get("/product-extras/:productExtraId", productExtra.findOne);
+router.get("/product-extras/:productExtraId", isValidVendor, productExtra.findOne);
 
 /**
  * @api {put} /product-extras/:id Update product-extra
@@ -57,7 +58,7 @@ router.get("/product-extras/:productExtraId", productExtra.findOne);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.put("/product-extras/:productExtraId", productExtra.update);
+router.put("/product-extras/:productExtraId", isValidVendor, productExtra.update);
 
 /**
  * @api {delete} /product-extras/:id Delete product-extra
@@ -69,6 +70,6 @@ router.put("/product-extras/:productExtraId", productExtra.update);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.delete("/product-extras/:productExtraId", productExtra.delete);
+router.delete("/product-extras/:productExtraId", isValidVendor, productExtra.delete);
 
 export default router;
