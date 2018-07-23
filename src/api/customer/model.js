@@ -1,12 +1,12 @@
-/*
-* @author 4Dcoder
-*/
+/**
+ * @author 4Dcoder
+ * @description cart is an instance of whislist
+ */
 
 import mongoose, { Schema } from "mongoose";
 import Currency from "../currency/model";
 import LanguageList from "../languageList/model";
 import { randomNonce } from "./../../services/helpers";
-
 
 const CustomerSchema = new Schema({
   nonce: {
@@ -23,8 +23,17 @@ const CustomerSchema = new Schema({
   username: { type: String, default: "" },
   wallet: { type: String, default: "" },
   currency: { type: Schema.Types.ObjectId, ref: "Currency" },
-  cart: { type: Array, default: [] },
-  wishlist: { type: Array, default: [] },
+  cart: [{
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    quantity: { type: Number, default: 1, required: true },
+  }],
+  wishlist: [{
+    name: { type: String, unique: true, trim: true, max: 100, min: [2, "Too short name"] },
+    products: [{
+      product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+      quantity: { type: Number, default: 1, required: true },
+    }],
+  }],
   languageList: { type: Schema.Types.ObjectId, ref: "LanguageList" },
   gender: { type: String, enum: ["m", "f"] },
   password: { type: String, default: "" },

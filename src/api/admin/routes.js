@@ -73,7 +73,6 @@ router.get("/init/media", isValidAdmin, init.initMedia);
 router.get("/init/message", isValidAdmin, init.initMessage);
 router.get("/init/order", isValidAdmin, init.initOrder);
 router.get("/init/product", isValidAdmin, init.initProduct);
-router.get("/init/product-extra", isValidAdmin, init.initProductExtra);
 router.get("/init/review", isValidAdmin, init.initReview);
 router.get("/init/setting", isValidAdmin, init.initSetting);
 router.get("/init/slider", isValidAdmin, init.initSlider);

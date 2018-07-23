@@ -6,7 +6,6 @@ import mongoose, { Schema } from "mongoose";
 import Category from "../category/model";
 import Vendor from "../vendor/model";
 import Brand from "../brand/model";
-import ProductExtra from "../productExtra/model";
 
 const ProductSchema = new Schema({
   code: { type: String, unique: true, required: [false, "Why no Code?"], default: "" },
@@ -15,10 +14,8 @@ const ProductSchema = new Schema({
   name: { type: String, required: [true, "Why no Name?"] },
   tag: { type: Array, default: [] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   category: { type: Schema.Types.ObjectId, ref: "Category" },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
-  productExtra: { type: Schema.Types.ObjectId, ref: "ProductExtra" },
   description: { type: String, required: [true, "Why no Description?"] },
   short_description: { type: String, required: [true, "Why no Short description?"] },
   unit_cost: { type: Number, required: [true, "Why no Unit cost?"] },
@@ -52,6 +49,10 @@ const ProductSchema = new Schema({
     type: String,
     enum: ["FIFO", "LIFO", "AVCO"],
     default: "LIFO",
+  },
+  extra_fields: {
+    type: Array,
+    default: [{ name: "", value: "" }],
   },
   download_num: { type: Number, default: 0 },
   featured: { type: Boolean, default: false },

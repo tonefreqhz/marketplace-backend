@@ -2,7 +2,6 @@ import { success, fail } from "./../../services/response/";
 import Admin from "./model";
 import Vendor from "../vendor/model";
 import Product from "../product/model";
-import ProductExtra from "../productExtra/model";
 import Category from "../category/model";
 import Blog from "../blog/model";
 import Brand from "../brand/model";
@@ -27,7 +26,28 @@ import Setting from "../setting/model";
 // initAdmin
 // ////////////////////////////////////
 
-let admin = {};
+let admin = {
+  nonce: 909091,
+  username: "Tricy",
+  role: "admin",
+  last_access: [
+    {
+      accessDate: "",
+      ipAddress: "",
+    },
+  ],
+  fullname: "Yoh Trinity",
+  phone: "00128065544",
+  address: "Lekki Phase II",
+  email: "yohanne@yahoo.com",
+  standing: "active",
+  _id: "5b4738c933b975588b4ae745",
+  publicAddress: "0x1b19bfacc9fbcedd42deed4fe200beb039ecd1e1",
+  updated: "2018-07-12T11:17:29.845Z",
+  createdAt: "2018-07-12T11:17:29.861Z",
+  updatedAt: "2018-07-14T18:41:29.349Z",
+  __v: 0,
+};
 
 export function initAdmin(req, res) {
   const admin1 = new Admin({
@@ -58,7 +78,22 @@ export function initAdmin(req, res) {
 // initVendor
 // ////////////////////////////////////
 
-let vendor = { nonce: 384127, username: "James", role: "", last_access: [{ accessDate: "", ipAddress: "" }], fullname: "Edward", phone: "09089999222222", address: "Agu Awka", email: "james@awka.an", standing: "active", _id: "5b54e618ae6b2a035fe83843", publicAddress: "0x1b19bfacc9fbcedd42deed4fe200beb039ecd1e0", updated: "2018-07-22T20:16:24.678Z", createdAt: "2018-07-22T20:16:24.687Z", updatedAt: "2018-07-22T20:20:53.093Z", __v: 0 };
+let vendor = {
+  nonce: 384127,
+  username: "James",
+  last_access: [{ accessDate: "", ipAddress: "" }],
+  fullname: "Edward",
+  phone: "09089999222222",
+  address: "Agu Awka",
+  email: "james@awka.an",
+  standing: "active",
+  _id: "5b54e618ae6b2a035fe83843",
+  publicAddress: "0x1b19bfacc9fbcedd42deed4fe200beb039ecd1e0",
+  updated: "2018-07-22T20:16:24.678Z",
+  createdAt: "2018-07-22T20:16:24.687Z",
+  updatedAt: "2018-07-22T20:20:53.093Z",
+  __v: 0,
+};
 
 export function initVendor(req, res) {
   const vendor1 = new Vendor({
@@ -75,6 +110,7 @@ export function initVendor(req, res) {
     password: "wendy7678",
     tagline: "solidOxford",
     details: "solidOxford",
+    website: "http://www.solidOxford.com",
     facebook: "facebook.com/solidOxford",
     skype: "@solidOxford",
     google_plus: "@solidOxford",
@@ -797,7 +833,6 @@ let category = {
   description: "Vehicles Cars",
   kind: "physical",
   vendor: "5b54e618ae6b2a035fe83843",
-  vendor_id: "5b54e618ae6b2a035fe83843",
   updated: "2018-07-23T08:46:43.719Z",
   createdAt: "2018-07-23T08:46:43.721Z",
   updatedAt: "2018-07-23T08:46:43.721Z",
@@ -812,8 +847,7 @@ export function initCategory(req, res) {
     description: "Vehicles Cars",
     kind: "physical",
     parent: "0",
-    vendor,
-    vendor_id: vendor._id,
+    vendor: vendor._id,
   });
 
   category1.save()
@@ -842,7 +876,6 @@ let brand = {
   icon: "default-category-icon.png",
   banner: "default-category-banner.png",
   vendor: "5b54e618ae6b2a035fe83843",
-  vendor_id: "5b54e618ae6b2a035fe83843",
   updated: "2018-07-23T08:46:43.719Z",
   createdAt: "2018-07-23T08:46:43.721Z",
   updatedAt: "2018-07-23T08:46:43.721Z",
@@ -855,8 +888,7 @@ export function initBrand(req, res) {
     description: "trending men and women wears, accessories and shoes",
     icon: "default-category-icon.png",
     banner: "default-category-banner.png",
-    vendor,
-    vendor_id: vendor._id,
+    vendor: vendor._id,
   });
 
   brand1.save()
@@ -915,7 +947,6 @@ let product = {
   _id: "5b55979956bed531379b0aa3",
   name: "Corolla E",
   vendor: "5b54e618ae6b2a035fe83843",
-  vendor_id: "5b54e618ae6b2a035fe83843",
   category: "5b5595ea65bbd42e261016bc",
   brand: "5b5595f365bbd42e261016bd",
   description: "Corolla E, hybrid electric car",
@@ -926,7 +957,6 @@ let product = {
   updated: "2018-07-23T08:53:45.490Z",
   createdAt: "2018-07-23T08:53:45.563Z",
   updatedAt: "2018-07-23T08:53:45.563Z",
-  __v: 0,
 };
 
 export function initProduct(req, res) {
@@ -937,7 +967,6 @@ export function initProduct(req, res) {
     name: "Corolla E",
     tag: ["shoe"],
     vendor,
-    vendor_id: vendor._id,
     category,
     brand,
     description: "Corolla E, hybrid electric car",
@@ -965,7 +994,6 @@ export function initProduct(req, res) {
     download_name: "bezop-toyota-corolla",
     valuation: "LIFO",
     download_num: "3453",
-    currency: "USD",
     featured: true,
     deal: false,
   });
@@ -980,30 +1008,6 @@ export function initProduct(req, res) {
       return success(res, 200, productResult, "Done Initializing product Data!");
     }).catch((err) => {
       fail(res, 500, `Error adding product ${err.message}`);
-    });
-}
-
-// /////////////////////////////////////
-// initProductExtra
-// ////////////////////////////////////
-
-
-export function initProductExtra(req, res) {
-  const productExtra1 = new ProductExtra({
-    product_id: product._id,
-    name: "Top Speed",
-    value: "360 Km/H",
-  });
-
-  productExtra1.save()
-    .then((productExtraResult) => {
-      if (!productExtraResult) {
-        fail(res, 404, "Error not found newly added productExtra");
-      }
-      console.log(`\r\nproductExtra is added ${productExtraResult}`);
-      return success(res, 200, productExtraResult, "Done Initializing productExtra Data!");
-    }).catch((err) => {
-      fail(res, 500, `Error adding productExtra ${err.message}`);
     });
 }
 
@@ -1037,8 +1041,7 @@ let stock = {
 export function initStock(req, res) {
   const stock1 = new Stock({
     vendor,
-    vendor_id: vendor._id,
-    products: [product],
+    product,
     order_num: "678h7",
     kind: "add",
     quantity: 20,
@@ -1070,174 +1073,8 @@ let customer = {
   nonce: 801167,
   username: "Jackie",
   wallet: "bez wallet",
-  cart: [
-    {
-      code: "5647",
-      sku: "577478394854",
-      upc: "344-455-454-344",
-      tag: [
-        "shoe",
-      ],
-      shipping_cost: 2,
-      image_sm: "small",
-      image_md: "medium",
-      image_lg: "large",
-      image_front: "front",
-      image_back: "back",
-      image_top: "default-product-top-image.jpg",
-      image_bottom: "default-product-bottom-image.jpg",
-      image_right: "default-product-right-image.jpg",
-      image_left: "default-product-left-image.jpg",
-      icon: "default-product-icon.jpg",
-      unit: "2",
-      length: "3m",
-      width: "1.5m",
-      height: "1.2m",
-      color: "red",
-      options: "none",
-      discount: 5,
-      discount_type: "percent",
-      tax: 4,
-      tax_type: "percent",
-      download: true,
-      download_name: "bezop-toyota-corolla",
-      deal: false,
-      valuation: "LIFO",
-      download_num: 3453,
-      featured: true,
-      view_count: 1,
-      standing: "active",
-      _id: "5b55979956bed531379b0aa3",
-      name: "Corolla E",
-      vendor: "5b54e618ae6b2a035fe83843",
-      vendor_id: "5b54e618ae6b2a035fe83843",
-      category: "5b5595ea65bbd42e261016bc",
-      brand: "5b5595f365bbd42e261016bd",
-      description: "Corolla E, hybrid electric car",
-      short_description: "Sports racing car",
-      unit_cost: 23,
-      unit_price: 26,
-      view_date: "2018-07-23T08:53:45.490Z",
-      updated: "2018-07-23T08:53:45.490Z",
-      createdAt: "2018-07-23T08:53:45.563Z",
-      updatedAt: "2018-07-23T08:53:45.563Z",
-      __v: 0,
-    },
-  ],
-  wishlist: [
-    {
-      "Xmas Shopping": [
-        {
-          code: "5647",
-          sku: "577478394854",
-          upc: "344-455-454-344",
-          tag: [
-            "shoe",
-          ],
-          shipping_cost: 2,
-          image_sm: "small",
-          image_md: "medium",
-          image_lg: "large",
-          image_front: "front",
-          image_back: "back",
-          image_top: "default-product-top-image.jpg",
-          image_bottom: "default-product-bottom-image.jpg",
-          image_right: "default-product-right-image.jpg",
-          image_left: "default-product-left-image.jpg",
-          icon: "default-product-icon.jpg",
-          unit: "2",
-          length: "3m",
-          width: "1.5m",
-          height: "1.2m",
-          color: "red",
-          options: "none",
-          discount: 5,
-          discount_type: "percent",
-          tax: 4,
-          tax_type: "percent",
-          download: true,
-          download_name: "bezop-toyota-corolla",
-          deal: false,
-          valuation: "LIFO",
-          download_num: 3453,
-          featured: true,
-          view_count: 1,
-          standing: "active",
-          _id: "5b55979956bed531379b0aa3",
-          name: "Corolla E",
-          vendor: "5b54e618ae6b2a035fe83843",
-          vendor_id: "5b54e618ae6b2a035fe83843",
-          category: "5b5595ea65bbd42e261016bc",
-          brand: "5b5595f365bbd42e261016bd",
-          description: "Corolla E, hybrid electric car",
-          short_description: "Sports racing car",
-          unit_cost: 23,
-          unit_price: 26,
-          view_date: "2018-07-23T08:53:45.490Z",
-          updated: "2018-07-23T08:53:45.490Z",
-          createdAt: "2018-07-23T08:53:45.563Z",
-          updatedAt: "2018-07-23T08:53:45.563Z",
-          __v: 0,
-        },
-      ],
-    },
-    {
-      "Rentree Scolaire": [
-        {
-          code: "5647",
-          sku: "577478394854",
-          upc: "344-455-454-344",
-          tag: [
-            "shoe",
-          ],
-          shipping_cost: 2,
-          image_sm: "small",
-          image_md: "medium",
-          image_lg: "large",
-          image_front: "front",
-          image_back: "back",
-          image_top: "default-product-top-image.jpg",
-          image_bottom: "default-product-bottom-image.jpg",
-          image_right: "default-product-right-image.jpg",
-          image_left: "default-product-left-image.jpg",
-          icon: "default-product-icon.jpg",
-          unit: "2",
-          length: "3m",
-          width: "1.5m",
-          height: "1.2m",
-          color: "red",
-          options: "none",
-          discount: 5,
-          discount_type: "percent",
-          tax: 4,
-          tax_type: "percent",
-          download: true,
-          download_name: "bezop-toyota-corolla",
-          deal: false,
-          valuation: "LIFO",
-          download_num: 3453,
-          featured: true,
-          view_count: 1,
-          standing: "active",
-          _id: "5b55979956bed531379b0aa3",
-          name: "Corolla E",
-          vendor: "5b54e618ae6b2a035fe83843",
-          vendor_id: "5b54e618ae6b2a035fe83843",
-          category: "5b5595ea65bbd42e261016bc",
-          brand: "5b5595f365bbd42e261016bd",
-          description: "Corolla E, hybrid electric car",
-          short_description: "Sports racing car",
-          unit_cost: 23,
-          unit_price: 26,
-          view_date: "2018-07-23T08:53:45.490Z",
-          updated: "2018-07-23T08:53:45.490Z",
-          createdAt: "2018-07-23T08:53:45.563Z",
-          updatedAt: "2018-07-23T08:53:45.563Z",
-          __v: 0,
-        },
-      ],
-    },
-  ],
+  cart: [],
+  wishlist: [],
   password: "6090juy778",
   photo: "default-customer-photo",
   profile: "8787",
@@ -1266,7 +1103,19 @@ let customer = {
   updatedAt: "2018-07-23T09:08:41.942Z",
   __v: 0,
 };
-
+/*
+  cart: [{
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    quantity: { type: Number, default: 1, required: true },
+  }],
+  wishlist: [{
+    name: { type: String, unique: true, trim: true, max: 100, min: [2, "Too short name"] },
+    products: [{
+      product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+      quantity: { type: Number, default: 1, required: true },
+    }],
+  }],
+  */
 export function initCustomer(req, res) {
   const customer1 = new Customer({
     access_token: "809iknhg67",
@@ -1275,8 +1124,9 @@ export function initCustomer(req, res) {
     username: "Jackie",
     language: "Chinese",
     currency,
-    wishlist: [{ "Xmas Shopping": [product] }, { "Rentree Scolaire": [product] }],
-    cart: [product],
+    cart: [{ product: product._id, quantity: 10 }, { product: product._id, quantity: 7 }],
+    wishlist: [{ name: "Xmas Shopping", products: [{ product, quantity: 10 }, { product, quantity: 7 }] },
+      { name: "Rentree´ Scolair", products: [{ product, quantity: 10 }, { product, quantity: 7 }] }],
     languageList,
     gender: "m",
     password: "6090juy778",

@@ -12,7 +12,6 @@ const BrandSchema = new Schema({
   icon: { type: String, required: [false, "Why no logo?"] },
   banner: { type: String, required: [false, "Why no banner?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   view_count: { type: Number, default: 1 },
   standing: {
     type: String,

@@ -13,7 +13,6 @@ const categorySchema = new Schema({
   banner: { type: String, required: [false, "Why no banner?"] },
   parent: { type: String, default: "0" },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   view_count: { type: Number, default: 1 },
   standing: {
     type: String,

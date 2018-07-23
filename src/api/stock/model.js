@@ -7,9 +7,8 @@ import Product from "../product/model";
 import Vendor from "../vendor/model";
 
 const StockSchema = new Schema({
-  vendor: [{ type: Schema.Types.ObjectId, ref: "Vendor" }],
-  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
-  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  product: { type: Schema.Types.ObjectId, ref: "Product" },
   order_num: { type: String, required: [true, "Why no order number?"] },
   kind: { type: String, enum: ["add", "destroy"], required: [true, "Why no kind?"] },
   quantity: { type: Number, required: [true, "Why no quantity?"] },
