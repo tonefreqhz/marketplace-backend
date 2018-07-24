@@ -64,7 +64,7 @@ const CustomerSchema = new Schema({
   },
   last_access: [{
     accessDate: { type: Date },
-    ipAddress: { type: String },
+    ipAddress: { type: String, min: 15, max: 45 },
   }],
   standing: {
     type: String,

@@ -1,6 +1,7 @@
 /**
- * @description Currency is infered from the vendor currency preferences for all vendor products
  * @author 4Dcoder
+ * @description Currency is infered from the vendor currency preferences for all vendor products
+ * Products with the same parent names are siblings or varaity options
  */
 
 import mongoose, { Schema } from "mongoose";
@@ -13,21 +14,29 @@ const ProductSchema = new Schema({
   sku: { type: String, required: [false, "Why no Sku?"], max: 50 },
   upc: { type: String, required: [false, "Why no Upc?"], max: 50 },
   name: { type: String, required: [true, "Why no Product name?"], max: 200 },
-  tag: { type: Array, default: [] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   category: {
     main: { type: Schema.Types.ObjectId, ref: "Category" },
     sub: { type: Schema.Types.ObjectId, ref: "Category" },
   },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
-  description: { type: String, required: [true, "Why no Description?"], max: 5000 },
-  short_description: { type: String, required: [true, "Why no Short description?"], max: 500 },
-  color: { type: String, default: "" },
-  parent: { type: String, default: "" },
-  cost: {
-    unit_cost: { type: Number, required: [true, "Why no Unit cost?"] },
+  description: {
+    color: { type: String, default: "" },
+    unit: { type: String, default: "" },
+    long: { type: String, required: [true, "Why no Description?"], max: 5000 },
+    short: { type: String, required: [true, "Why no Short description?"], max: 500 },
+    tag: { type: Array, default: [] },
+  },
+  variety: {
+    options: { type: Boolean, required: [false, "Why no Deal?"], default: false },
+    parent: { type: String, default: "" },
+  },
+  price: {
+    deal: { type: Boolean, required: [false, "Why no Deal?"], default: false },
+    valuation: { type: String, enum: ["FIFO", "LIFO", "AVCO"], default: "LIFO", required: [true, "Why no valuation?"] },
     unit_price: { type: Number, required: [true, "Why no Unit price?"] },
-    alt_price: { type: Number },
+    cost_price: { type: Number, required: [false, "Why no cost price?"] },
+    slash_price: { type: Number },
     discount: { type: Number, required: [false, "Why no Discount?"], default: 0.0 },
     discount_type: { type: String, enum: ["fixed", "percent"], default: "percent" },
     tax: { type: Number, required: [false, "Why no Tax?"], default: 0.0 },
@@ -45,9 +54,8 @@ const ProductSchema = new Schema({
     image_left: { type: String, default: "default-product-left-image.jpg" },
     icon: { type: String, default: "default-product-icon.jpg" },
   },
-  unit: { type: String, default: "" },
   shipping_details: {
-    shipping_cost: { type: Number, default: 0.0 },
+    cost: { type: Number, default: 0.0 },
     weight: { type: String, max: 20 },
     length: { type: String, max: 20 },
     width: { type: String, max: 20 },
@@ -58,17 +66,16 @@ const ProductSchema = new Schema({
     model_number: { type: String, max: 100 },
     release_date: { type: Date },
   },
-  download: { type: Boolean, required: [false, "Why no Download?"], default: false },
-  download_name: { type: String, default: "Bezop-Product-Download" },
-  deal: { type: Boolean, required: [false, "Why no Deal?"], default: false },
-  valuation: { type: String, enum: ["FIFO", "LIFO", "AVCO"], default: "LIFO", required: [true, "Why no valuation?"] },
+  download: {
+    downloadable: { type: Boolean, required: [false, "Why no Download?"], default: false },
+    download_name: { type: String, default: "Bezop-Product-Download" },
+  },
   extra_fields: [{
     name: { type: String, max: 20 },
     value: { type: String, max: 100 },
   }],
-  download_num: { type: Number, default: 0 },
-  featured: { type: Boolean, default: false },
   analytics: {
+    featured: { type: Boolean, default: false },
     view_date: { type: Date, default: Date.now },
     view_count: { type: Number, default: 1 },
   },

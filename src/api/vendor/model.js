@@ -88,10 +88,10 @@ const VendorSchema = new Schema({
   },
   products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   view_count: { type: Number, default: 1 },
-  last_access: {
-    type: Array,
-    default: [{ accessDate: "", ipAddress: "" }],
-  },
+  last_access: [{
+    accessDate: { type: Date },
+    ipAddress: { type: String, min: 15, max: 45 },
+  }],
   account: {
     type: Array,
     default: { complete_profile: false, email_verified: false, domain_name_set: false, business_verified: false },

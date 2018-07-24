@@ -19,10 +19,10 @@ const AdminSchema = new mongoose.Schema({
   },
   username: { type: String, default: "" },
   role: { type: String, default: "" },
-  last_access: {
-    type: Array,
-    default: [{ accessDate: "", ipAddress: "" }],
-  },
+  last_access: [{
+    accessDate: { type: Date },
+    ipAddress: { type: String, min: 15, max: 45 },
+  }],
   fullname: { type: String, default: "" },
   phone: { type: String, default: "" },
   address: { type: String, default: "" },
@@ -30,7 +30,6 @@ const AdminSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
     unique: true,
-    default: "",
   },
   standing: {
     type: String,
