@@ -50,7 +50,7 @@ const router = express.Router();
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.post("/products", isValidVendor, product.create);
+router.post("/products", isValidAdmin, product.create);
 
 /**
  * @api {get} /products Retrieve products
@@ -59,7 +59,7 @@ router.post("/products", isValidVendor, product.create);
  * @apiSuccess {Object[]} rows List of products.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/products", isValidAdmin, product.findAll);
+router.get("/products", product.findAll);
 
 /**
  * @api {get} /products/:id Retrieve product
@@ -112,7 +112,7 @@ router.get("/products/:productId", product.findOne);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.put("/products/:productId", isValidVendor, product.update);
+router.put("/products/:productId", isValidAdmin, product.update);
 
 /**
  * @api {delete} /products/:id Delete product

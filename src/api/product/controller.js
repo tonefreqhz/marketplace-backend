@@ -92,12 +92,10 @@ exports.findAll = (req, res) => Product
 
 // Find a single product with a productId
 exports.findOne = (req, res) => {
-  const { data } = req.body;
   const { productId } = req.params.productId;
 
   // Validate request
   if (!productId) return fail(res, 400, "Invalid Product Id as request parameter");
-  if (!data.name) return fail(res, 400, "Product name can not be empty");
 
   return Product.findById(productId)
     .then((result) => {
