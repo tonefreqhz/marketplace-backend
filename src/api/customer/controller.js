@@ -1,39 +1,31 @@
 
 import Customer from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
-// Retrieve and return all customers from the database.
-exports.findAll = (req, res) => {
-  Customer.find()
-    .then((customers) => {
-      res.send(customers);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving customers.",
-      });
-    });
-};
 
-// Find a single customer with a customerId
-exports.findOne = (req, res) => {
-  Customer.findById(req.params.customerId)
-    .then((customer) => {
-      if (!customer) {
-        res.status(404).send({
-          message: `Customer not found with id ${req.params.customerId}`,
-        });
-      }
-      res.send(customer);
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Customer.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
+
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.customerId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Customer.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Customer not found with id ${req.params.customerId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving customer with id ${req.params.customerId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a customer identified by the customerId in the request
 exports.update = (req, res) => {
@@ -85,23 +77,18 @@ exports.update = (req, res) => {
 
 // Delete a customer with the specified customerId in the request
 exports.delete = (req, res) => {
-  Customer.findByIdAndRemove(req.params.customerId)
-    .then((customer) => {
-      if (!customer) {
-        res.status(404).send({
-          message: `Customer not found with id ${req.params.customerId}`,
-        });
-      }
-      res.send({ message: "Customer deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.customerId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Customer.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Customer not found with id ${req.params.customerId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete customer with id ${req.params.customerId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };
-

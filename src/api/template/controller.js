@@ -1,5 +1,6 @@
 
 import Template from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Template
 exports.create = (req, res) => {
@@ -29,39 +30,29 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all templates from the database.
-exports.findAll = (req, res) => {
-  Template.find()
-    .then((templates) => {
-      res.send(templates);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving templates.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Template.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single template with a templateId
-exports.findOne = (req, res) => {
-  Template.findById(req.params.templateId)
-    .then((template) => {
-      if (!template) {
-        res.status(404).send({
-          message: `Template not found with id ${req.params.templateId}`,
-        });
-      }
-      res.send(template);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.templateId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Template.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Template not found with id ${req.params.templateId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving template with id ${req.params.templateId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a template identified by the templateId in the request
 exports.update = (req, res) => {
@@ -100,22 +91,18 @@ exports.update = (req, res) => {
 
 // Delete a template with the specified templateId in the request
 exports.delete = (req, res) => {
-  Template.findByIdAndRemove(req.params.templateId)
-    .then((template) => {
-      if (!template) {
-        res.status(404).send({
-          message: `Template not found with id ${req.params.templateId}`,
-        });
-      }
-      res.send({ message: "Template deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.templateId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Template.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Template not found with id ${req.params.templateId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete template with id ${req.params.templateId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

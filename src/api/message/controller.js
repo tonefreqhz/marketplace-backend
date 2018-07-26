@@ -1,5 +1,6 @@
 
 import Message from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Message
 exports.create = (req, res) => {
@@ -36,39 +37,29 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all messages from the database.
-exports.findAll = (req, res) => {
-  Message.find()
-    .then((messages) => {
-      res.send(messages);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving messages.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Message.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single message with a messageId
-exports.findOne = (req, res) => {
-  Message.findById(req.params.messageId)
-    .then((message) => {
-      if (!message) {
-        res.status(404).send({
-          message: `Message not found with id ${req.params.messageId}`,
-        });
-      }
-      res.send(message);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.messageId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Message.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Message not found with id ${req.params.messageId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving message with id ${req.params.messageId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a message identified by the messageId in the request
 exports.update = (req, res) => {
@@ -114,22 +105,18 @@ exports.update = (req, res) => {
 
 // Delete a message with the specified messageId in the request
 exports.delete = (req, res) => {
-  Message.findByIdAndRemove(req.params.messageId)
-    .then((message) => {
-      if (!message) {
-        res.status(404).send({
-          message: `Message not found with id ${req.params.messageId}`,
-        });
-      }
-      res.send({ message: "Message deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.messageId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Message.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Message not found with id ${req.params.messageId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete message with id ${req.params.messageId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

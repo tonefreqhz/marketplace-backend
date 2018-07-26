@@ -1,5 +1,6 @@
 
 import Stock from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Stock
 exports.create = (req, res) => {
@@ -34,39 +35,30 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all stocks from the database.
-exports.findAll = (req, res) => {
-  Stock.find()
-    .then((stocks) => {
-      res.send(stocks);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving stocks.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Stock.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single stock with a stockId
-exports.findOne = (req, res) => {
-  Stock.findById(req.params.stockId)
-    .then((stock) => {
-      if (!stock) {
-        res.status(404).send({
-          message: `Stock not found with id ${req.params.stockId}`,
-        });
-      }
-      res.send(stock);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.stockId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Stock.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Stock not found with id ${req.params.stockId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving stock with id ${req.params.stockId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
+
 
 // Update a stock identified by the stockId in the request
 exports.update = (req, res) => {
@@ -103,22 +95,18 @@ exports.update = (req, res) => {
 
 // Delete a stock with the specified stockId in the request
 exports.delete = (req, res) => {
-  Stock.findByIdAndRemove(req.params.stockId)
-    .then((stock) => {
-      if (!stock) {
-        res.status(404).send({
-          message: `Stock not found with id ${req.params.stockId}`,
-        });
-      }
-      res.send({ message: "Stock deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.stockId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Stock.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Stock not found with id ${req.params.stockId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete stock with id ${req.params.stockId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

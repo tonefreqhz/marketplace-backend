@@ -1,22 +1,12 @@
 
-import { success, notFound } from "./../../services/response/";
-import { Category } from ".";
+import { Category } from "./../category";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Category
 export const create = ({ bodymen: { body } }, res, next) =>
   Category.create(body)
     .then(category => category.view(true))
     .then(success(res, 201))
-    .catch(next);
-
-export const index = ({ querymen: { query, select, cursor } }, res, next) =>
-  Category.count(query)
-    .then(count => Category.find(query, select, cursor)
-      .then(categorys => ({
-        count,
-        rows: categorys.map(category => category.view()),
-      })), )
-    .then(success(res))
     .catch(next);
 
 export const show = ({ params }, res, next) =>
@@ -41,39 +31,30 @@ export const destroy = ({ params }, res, next) =>
     .then(success(res, 204))
     .catch(next);
 
-// Retrieve and return all categorys from the database.
-export const findAll = (req, res) => {
-  Category.find()
-    .then((categorys) => {
-      res.send(categorys);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving categorys.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Category.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single category with a categoryId
-exports.findOne = (req, res) => {
-  Category.findById(req.params.categoryId)
-    .then((category) => {
-      if (!category) {
-        res.status(404).send({
-          message: `Category not found with id ${req.params.categoryId}`,
-        });
-      }
-      res.send(category);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.categoryId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Category.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, 404, "Error record not found.");
+      return success(res, 200, result, "retrieving record was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Category not found with id ${req.params.categoryId}`,
-        });
+        notFound(res, 404, `Error retrieving record.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving category with id ${req.params.categoryId}`,
-      });
+      return fail(res, 500, `Error retrieving record.\r\n${err.message}`);
     });
-};
+}
+
 
 // Update a category identified by the categoryId in the request
 exports.update = (req, res) => {
@@ -112,22 +93,18 @@ exports.update = (req, res) => {
 
 // Delete a category with the specified categoryId in the request
 exports.delete = (req, res) => {
-  Category.findByIdAndRemove(req.params.categoryId)
-    .then((category) => {
-      if (!category) {
-        res.status(404).send({
-          message: `Category not found with id ${req.params.categoryId}`,
-        });
-      }
-      res.send({ message: "Category deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.categoryId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Category.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Category not found with id ${req.params.categoryId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete category with id ${req.params.categoryId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

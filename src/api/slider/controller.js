@@ -1,5 +1,6 @@
 
 import Slider from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Slider
 exports.create = (req, res) => {
@@ -32,39 +33,29 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all sliders from the database.
-exports.findAll = (req, res) => {
-  Slider.find()
-    .then((sliders) => {
-      res.send(sliders);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving sliders.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Slider.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single slider with a sliderId
-exports.findOne = (req, res) => {
-  Slider.findById(req.params.sliderId)
-    .then((slider) => {
-      if (!slider) {
-        res.status(404).send({
-          message: `Slider not found with id ${req.params.sliderId}`,
-        });
-      }
-      res.send(slider);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.sliderId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Slider.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Slider not found with id ${req.params.sliderId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving slider with id ${req.params.sliderId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a slider identified by the sliderId in the request
 exports.update = (req, res) => {
@@ -101,22 +92,18 @@ exports.update = (req, res) => {
 
 // Delete a slider with the specified sliderId in the request
 exports.delete = (req, res) => {
-  Slider.findByIdAndRemove(req.params.sliderId)
-    .then((slider) => {
-      if (!slider) {
-        res.status(404).send({
-          message: `Slider not found with id ${req.params.sliderId}`,
-        });
-      }
-      res.send({ message: "Slider deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.sliderId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Slider.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Slider not found with id ${req.params.sliderId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete slider with id ${req.params.sliderId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

@@ -22,6 +22,8 @@ import Message from "../message/model";
 import Ticket from "../ticket/model";
 import Setting from "../setting/model";
 
+import { randomNonce } from "./../../services/helpers";
+
 // /////////////////////////////////////
 // initAdmin
 // ////////////////////////////////////
@@ -87,7 +89,7 @@ let vendor = {
   address: "Agu Awka",
   email: "james@awka.an",
   standing: "active",
-  _id: "5b54e618ae6b2a035fe83843",
+  _id: "5b58988ff124544a827a904d",
   publicAddress: "0x1b19bfacc9fbcedd42deed4fe200beb039ecd1e0",
   updated: "2018-07-22T20:16:24.678Z",
   createdAt: "2018-07-22T20:16:24.687Z",
@@ -98,7 +100,7 @@ let vendor = {
 export function initVendor(req, res) {
   const vendor1 = new Vendor({
     nonce: 34635564,
-    publicAddress: "0x1B19BfaCc9FbcEDD42DEed4FE200BEb039eCd1E0",
+    publicAddress: randomNonce(),
     username: "blaze",
     fullname: "Blaze Billy",
     phone: "08134836164",
@@ -138,7 +140,7 @@ export function initVendor(req, res) {
     approvedAt: Date.now(),
   });
 
-  vendor1.save()
+  return vendor1.save()
     .then((vendorResult) => {
       if (!vendorResult) {
         fail(res, 404, "Error not found newly added vendor");
@@ -972,18 +974,18 @@ let product = {
     view_date: "2018-07-24T10:00:26.742Z",
   },
   standing: "active",
-  _id: "5b56f8ba0eb49016ce1e1f47",
+  id: "5b55e28b15b40a522a4bbef8",
   code: "5647",
   sku: "12345647",
   upc: "120005647",
   name: "Corolla E",
-  vendor: "5b54e618ae6b2a035fe83843",
+  vendor: "5b58988ff124544a827a904d",
   brand: "5b5595f365bbd42e261016bd",
   extra_fields: [
     {
       _id: "5b56f8ba0eb49016ce1e1f48",
-      name: null,
-      value: null,
+      name: "Expire Date",
+      value: "2019-12-28",
     },
   ],
   updated: "2018-07-24T10:00:26.742Z",
@@ -995,7 +997,7 @@ let product = {
 export function initProduct(req, res) {
   // Create a Product
   const product1 = new Product({
-    code: "5647",
+    code: randomNonce(),
     sku: "12345647",
     upc: "120005647",
     name: "Corolla E",

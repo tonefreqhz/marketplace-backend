@@ -13,7 +13,7 @@ import jwtDecode from "jwt-decode";
 import Admin from "./../admin/model";
 import Vendor from "./../vendor/model";
 import Customer from "./../customer/model";
-import { randomNonce } from "./../../services/helpers";
+import { getClientAccess, addToAccess } from "./../../services/helpers";
 import { success, fail, notFound } from "./../../services/response";
 import { jwtSecret, getToken } from "./../../services/jwt";
 
@@ -24,7 +24,6 @@ import { jwtSecret, getToken } from "./../../services/jwt";
 // //////////////////////////////////////////////////
 export const find = (req, res, next) => {
   let User = null;
-
   const { userType, authType, publicAddress } = req.params;
   console.log(`User Type: ${userType} Auth Type: ${authType} publicAddress: ${publicAddress}`);
   if (!userType || !authType || !publicAddress) {
@@ -49,7 +48,7 @@ export const find = (req, res, next) => {
     .then((user) => {
       if ((!user && authType === "login") || (user && authType === "signup")) {
         const msg = authType === "login" ? "is not found, please signup" : "ialready exist, please login";
-        fail(res, 401, `User with publicAddress ${publicAddress} ${msg} `);
+        return fail(res, 401, `User with publicAddress ${publicAddress} ${msg} `);
       }
 
       // Create a User
@@ -63,18 +62,19 @@ export const find = (req, res, next) => {
           email: "",
         });
 
-          // Save User in the database
-        newUser.save()
-          .then((record) => {
-            success(res, 200, { publicAddress, nonce: record.nonce, authType: "signup" }, "new User record has been created");
-          })
-          .catch((err) => {
-            fail(res, 500, err.message || "Some error occurred while creating the User.");
-          });
+        if (userType === "vendor") {
+          newUser.domain_name = publicAddress;
+        }
+
+        // Save User in the database
+        return newUser.save()
+          .then(record => success(res, 200, { publicAddress, nonce: record.nonce, authType: "signup" }, "new User record has been created"))
+          .catch(err => fail(res, 500, err.message || "Some error occurred while creating the User."));
       }
       if ((user && authType === "login")) {
-        success(res, 200, { publicAddress, nonce: user.nonce, authType }, "Login successful!");
+        return success(res, 200, { publicAddress, nonce: user.nonce, authType }, "Login successful!");
       }
+      return fail(res, 500, "Unknown error finding user.");
     })
     .catch(next);
 };
@@ -114,6 +114,12 @@ export const auth = (req, res, next) => {
       if (!user) {
         return fail(res, 401, `User with publicAddress ${publicAddress} is not found in database. Signup`);
       }
+      const clientAccess = getClientAccess(req);
+      // Log last_access
+      user.last_access = addToAccess(user.last_access, 10, clientAccess);
+      user.save()
+        .then(record => record)
+        .catch(err => console.log(err.message || "Unable to update user access log."));
       return user;
     })
 
@@ -217,7 +223,8 @@ export function isValidAdmin(req, res, next) {
       || (admin.id !== id)) {
         return fail(res, 401, "Admin verification failed");
       }
-      // return next;
+      res.locals.userId = id;
+      res.locals.userType = "admin";
       return next();
     });
 }
@@ -251,7 +258,8 @@ export function isValidVendor(req, res, next) {
       || (vendor.id !== id)) {
         return fail(res, 401, "Vendor verification failed");
       }
-      // return next;
+      res.locals.userId = id;
+      res.locals.userType = "vendor";
       return next();
     });
 }
@@ -286,7 +294,8 @@ export function isValidCustomer(req, res, next) {
       || (customer.id !== id)) {
         return fail(res, 401, "Customer verification failed");
       }
-      // return next;
+      res.locals.userId = id;
+      res.locals.userType = "customer";
       return next();
     });
 }

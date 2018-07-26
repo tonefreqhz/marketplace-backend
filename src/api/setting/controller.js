@@ -1,5 +1,6 @@
 
 import Setting from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Setting
 exports.create = (req, res) => {
@@ -30,39 +31,30 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all settings from the database.
-exports.findAll = (req, res) => {
-  Setting.find()
-    .then((settings) => {
-      res.send(settings);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving settings.",
-      });
-    });
-};
 
-// Find a single setting with a settingId
-exports.findOne = (req, res) => {
-  Setting.findById(req.params.settingId)
-    .then((setting) => {
-      if (!setting) {
-        res.status(404).send({
-          message: `Setting not found with id ${req.params.settingId}`,
-        });
-      }
-      res.send(setting);
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Setting.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
+
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.settingId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Setting.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Setting not found with id ${req.params.settingId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving setting with id ${req.params.settingId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a setting identified by the settingId in the request
 exports.update = (req, res) => {
@@ -99,22 +91,18 @@ exports.update = (req, res) => {
 
 // Delete a setting with the specified settingId in the request
 exports.delete = (req, res) => {
-  Setting.findByIdAndRemove(req.params.settingId)
-    .then((setting) => {
-      if (!setting) {
-        res.status(404).send({
-          message: `Setting not found with id ${req.params.settingId}`,
-        });
-      }
-      res.send({ message: "Setting deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.settingId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Setting.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Setting not found with id ${req.params.settingId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete setting with id ${req.params.settingId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };
