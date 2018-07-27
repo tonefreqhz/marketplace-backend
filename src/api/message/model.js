@@ -3,8 +3,21 @@
 */
 
 import mongoose, { Schema } from "mongoose";
+import Admin from "../admin/model";
+import Vendor from "../vendor/model";
+import Customer from "../customer/model";
 
 const MessageSchema = new Schema({
+  admin: { type: Schema.Types.ObjectId, ref: "Admin" },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  customer: { type: Schema.Types.ObjectId, ref: "Customer" },
+  visitorName: { type: String },
+  visitorEmail: { type: String },
+  sentBy: {
+    type: String,
+    enum: ["visitor", "customer", "vendor", "admin"],
+    required: [true, "Why no sender?"],
+  },
   kind: {
     type: String,
     enum: ["arbitration", "chat", "contact", "ticket"],
@@ -16,17 +29,8 @@ const MessageSchema = new Schema({
     enum: ["visitor_vendor", "customer_vendor", "customer_admin", "vendor_admin"],
     required: [true, "Why no communication party?"],
   },
-  visitorName: { type: String },
-  visitorEmail: { type: String },
   subject: { type: String },
   message: { type: String },
-  customer: { type: String },
-  vendor: { type: String },
-  sentBy: {
-    type: String,
-    enum: ["visitor", "customer", "vendor", "admin"],
-    required: [true, "Why no sender?"],
-  },
   standing: {
     type: String,
     enum: ["read", "unread", "trashed"],
