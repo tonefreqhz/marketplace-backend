@@ -63,7 +63,7 @@ export const find = (req, res, next) => {
         });
 
         if (userType === "vendor") {
-          newUser.domain_name = publicAddress;
+          newUser.domainName = publicAddress;
         }
 
         // Save User in the database
@@ -116,7 +116,7 @@ export const auth = (req, res, next) => {
       }
       const clientAccess = getClientAccess(req);
       // Log last_access
-      user.last_access = addToAccess(user.last_access, 10, clientAccess);
+      user.lastAccess = addToAccess(user.lastAccess, 10, clientAccess);
       user.save()
         .then(record => record)
         .catch(err => console.log(err.message || "Unable to update user access log."));

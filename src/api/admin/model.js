@@ -18,7 +18,7 @@ const AdminSchema = new mongoose.Schema({
   },
   username: { type: String, default: "" },
   role: { type: String, default: "" },
-  last_access: [{
+  lastAccess: [{
     accessDate: { type: Date },
     ipAddress: { type: String, min: 15, max: 45 },
   }],
