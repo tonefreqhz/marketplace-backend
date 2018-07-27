@@ -24,4 +24,5 @@ const SubscriberSchema = new Schema({
 });
 
 const Subscriber = mongoose.model("Subscriber", SubscriberSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Subscriber;

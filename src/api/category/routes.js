@@ -7,7 +7,7 @@ import { middleware as query } from "querymen";
 import { middleware as body } from "bodymen";
 import { token } from "./../../services/jwt";
 import * as category from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = new Router();
 
@@ -23,7 +23,7 @@ const router = new Router();
  * @apiError 404 Category not found.
  * @apiError 401 master access only.
  */
-router.post("/categories", isValidAdmin, category.create);
+router.post("/categories", isValidVendor, category.create);
 
 /**
  * @api {get} /categories Retrieve categories
@@ -58,7 +58,7 @@ router.get("/categories/:categoryId", category.findOne);
  * @apiError 404 Category not found.
  * @apiError 401 master access only.
  */
-router.put("/categories/:categoryId", isValidAdmin, category.update);
+router.put("/categories/:categoryId", isValidVendor, category.update);
 
 /**
  * @api {delete} /categories/:id Delete category
@@ -70,6 +70,6 @@ router.put("/categories/:categoryId", isValidAdmin, category.update);
  * @apiError 404 Category not found.
  * @apiError 401 master access only.
  */
-router.delete("/categories/:categoryId", isValidAdmin, category.delete);
+router.delete("/categories/:categoryId", isValidVendor, category.delete);
 
 export default router;

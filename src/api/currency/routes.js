@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as currency from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ const router = express.Router();
  * @apiError 404 Currency not found.
  * @apiError 401 master access only.
  */
-router.post("/currencies", isValidAdmin, currency.create);
+router.post("/currencies", isValidVendor, currency.create);
 
 /**
  * @api {get} /currencies Retrieve currencies
@@ -65,7 +65,7 @@ router.get("/currencies/:currencyId", currency.findOne);
  * @apiError 404 Currency not found.
  * @apiError 401 master access only.
  */
-router.put("/currencies/:currencyId", isValidAdmin, currency.update);
+router.put("/currencies/:currencyId", isValidVendor, currency.update);
 
 /**
  * @api {delete} /currencies/:id Delete currency
@@ -77,6 +77,6 @@ router.put("/currencies/:currencyId", isValidAdmin, currency.update);
  * @apiError 404 Currency not found.
  * @apiError 401 master access only.
  */
-router.delete("/currencies/:currencyId", isValidAdmin, currency.delete);
+router.delete("/currencies/:currencyId", isValidVendor, currency.delete);
 
 export default router;

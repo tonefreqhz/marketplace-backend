@@ -1,35 +1,42 @@
 
-import { Category } from "./../category";
+import Category, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Category
-export const create = ({ bodymen: { body } }, res, next) =>
-  Category.create(body)
-    .then(category => category.view(true))
-    .then(success(res, 201))
-    .catch(next);
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
 
-export const show = ({ params }, res, next) =>
-  Category.findById(params.id)
-    .then(notFound(res))
-    .then(category => (category ? category.view() : null))
-    .then(success(res))
-    .catch(next);
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
+  }
 
-export const update = ({ bodymen: { body }, params }, res, next) =>
-  Category.findById(params.id)
-    .then(notFound(res))
-    .then(category => (category ? Object.assign(category, body).save() : null))
-    .then(category => (category ? category.view(true) : null))
-    .then(success(res))
-    .catch(next);
+  // Validate request
+  if (!data.name) return fail(res, 422, "name cannot be empty and must be alphanumeric.");
+  if (!data.description) return fail(res, 422, "description cannot be empty and must be alphanumeric.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty and must be alphanumeric.");
 
-export const destroy = ({ params }, res, next) =>
-  Category.findById(params.id)
-    .then(notFound(res))
-    .then(category => (category ? category.remove() : null))
-    .then(success(res, 204))
-    .catch(next);
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.name) newObject.name = data.name;
+  if (data.description) newObject.description = data.description;
+  if (data.kind) newObject.kind = data.kind;
+  if (data.parent) newObject.parent = data.parent;
+
+  // Create a record
+  const record = new Category(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -41,60 +48,65 @@ export function findAll(req, res) {
 // Retrieve a single record with a given recordId
 export function findOne(req, res) {
   const recordId = req.params.categoryId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
-  return Category.findById(req.params.recordId)
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return Category.findById(recordId)
     .then((result) => {
-      if (!result) return notFound(res, 404, "Error record not found.");
+      if (!result) return notFound(res, "Error record not found.");
       return success(res, 200, result, "retrieving record was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        notFound(res, 404, `Error retrieving record.\r\n${err.message}`);
+        notFound(res, `Error retrieving record.\r\n${err.message}`);
       }
       return fail(res, 500, `Error retrieving record.\r\n${err.message}`);
     });
 }
 
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.categoryId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
 
-// Update a category identified by the categoryId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Category name can not be empty",
-    });
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
   }
 
-  // Find category and update it with the request body
-  Category.findByIdAndUpdate(req.params.categoryId, {
-    name: req.body.name,
-    description: req.body.description,
-    kind: req.body.kind,
-    parent: req.body.parent,
-  }, { new: true })
-    .then((category) => {
-      if (!category) {
-        res.status(404).send({
-          message: `Category not found with id ${req.params.categoryId}`,
-        });
-      }
-      res.send(category);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Category not found with id ${req.params.categoryId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating category with id ${req.params.categoryId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.name) return fail(res, 422, "name cannot be empty and must be alphanumeric.");
+  if (!data.description) return fail(res, 422, "description cannot be empty and must be alphanumeric.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty and must be alphanumeric.");
+
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.name) newObject.name = data.name;
+  if (data.description) newObject.description = data.description;
+  if (data.kind) newObject.kind = data.kind;
+  if (data.parent) newObject.parent = data.parent;
+
+  // Create a record
+  const record = new Category(newObject);
+
+  // Find record and update it with id
+  return Category.findByIdAndUpdate(recordId, { record }, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
+
 
 // Delete a category with the specified categoryId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.categoryId || "";
-  // Validate request
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
   return Category.findByIdAndRemove(recordId)
     .then((record) => {

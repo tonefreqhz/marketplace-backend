@@ -23,4 +23,5 @@ const SettingSchema = new Schema({
 });
 
 const Setting = mongoose.model("Setting", SettingSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Setting;

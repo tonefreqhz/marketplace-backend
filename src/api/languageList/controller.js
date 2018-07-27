@@ -1,5 +1,5 @@
 
-import LanguageList from "./model";
+import LanguageList, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new LanguageList
@@ -14,7 +14,7 @@ exports.create = (req, res) => {
   // Create a LanguageList
   const languageList = new LanguageList({
     name: req.body.name || "Untitled LanguageList",
-    db_field: req.body.db_field,
+    dbField: req.body.dbField,
   });
 
   // Save LanguageList in the database
@@ -50,9 +50,9 @@ export function findAll(req, res) {
 // Retrieve a single record with a given recordId
 export function findOne(req, res) {
   const recordId = req.params.languageListId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
-  return LanguageList.findById(req.params.recordId)
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return LanguageList.findById(recordId)
     .then((result) => {
       if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
       return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
@@ -76,7 +76,7 @@ exports.update = (req, res) => {
   // Find languageList and update it with the request body
   LanguageList.findByIdAndUpdate(req.params.languageListId, {
     name: req.body.name || "Untitled LanguageList",
-    db_field: req.body.db_field,
+    dbField: req.body.dbField,
   }, { new: true })
     .then((languageList) => {
       if (!languageList) {
@@ -100,8 +100,8 @@ exports.update = (req, res) => {
 // Delete a languageList with the specified languageListId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.languageListId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   return LanguageList.findByIdAndRemove(recordId)
     .then((record) => {
       if (!record) return notFound(res, `Record not found with id ${recordId}`);

@@ -1,6 +1,6 @@
 
 import validator from "validator";
-import Product from "./model";
+import Product, { ObjectId } from "./model";
 import { findVendorByDomain } from "./../vendor/controller";
 import { success, fail, notFound } from "../../services/response/index";
 
@@ -50,118 +50,117 @@ export function create(req, res) {
 
   if (!data.price.unit_price) return fail(res, 422, "Product unit price can not be empty and must be numeric.");
 
-  const productObject = {};
-  productObject.vendor = vendorId;
-  if (data.code) productObject.code = data.code;
-  if (data.sku) productObject.sku = data.sku;
-  if (data.upc) productObject.upc = data.upc;
-  if (data.name) productObject.name = data.name;
-  if (data.brand) productObject.brand = data.brand;
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.code) newObject.code = data.code;
+  if (data.sku) newObject.sku = data.sku;
+  if (data.upc) newObject.upc = data.upc;
+  if (data.name) newObject.name = data.name;
+  if (data.brand) newObject.brand = data.brand;
 
-  productObject.category = {};
-  if (data.category && data.category.main) productObject.category.main = data.category.main;
-  if (data.category && data.category.sub) productObject.category.sub = data.category.sub;
-  if (data.brand) productObject.brand = data.brand;
+  newObject.category = {};
+  if (data.category && data.category.main) newObject.category.main = data.category.main;
+  if (data.category && data.category.sub) newObject.category.sub = data.category.sub;
+  if (data.brand) newObject.brand = data.brand;
 
-  productObject.description = {};
-  if (data.description.color) productObject.description.color = data.description.color;
-  if (data.description.unit) productObject.description.unit = data.description.unit;
-  if (data.description.long) productObject.description.long = data.description.long;
-  if (data.description.short) productObject.description.short = data.description.short;
+  newObject.description = {};
+  if (data.description.color) newObject.description.color = data.description.color;
+  if (data.description.unit) newObject.description.unit = data.description.unit;
+  if (data.description.long) newObject.description.long = data.description.long;
+  if (data.description.short) newObject.description.short = data.description.short;
   if (data.description.tag && typeof data.description.tag === "object") {
-    productObject.description.tag = [];
-    productObject.description.tag = data.description.tag;
+    newObject.description.tag = [];
+    newObject.description.tag = data.description.tag;
   }
 
-  productObject.variety = {};
+  newObject.variety = {};
   if (data.variety.options && typeof data.variety.options === "boolean") {
-    productObject.variety.options = data.variety.options;
-    if (data.variety.parent) productObject.variety.parent = data.variety.parent;
+    newObject.variety.options = data.variety.options;
+    if (data.variety.parent) newObject.variety.parent = data.variety.parent;
   } else if (data.variety.options && (data.variety.options).toLowerCase() === "true") {
-    productObject.variety.options = true;
-    if (data.variety.parent) productObject.variety.parent = data.variety.parent;
+    newObject.variety.options = true;
+    if (data.variety.parent) newObject.variety.parent = data.variety.parent;
   } else if (data.variety.options && (data.variety.options).toLowerCase() === "false") {
-    productObject.variety.options = false;
-    if (data.variety.parent) productObject.variety.parent = data.variety.parent;
+    newObject.variety.options = false;
+    if (data.variety.parent) newObject.variety.parent = data.variety.parent;
   }
 
   if (data.variety.options === true && !data.variety.parent) {
     return fail(res, 422, "Enter variety parent name or set options to false.");
   }
 
-  productObject.price = {};
+  newObject.price = {};
   if (data.price.deal && typeof data.price.deal === "boolean") {
-    productObject.price.deal = data.price.deal;
+    newObject.price.deal = data.price.deal;
   } else if (data.price.deal && (data.price.deal).toLowerCase() === "true") {
-    productObject.price.deal = true;
+    newObject.price.deal = true;
   } else if (data.price.deal && (data.price.deal).toLowerCase() === "false") {
-    productObject.price.deal = false;
+    newObject.price.deal = false;
   }
 
   if (data.price.valuation && ((data.price.valuation).toUpperCase() === "LIFO" ||
   (data.price.valuation).toUpperCase() === "FIFO" || (data.price.valuation).toUpperCase() === "AVCO")) {
-    productObject.price.valuation = (data.price.valuation).toUpperCase();
+    newObject.price.valuation = (data.price.valuation).toUpperCase();
   }
   if (data.price.unit_price && typeof data.price.unit_price === "number") {
-    productObject.price.unit_price = data.price.unit_price;
+    newObject.price.unit_price = data.price.unit_price;
   }
   if (data.price.cost_price && typeof data.price.cost_price === "number") {
-    productObject.price.cost_price = data.price.cost_price;
+    newObject.price.cost_price = data.price.cost_price;
   }
   if (data.price.slash_price && typeof data.price.slash_price === "number") {
-    productObject.price.slash_price = data.price.slash_price;
+    newObject.price.slash_price = data.price.slash_price;
   }
   if (data.price.discount && typeof data.price.discount === "number") {
-    productObject.price.discount = data.price.discount;
+    newObject.price.discount = data.price.discount;
   }
   if (data.price.discount_type && ((data.price.discount_type).toLowerCase() === "fixed" ||
   (data.price.discount_type).toLowerCase() === "percent")) {
-    productObject.price.discount_type = (data.price.discount_type).toLowerCase();
+    newObject.price.discount_type = (data.price.discount_type).toLowerCase();
   }
   if (data.price.tax && typeof data.price.tax === "number") {
-    productObject.price.tax = data.price.tax;
+    newObject.price.tax = data.price.tax;
   }
   if (data.price.tax_type && ((data.price.tax_type).toLowerCase() === "fixed" ||
   (data.price.tax_type).toLowerCase() === "percent")) {
-    productObject.price.tax_type = (data.price.tax_type).toLowerCase();
+    newObject.price.tax_type = (data.price.tax_type).toLowerCase();
   }
 
-  productObject.shipping_details = {};
-  if (data.shipping_details.cost) productObject.shipping_details.cost = data.shipping_details.cost;
+  newObject.shipping_details = {};
+  if (data.shipping_details.cost) newObject.shipping_details.cost = data.shipping_details.cost;
   if (data.shipping_details.weight) {
-    productObject.shipping_details.weight = data.shipping_details.weight;
+    newObject.shipping_details.weight = data.shipping_details.weight;
   }
   if (data.shipping_details.length) {
-    productObject.shipping_details.length = data.shipping_details.length;
+    newObject.shipping_details.length = data.shipping_details.length;
   }
   if (data.shipping_details.width) {
-    productObject.shipping_details.width = data.shipping_details.width;
+    newObject.shipping_details.width = data.shipping_details.width;
   }
   if (data.shipping_details.height) {
-    productObject.shipping_details.height = data.shipping_details.height;
+    newObject.shipping_details.height = data.shipping_details.height;
   }
 
-  productObject.manufacture_details = {};
+  newObject.manufacture_details = {};
   if (data.manufacture_details.make) {
-    productObject.manufacture_details.make = data.manufacture_details.make;
+    newObject.manufacture_details.make = data.manufacture_details.make;
   }
   if (data.manufacture_details.model_number) {
-    productObject.manufacture_details.model_number = data.manufacture_details.model_number;
+    newObject.manufacture_details.model_number = data.manufacture_details.model_number;
   }
   if (data.manufacture_details.release_date) {
-    productObject.manufacture_details.release_date = data.manufacture_details.release_date;
+    newObject.manufacture_details.release_date = data.manufacture_details.release_date;
   }
 
-  productObject.download = {};
-  if (data.download.downloadable && typeof data.download.downloadable === "boolean") {
-    productObject.download.downloadable = data.download.downloadable;
-    if (data.download.name) productObject.download.name = data.download.name;
-  } else if (data.download.downloadable && (data.download.downloadable).toLowerCase() === "true") {
-    productObject.download.downloadable = true;
-    if (data.download.name) productObject.download.name = data.download.name;
-  } else if (data.download.downloadable && (data.download.downloadable).toLowerCase() === "false") {
-    productObject.download.downloadable = false;
-    if (data.download.name) productObject.download.name = data.download.name;
+  newObject.download = {};
+  if (data.download.downloadable &&
+    (typeof data.download.downloadable === "boolean" ||
+    (data.download.downloadable).toLowerCase() === "true" ||
+    (data.download.downloadable).toLowerCase() === "false")) {
+    newObject.download.downloadable = Boolean(data.download.downloadable);
+  }
+  if (data.download.download_name) {
+    newObject.download.download_name = data.download.download_name;
   }
 
   if (data.extra_fields && typeof data.extra_fields === "object" && data.extra_fields[0].name &&
@@ -176,12 +175,12 @@ export function create(req, res) {
         fieldArray.push({ name: fieldName, value: fieldValue });
       }
     });
-    productObject.extra_fields = {};
-    productObject.extra_fields = fieldArray;
+    newObject.extra_fields = {};
+    newObject.extra_fields = fieldArray;
   }
 
   // Create a Product
-  const product = new Product(productObject);
+  const product = new Product(newObject);
 
   // Save Product in the database
   return product.save()
@@ -335,118 +334,121 @@ export function update(req, res) {
 
   if (!data.price.unit_price) return fail(res, 422, "Product unit price can not be empty and must be numeric.");
 
-  const productObject = {};
-  productObject.vendor = vendorId;
-  if (data.code) productObject.code = data.code;
-  if (data.sku) productObject.sku = data.sku;
-  if (data.upc) productObject.upc = data.upc;
-  if (data.name) productObject.name = data.name;
-  if (data.brand) productObject.brand = data.brand;
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.code) newObject.code = data.code;
+  if (data.sku) newObject.sku = data.sku;
+  if (data.upc) newObject.upc = data.upc;
+  if (data.name) newObject.name = data.name;
+  if (data.brand) newObject.brand = data.brand;
 
-  productObject.category = {};
-  if (data.category && data.category.main) productObject.category.main = data.category.main;
-  if (data.category && data.category.sub) productObject.category.sub = data.category.sub;
-  if (data.brand) productObject.brand = data.brand;
+  newObject.category = {};
+  if (data.category && data.category.main) newObject.category.main = data.category.main;
+  if (data.category && data.category.sub) newObject.category.sub = data.category.sub;
+  if (data.brand) newObject.brand = data.brand;
 
-  productObject.description = {};
-  if (data.description.color) productObject.description.color = data.description.color;
-  if (data.description.unit) productObject.description.unit = data.description.unit;
-  if (data.description.long) productObject.description.long = data.description.long;
-  if (data.description.short) productObject.description.short = data.description.short;
+  newObject.description = {};
+  if (data.description.color) newObject.description.color = data.description.color;
+  if (data.description.unit) newObject.description.unit = data.description.unit;
+  if (data.description.long) newObject.description.long = data.description.long;
+  if (data.description.short) newObject.description.short = data.description.short;
   if (data.description.tag && typeof data.description.tag === "object") {
-    productObject.description.tag = [];
-    productObject.description.tag = data.description.tag;
+    newObject.description.tag = [];
+    newObject.description.tag = data.description.tag;
   }
 
-  productObject.variety = {};
+  newObject.variety = {};
   if (data.variety.options && typeof data.variety.options === "boolean") {
-    productObject.variety.options = data.variety.options;
-    if (data.variety.parent) productObject.variety.parent = data.variety.parent;
+    newObject.variety.options = data.variety.options;
+    if (data.variety.parent) newObject.variety.parent = data.variety.parent;
   } else if (data.variety.options && (data.variety.options).toLowerCase() === "true") {
-    productObject.variety.options = true;
-    if (data.variety.parent) productObject.variety.parent = data.variety.parent;
+    newObject.variety.options = true;
+    if (data.variety.parent) newObject.variety.parent = data.variety.parent;
   } else if (data.variety.options && (data.variety.options).toLowerCase() === "false") {
-    productObject.variety.options = false;
-    if (data.variety.parent) productObject.variety.parent = data.variety.parent;
+    newObject.variety.options = false;
+    if (data.variety.parent) newObject.variety.parent = data.variety.parent;
   }
 
   if (data.variety.options === true && !data.variety.parent) {
     return fail(res, 422, "Enter variety parent name or set options to false.");
   }
 
-  productObject.price = {};
+  newObject.price = {};
   if (data.price.deal && typeof data.price.deal === "boolean") {
-    productObject.price.deal = data.price.deal;
+    newObject.price.deal = data.price.deal;
   } else if (data.price.deal && (data.price.deal).toLowerCase() === "true") {
-    productObject.price.deal = true;
+    newObject.price.deal = true;
   } else if (data.price.deal && (data.price.deal).toLowerCase() === "false") {
-    productObject.price.deal = false;
+    newObject.price.deal = false;
   }
 
   if (data.price.valuation && ((data.price.valuation).toUpperCase() === "LIFO" ||
   (data.price.valuation).toUpperCase() === "FIFO" || (data.price.valuation).toUpperCase() === "AVCO")) {
-    productObject.price.valuation = (data.price.valuation).toUpperCase();
+    newObject.price.valuation = (data.price.valuation).toUpperCase();
   }
   if (data.price.unit_price && typeof data.price.unit_price === "number") {
-    productObject.price.unit_price = data.price.unit_price;
+    newObject.price.unit_price = data.price.unit_price;
   }
   if (data.price.cost_price && typeof data.price.cost_price === "number") {
-    productObject.price.cost_price = data.price.cost_price;
+    newObject.price.cost_price = data.price.cost_price;
   }
   if (data.price.slash_price && typeof data.price.slash_price === "number") {
-    productObject.price.slash_price = data.price.slash_price;
+    newObject.price.slash_price = data.price.slash_price;
   }
   if (data.price.discount && typeof data.price.discount === "number") {
-    productObject.price.discount = data.price.discount;
+    newObject.price.discount = data.price.discount;
   }
   if (data.price.discount_type && ((data.price.discount_type).toLowerCase() === "fixed" ||
   (data.price.discount_type).toLowerCase() === "percent")) {
-    productObject.price.discount_type = (data.price.discount_type).toLowerCase();
+    newObject.price.discount_type = (data.price.discount_type).toLowerCase();
   }
   if (data.price.tax && typeof data.price.tax === "number") {
-    productObject.price.tax = data.price.tax;
+    newObject.price.tax = data.price.tax;
   }
   if (data.price.tax_type && ((data.price.tax_type).toLowerCase() === "fixed" ||
   (data.price.tax_type).toLowerCase() === "percent")) {
-    productObject.price.tax_type = (data.price.tax_type).toLowerCase();
+    newObject.price.tax_type = (data.price.tax_type).toLowerCase();
   }
 
-  productObject.shipping_details = {};
-  if (data.shipping_details.cost) productObject.shipping_details.cost = data.shipping_details.cost;
+  newObject.shipping_details = {};
+  if (data.shipping_details.cost) newObject.shipping_details.cost = data.shipping_details.cost;
   if (data.shipping_details.weight) {
-    productObject.shipping_details.weight = data.shipping_details.weight;
+    newObject.shipping_details.weight = data.shipping_details.weight;
   }
   if (data.shipping_details.length) {
-    productObject.shipping_details.length = data.shipping_details.length;
+    newObject.shipping_details.length = data.shipping_details.length;
   }
   if (data.shipping_details.width) {
-    productObject.shipping_details.width = data.shipping_details.width;
+    newObject.shipping_details.width = data.shipping_details.width;
   }
   if (data.shipping_details.height) {
-    productObject.shipping_details.height = data.shipping_details.height;
+    newObject.shipping_details.height = data.shipping_details.height;
   }
 
-  productObject.manufacture_details = {};
+  newObject.manufacture_details = {};
   if (data.manufacture_details.make) {
-    productObject.manufacture_details.make = data.manufacture_details.make;
+    newObject.manufacture_details.make = data.manufacture_details.make;
   }
   if (data.manufacture_details.model_number) {
-    productObject.manufacture_details.model_number = data.manufacture_details.model_number;
+    newObject.manufacture_details.model_number = data.manufacture_details.model_number;
   }
   if (data.manufacture_details.release_date) {
-    productObject.manufacture_details.release_date = data.manufacture_details.release_date;
+    newObject.manufacture_details.release_date = data.manufacture_details.release_date;
   }
 
-  productObject.download = {};
+
   if (data.download.downloadable && typeof data.download.downloadable === "boolean") {
-    productObject.download.downloadable = data.download.downloadable;
-    if (data.download.name) productObject.download.name = data.download.name;
+    newObject.download = {};
+    newObject.download.downloadable = data.download.downloadable;
+    if (data.download.name) newObject.download.name = data.download.name;
   } else if (data.download.downloadable && (data.download.downloadable).toLowerCase() === "true") {
-    productObject.download.downloadable = true;
-    if (data.download.name) productObject.download.name = data.download.name;
+    newObject.download = {};
+    newObject.download.downloadable = true;
+    if (data.download.name) newObject.download.name = data.download.name;
   } else if (data.download.downloadable && (data.download.downloadable).toLowerCase() === "false") {
-    productObject.download.downloadable = false;
-    if (data.download.name) productObject.download.name = data.download.name;
+    newObject.download = {};
+    newObject.download.downloadable = false;
+    if (data.download.name) newObject.download.name = data.download.name;
   }
 
   if (data.extra_fields && typeof data.extra_fields === "object" && data.extra_fields[0].name &&
@@ -461,14 +463,14 @@ export function update(req, res) {
         fieldArray.push({ name: fieldName, value: fieldValue });
       }
     });
-    productObject.extra_fields = {};
-    productObject.extra_fields = fieldArray;
+    newObject.extra_fields = {};
+    newObject.extra_fields = fieldArray;
   }
 
-  productObject.updated = Date.now();
+  newObject.updated = Date.now();
 
   // Find product and update it with the request body
-  return Product.findByIdAndUpdate(productId, productObject, { new: true })
+  return Product.findByIdAndUpdate(productId, newObject, { new: true })
     .then((result) => {
       if (!result) {
         return notFound(res, `Product not found with id ${productId}`);
@@ -485,8 +487,8 @@ export function update(req, res) {
 // Delete a product with the specified productId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.productId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   return Product.findByIdAndRemove(recordId)
     .then((record) => {
       if (!record) return notFound(res, `Record not found with id ${recordId}`);

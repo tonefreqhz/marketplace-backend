@@ -13,7 +13,7 @@ const BlogSchema = new Schema({
   content: { type: String, required: [true, "Why no content?"] },
   tag: { type: Array, required: [true, "Why no Tag?"] },
   image: { type: [] },
-  view_count: { type: Number, default: 1 },
+  viewCount: { type: Number, default: 1 },
   standing: {
     type: String,
     enum: ["published", "unpublished", "trashed"],
@@ -25,4 +25,5 @@ const BlogSchema = new Schema({
 });
 
 const Blog = mongoose.model("Blog", BlogSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Blog;

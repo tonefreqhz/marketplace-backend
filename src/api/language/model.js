@@ -25,4 +25,5 @@ const LanguageSchema = new Schema({
 });
 
 const Language = mongoose.model("Language", LanguageSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Language;

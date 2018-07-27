@@ -41,4 +41,5 @@ const MediaSchema = new Schema({
 });
 
 const Media = mongoose.model("Media", MediaSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Media;

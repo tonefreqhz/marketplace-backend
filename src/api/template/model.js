@@ -26,4 +26,5 @@ const TemplateSchema = new Schema({
 });
 
 const Template = mongoose.model("Template", TemplateSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Template;

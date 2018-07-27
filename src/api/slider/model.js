@@ -6,7 +6,7 @@ import mongoose, { Schema } from "mongoose";
 
 const SliderSchema = new Schema({
   name: { type: String, required: [true, "Why no slider name?"] },
-  vendor_id: { type: String, required: [true, "Why no vendor?"] },
+  vendorId: { type: String, required: [true, "Why no vendor?"] },
   kind: {
     type: String,
     enum: ["image", "text"],
@@ -17,10 +17,14 @@ const SliderSchema = new Schema({
     type: [],
   },
   page: {
-    type: Array,
-    default: { product: false, stock: false, vendor: false, brand: false, category: false, blog: false },
+    product: { type: Boolean, default: false },
+    stock: { type: Boolean, default: false },
+    vendor: { type: Boolean, default: false },
+    brand: { type: Boolean, default: false },
+    category: { type: Boolean, default: false },
+    blog: { type: Boolean, default: false },
   },
-  place: "",
+  place: { type: String },
   title: { type: String, required: [true, "Why no title?"] },
   style: { type: String },
   standing: { type: String },
@@ -30,4 +34,5 @@ const SliderSchema = new Schema({
 });
 
 const Slider = mongoose.model("Slider", SliderSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Slider;

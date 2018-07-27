@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as order from "./controller";
-import { isValidAdmin, isValidVendor } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -40,7 +40,7 @@ const router = express.Router();
  * @apiError 404 Order not found.
  * @apiError 401 master access only.
  */
-router.post("/orders", isValidAdmin, order.create);
+router.post("/orders", isValidVendor, order.create);
 
 /**
  * @api {get} /orders Retrieve orders
@@ -49,7 +49,7 @@ router.post("/orders", isValidAdmin, order.create);
  * @apiSuccess {Object[]} rows List of Orders.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/orders", isValidAdmin, order.findAll);
+router.get("/orders", isValidVendor, order.findAll);
 
 
 /**
@@ -107,6 +107,6 @@ router.put("/orders/:orderId", isValidVendor, order.update);
  * @apiError 404 Order not found.
  * @apiError 401 master access only.
  */
-router.delete("/orders/:orderId", isValidAdmin, order.delete);
+router.delete("/orders/:orderId", isValidVendor, order.delete);
 
 export default router;

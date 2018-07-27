@@ -2,41 +2,48 @@
 * @author 4Dcoder
 */
 
-import Arbitration from "./model";
+import Arbitration, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Arbitration
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.order_id) {
-    res.status(400).send({
-      message: "Arbitration sales order cannot be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
   }
 
-  // Create a Arbitration
-  const arbitration = new Arbitration({
-    order_id: req.body.order_id,
-    vendor_id: req.body.vendor_id,
-    customer_id: req.body.customer_id,
-    amount: req.body.amount,
-    customer_complaint: req.body.customer_complaint,
-    vendor_complaint: req.body.vendor_complaint,
-    arbitration_status: req.body.arbitration_status,
-    arbiter: req.body.arbiter,
-    verdict: req.body.verdict,
-  });
+  // Validate request
+  if (!data.order) return fail(res, 422, "order cannot be empty and must be alphanumeric.");
+  if (!data.vendor) return fail(res, 422, "vendor cannot be empty and must be alphanumeric.");
+  if (!data.customer) return fail(res, 422, "customer cannot be empty and must be alphanumeric");
 
-  // Save Arbitration in the database
-  arbitration.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Arbitration.",
-      });
-    });
-};
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.order) newObject.order = data.order;
+  if (data.customer) newObject.customer = data.customer;
+  if (data.amount) newObject.amount = data.amount;
+  if (data.customerComplaint) newObject.customerComplaint = data.customerComplaint;
+  if (data.vendorComplaint) newObject.vendorComplaint = data.vendorComplaint;
+  if (data.arbitrationStatus) newObject.arbitrationStatus = data.arbitrationStatus;
+  if (data.arbiter) newObject.arbiter = data.arbiter;
+  if (data.verdict) newObject.verdict = data.verdict;
+
+  // Create a record
+  const record = new Arbitration(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -48,65 +55,68 @@ export function findAll(req, res) {
 // Retrieve a single record with a given recordId
 export function findOne(req, res) {
   const recordId = req.params.arbitrationId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
-  return Arbitration.findById(req.params.recordId)
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return Arbitration.findById(recordId)
     .then((result) => {
-      if (!result) return notFound(res, 404, "Error record not found.");
+      if (!result) return notFound(res, "Error record not found.");
       return success(res, 200, result, "retrieving record was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        notFound(res, 404, `Error retrieving record.\r\n${err.message}`);
+        notFound(res, `Error retrieving record.\r\n${err.message}`);
       }
       return fail(res, 500, `Error retrieving record.\r\n${err.message}`);
     });
 }
 
-// Update a arbitration identified by the arbitrationId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.order_id) {
-    res.status(400).send({
-      message: "Arbitration order can not be empty",
-    });
+// Update a record given by id
+export function update(req, res) {
+  const recordId = req.params.arbitrationId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
   }
 
+  // Validate request
+  if (!data.order) return fail(res, 422, "order cannot be empty and must be alphanumeric.");
+  if (!data.vendor) return fail(res, 422, "vendor cannot be empty and must be alphanumeric.");
+  if (!data.customer) return fail(res, 422, "customer cannot be empty and must be alphanumeric");
+
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.order) newObject.order = data.order;
+  if (data.customer) newObject.customer = data.customer;
+  if (data.amount) newObject.amount = data.amount;
+  if (data.customerComplaint) newObject.customerComplaint = data.customerComplaint;
+  if (data.vendorComplaint) newObject.vendorComplaint = data.vendorComplaint;
+  if (data.arbitrationStatus) newObject.arbitrationStatus = data.arbitrationStatus;
+  if (data.arbiter) newObject.arbiter = data.arbiter;
+  if (data.verdict) newObject.verdict = data.verdict;
+
+  // Create a record
+  const record = new Arbitration(newObject);
+
   // Find arbitration and update it with the request body
-  Arbitration.findByIdAndUpdate(req.params.arbitrationId, {
-    order_id: req.body.order_id,
-    vendor_id: req.body.vendor_id,
-    customer_id: req.body.customer_id,
-    amount: req.body.amount,
-    customer_complaint: req.body.customer_complaint,
-    vendor_complaint: req.body.vendor_complaint,
-    arbitration_status: req.body.arbitration_status,
-    arbiter: req.body.arbiter,
-    verdict: req.body.verdict,
-  }, { new: true })
-    .then((arbitration) => {
-      if (!arbitration) {
-        res.status(404).send({
-          message: `Arbitration not found with id ${req.params.arbitrationId}`,
-        });
-      }
-      res.send(arbitration);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Arbitration not found with id ${req.params.arbitrationId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating arbitration with id ${req.params.arbitrationId}`,
-      });
-    });
-};
+  return Arbitration.findByIdAndUpdate(recordId, { record }, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
 
 // Delete a arbitration with the specified arbitrationId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.arbitrationId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   return Arbitration.findByIdAndRemove(recordId)
     .then((record) => {
       if (!record) return notFound(res, `Record not found with id ${recordId}`);
@@ -114,8 +124,8 @@ exports.delete = (req, res) => {
     })
     .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
+        return notFound(res, `Error: record not found with id ${recordId}.\r\n${err.message}`);
       }
-      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
+      return fail(res, 500, `Error: could not delete record with id ${recordId}.\r\n${err.message}`);
     });
 };

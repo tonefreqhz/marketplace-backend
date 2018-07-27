@@ -31,6 +31,11 @@ const AdminSchema = new mongoose.Schema({
     lowercase: true,
     unique: true,
   },
+  notifications: [{
+    date: { type: Date, default: Date.now },
+    notice: { type: String, max: 2000 },
+    standing: { type: String, enum: ["unread", "read", "trashed"], default: "unread" },
+  }],
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],
@@ -40,4 +45,5 @@ const AdminSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Admin = mongoose.model("Admin", AdminSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Admin;

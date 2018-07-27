@@ -10,19 +10,19 @@ const MessageSchema = new Schema({
     enum: ["arbitration", "chat", "contact", "ticket"],
     required: [true, "Why no communication type?"],
   },
-  message_session: { type: String },
-  message_between: {
+  messageSession: { type: String },
+  messageBetween: {
     type: String,
     enum: ["visitor_vendor", "customer_vendor", "customer_admin", "vendor_admin"],
     required: [true, "Why no communication party?"],
   },
-  visitor_name: { type: String },
-  visitor_email: { type: String },
+  visitorName: { type: String },
+  visitorEmail: { type: String },
   subject: { type: String },
   message: { type: String },
   customer: { type: String },
   vendor: { type: String },
-  sent_by: {
+  sentBy: {
     type: String,
     enum: ["visitor", "customer", "vendor", "admin"],
     required: [true, "Why no sender?"],
@@ -38,4 +38,5 @@ const MessageSchema = new Schema({
 });
 
 const Message = mongoose.model("Message", MessageSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Message;

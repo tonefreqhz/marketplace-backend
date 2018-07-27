@@ -16,7 +16,7 @@ const ReviewSchema = new Schema({
     enum: ["product", "category", "brand", "vendor", "stock", "order"],
     required: [true, "Why no subject?"],
   },
-  subject_id: { type: String, required: [true, "Why no subject of review?"] },
+  subjectId: { type: String, required: [true, "Why no subject of review?"] },
   comment: { type: String },
   rating: {
     type: String,
@@ -34,4 +34,5 @@ const ReviewSchema = new Schema({
 });
 
 const Review = mongoose.model("Review", ReviewSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Review;

@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as subscriber from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.post("/subscribers", subscriber.create);
  * @apiSuccess {Object[]} rows List of Subscribers.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/subscribers", isValidAdmin, subscriber.findAll);
+router.get("/subscribers", isValidVendor, subscriber.findAll);
 
 /**
  * @api {get} /subscribers/:id Retrieve subscriber
@@ -40,7 +40,7 @@ router.get("/subscribers", isValidAdmin, subscriber.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Product not found.
  */
-router.get("/subscribers/:subscriberId", isValidAdmin, subscriber.findOne);
+router.get("/subscribers/:subscriberId", isValidVendor, subscriber.findOne);
 
 /**
  * @api {put} /subscribers/:id Update subscriber
@@ -68,6 +68,6 @@ router.put("/subscribers/:subscriberId", subscriber.update);
  * @apiError 404 Subscriber not found.
  * @apiError 401 master access only.
  */
-router.delete("/subscribers/:subscriberId", isValidAdmin, subscriber.delete);
+router.delete("/subscribers/:subscriberId", isValidVendor, subscriber.delete);
 
 export default router;

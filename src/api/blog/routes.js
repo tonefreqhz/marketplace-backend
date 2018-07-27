@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as blog from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ const router = express.Router();
  * @apiError 404 Blog not found.
  * @apiError 401 master access only.
  */
-router.post("/blogs", isValidAdmin, blog.create);
+router.post("/blogs", isValidVendor, blog.create);
 
 /**
 * @api {get} /blogs Retrieve blogs
@@ -65,7 +65,7 @@ router.get("/blogs/:blogId", blog.findOne);
  * @apiError 404 Blog not found.
  * @apiError 401 master access only.
  */
-router.put("/blogs/:blogId", isValidAdmin, blog.update);
+router.put("/blogs/:blogId", isValidVendor, blog.update);
 
 /**
  * @api {delete} /blogs/:id Delete blog
@@ -77,6 +77,6 @@ router.put("/blogs/:blogId", isValidAdmin, blog.update);
  * @apiError 404 Blog not found.
  * @apiError 401 master access only.
  */
-router.delete("/blogs/:blogId", isValidAdmin, blog.delete);
+router.delete("/blogs/:blogId", isValidVendor, blog.delete);
 
 export default router;

@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as coupon from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ const router = express.Router();
  * @apiError 404 Coupon not found.
  * @apiError 401 master access only.
  */
-router.post("/coupons", isValidAdmin, coupon.create);
+router.post("/coupons", isValidVendor, coupon.create);
 
 /**
 * @api {get} /coupons Retrieve coupons
@@ -32,7 +32,7 @@ router.post("/coupons", isValidAdmin, coupon.create);
 * @apiSuccess {Object[]} rows List of Coupons.
 * @apiError {Object} 400 Some parameters may contain invalid values.
 */
-router.get("/coupons", isValidAdmin, coupon.findAll);
+router.get("/coupons", isValidVendor, coupon.findAll);
 
 
 /**
@@ -43,7 +43,7 @@ router.get("/coupons", isValidAdmin, coupon.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Coupon not found.
  */
-router.get("/coupons/:couponId", isValidAdmin, coupon.findOne);
+router.get("/coupons/:couponId", isValidVendor, coupon.findOne);
 
 /**
  * @api {put} /coupons/:id Update coupon
@@ -61,7 +61,7 @@ router.get("/coupons/:couponId", isValidAdmin, coupon.findOne);
  * @apiError 404 Coupon not found.
  * @apiError 401 master access only.
  */
-router.put("/coupons/:couponId", isValidAdmin, coupon.update);
+router.put("/coupons/:couponId", isValidVendor, coupon.update);
 
 /**
  * @api {delete} /coupons/:id Delete coupon
@@ -73,6 +73,6 @@ router.put("/coupons/:couponId", isValidAdmin, coupon.update);
  * @apiError 404 Coupon not found.
  * @apiError 401 master access only.
  */
-router.delete("/coupons/:couponId", isValidAdmin, coupon.delete);
+router.delete("/coupons/:couponId", isValidVendor, coupon.delete);
 
 export default router;

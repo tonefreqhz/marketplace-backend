@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as ticket from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ const router = express.Router();
  * @apiError 404 Ticket not found.
  * @apiError 401 master access only.
  */
-router.post("/tickets", isValidAdmin, ticket.create);
+router.post("/tickets", isValidVendor, ticket.create);
 
 /**
  * @api {get} /tickets Retrieve tickets
@@ -34,7 +34,7 @@ router.post("/tickets", isValidAdmin, ticket.create);
  * @apiSuccess {Object[]} rows List of Tickets.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/tickets", isValidAdmin, ticket.findAll);
+router.get("/tickets", isValidVendor, ticket.findAll);
 
 
 /**
@@ -45,7 +45,7 @@ router.get("/tickets", isValidAdmin, ticket.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Ticket not found.
  */
-router.get("/tickets/:ticketId", isValidAdmin, ticket.findOne);
+router.get("/tickets/:ticketId", isValidVendor, ticket.findOne);
 
 /**
  * @api {put} /tickets/:id Update ticket
@@ -65,7 +65,7 @@ router.get("/tickets/:ticketId", isValidAdmin, ticket.findOne);
  * @apiError 404 Ticket not found.
  * @apiError 401 master access only.
  */
-router.put("/tickets/:ticketId", isValidAdmin, ticket.update);
+router.put("/tickets/:ticketId", isValidVendor, ticket.update);
 
 /**
  * @api {delete} /tickets/:id Delete ticket
@@ -77,6 +77,6 @@ router.put("/tickets/:ticketId", isValidAdmin, ticket.update);
  * @apiError 404 Ticket not found.
  * @apiError 401 master access only.
  */
-router.delete("/tickets/:ticketId", isValidAdmin, ticket.delete);
+router.delete("/tickets/:ticketId", isValidVendor, ticket.delete);
 
 export default router;

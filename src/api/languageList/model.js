@@ -6,7 +6,7 @@ import mongoose, { Schema } from "mongoose";
 
 const LanguageListSchema = new Schema({
   name: { type: String, required: [true, "Why no name?"] },
-  db_field: { type: String, required: [true, "Why no langauge table field name?"] },
+  dbField: { type: String, required: [true, "Why no langauge table field name?"] },
   icon: { type: String, required: [false, "Why no image?"] },
   standing: {
     type: String,
@@ -20,4 +20,5 @@ const LanguageListSchema = new Schema({
 });
 
 const LanguageList = mongoose.model("LanguageList", LanguageListSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default LanguageList;

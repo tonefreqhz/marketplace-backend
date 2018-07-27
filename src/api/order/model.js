@@ -9,7 +9,7 @@ import Customer from "../customer/model";
 import Coupon from "../coupon/model";
 
 const OrderSchema = new Schema({
-  order_num: { type: String, required: [true, "Why no Order Number?"] },
+  orderNum: { type: String, required: [true, "Why no Order Number?"] },
   kind: { type: String, enum: ["digital", "physical"], required: [true, "Why no Product type?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   customer: { type: Schema.Types.ObjectId, ref: "Customer" },
@@ -19,16 +19,16 @@ const OrderSchema = new Schema({
     quantity: { type: Number, default: 1, required: true },
     sku: { type: String },
     name: { type: String, required: true },
-    unit_cost: { type: Number, required: true },
+    unitCost: { type: Number, required: true },
     currency: { type: Schema.Types.ObjectId, ref: "Currency" },
     vat: { type: Number, required: [true, "Why no Value added tax?"] },
   }],
-  payment_details: {
+  paymentDetails: {
     amount: { type: Number, required: [true, "Why no amount payable?"] },
     method: { type: String, enum: ["paypal", "metamask"], required: [true, "Why no Payment method?"] },
     transaction_id: { type: String, required: [true, "Why no transaction id?"] },
   },
-  shipment_details: {
+  shipmentDetails: {
     recipient: { type: String, required: [true, "Why no Shipment details?"] },
     country: { type: String, max: 50 },
     state: { type: String, max: 50 },
@@ -40,14 +40,14 @@ const OrderSchema = new Schema({
     email: { type: String },
     delivery_note: { type: String, default: "Leave it at house", max: 200 },
   },
-  tracking_details: {
+  trackingDetails: {
     company: { type: String, required: [true, "Why no Tracking Number?"] },
     code: { type: String, required: [true, "Why no Tracking Number?"] },
     standing: { type: String, enum: ["pending", "dispatched", "arrived", "delivered"] },
     estimated_delivery: { type: Date },
   },
 
-  order_status: {
+  orderStatus: {
     type: String,
     num: ["paid", "delivered", "closed"],
     required: [true, "Why no Order status?"],
@@ -65,4 +65,5 @@ const OrderSchema = new Schema({
 });
 
 const Order = mongoose.model("Order", OrderSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Order;

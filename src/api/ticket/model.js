@@ -12,7 +12,7 @@ const TicketSchema = new Schema({
   complain: { type: String },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   customer: { type: Schema.Types.ObjectId, ref: "Customer" },
-  admin_id: { type: String },
+  adminId: { type: String },
   standing: {
     type: String,
     enum: ["pending", "resolved", "arbitration"],
@@ -24,4 +24,5 @@ const TicketSchema = new Schema({
 });
 
 const Ticket = mongoose.model("Ticket", TicketSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Ticket;
