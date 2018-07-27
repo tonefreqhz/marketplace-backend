@@ -1,5 +1,6 @@
 /*
 * @author 4Dcoder
+* @co author Odewale Ifeoluwa
 */
 
 import mongoose from "mongoose";
@@ -40,8 +41,40 @@ const AdminSchema = new mongoose.Schema({
     default: "active",
   },
   updated: { type: Date, default: Date.now },
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
+});
 
+AdminSchema.methods = {
+  view(full) {
+    const view = {
+      // simple view
+      id: this.id,
+      nonce: this.nonce,
+      publicAddress: this.publicAddress,
+      username: this.username,
+      role: this.role,
+      last_access: this.last_access,
+      fullname: this.fullname,
+      phone: this.phone,
+      address: this.address,
+      email: this.email,
+      notifications: this.notifications,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
 const Admin = mongoose.model("Admin", AdminSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;
 export default Admin;

@@ -1,5 +1,6 @@
 /*
 * @author 4Dcoder
+* @co author Odewale Ifeoluwa
 */
 
 import mongoose, { Schema } from "mongoose";
@@ -25,7 +26,37 @@ const ArbitrationSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+ArbitrationSchema.methods = {
+  view(full) {
+    const view = {
+      // simple view
+      id: this.id,
+      order: this.order,
+      vendor: this.vendor,
+      customer: this.customer,
+      amount: this.amount,
+      customerComplaint: this.customerComplaint,
+      vendorComplaint: this.vendorComplaint,
+      arbitrationStatus: this.arbitrationStatus,
+      arbiter: this.arbiter,
+      verdict: this.verdict,
+      updatedAt: this.updatedAt,
+      createdAt: this.createdAt,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
 
 const Arbitration = mongoose.model("Arbitration", ArbitrationSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

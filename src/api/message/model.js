@@ -39,7 +39,37 @@ const MessageSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    toJSON: (obj, ret) => { delete ret._id; },
+  },
 });
+
+MessageSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      kind: this.kind,
+      messageSession: this.messageSession,
+      messageBetween: this.messageBetween,
+      visitorName: this.visitorName,
+      visitorEmail: this.visitorEmail,
+      subject: this.subject,
+      message: this.message,
+      customer: this.customer,
+      vendor: this.vendor,
+      sentBy: this.sentBy,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Message = mongoose.model("Message", MessageSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

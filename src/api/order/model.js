@@ -62,7 +62,37 @@ const OrderSchema = new Schema({
 
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+OrderSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      orderNum: this.orderNum,
+      kind: this.kind,
+      vendor: this.vendor,
+      customer: this.customer,
+      coupon: this.coupon,
+      products: this.products,
+      paymentDetails: this.paymentDetails,
+      shipmentDetails: this.shipmentDetails,
+      trackingDetails: this.trackingDetails,
+      orderStatus: this.orderStatus,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Order = mongoose.model("Order", OrderSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

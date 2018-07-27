@@ -23,7 +23,33 @@ const CouponSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+CouponSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      vendor: this.vendor,
+      title: this.title,
+      code: this.code,
+      amount: this.amount,
+      specArray: this.specArray,
+      till: this.till,
+      standing: this.standing,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+    } : view;
+  },
+};
 
 const Coupon = mongoose.model("Coupon", CouponSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

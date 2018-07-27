@@ -32,7 +32,35 @@ const SliderSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+SliderSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      name: this.name,
+      vendor: this.vendor,
+      kind: this.kind,
+      elements: this.elements,
+      page: this.page,
+      place: this.place,
+      title: this.title,
+      style: this.style,
+      updatedAt: this.updatedAt,
+      createdAt: this.createdAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Slider = mongoose.model("Slider", SliderSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

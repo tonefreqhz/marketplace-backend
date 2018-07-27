@@ -178,7 +178,6 @@ export function create(req, res) {
     newObject.extraFields = {};
     newObject.extraFields = fieldArray;
   }
-
   // Create a Product
   const product = new Product(newObject);
 
@@ -199,7 +198,6 @@ export async function findAll(req, res) {
   const { vendorDomain, kind } = req.params;
   // console.log("\r\n\r\nvendorDomain, kind ", vendorDomain, kind);
   if (!vendorDomain) return fail(res, 422, "Vendor shop has not been specified.");
-  if (!kind) return fail(res, 422, "Product kind has not been specified.");
 
   let vendorId;
 
@@ -302,7 +300,7 @@ export function findOne(req, res) {
       if (!result) {
         return fail(res, 404, `Error: product not found with id ${productId}`);
       }
-      return success(res, 200, result, "product(s) retrieved successfully!");
+      return success(res, 200, result.veiw(true), "product(s) retrieved successfully!");
     })
     .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
@@ -476,10 +474,11 @@ export function update(req, res) {
   return Product.findByIdAndUpdate(productId, newObject, { new: true })
     .then((result) => {
       if (!result) {
-        return notFound(res, `Product not found with id ${productId}`);
+        return notFound(res, `Product not found with id ${productId} first`);
       }
-      return success(res, 200, result, "Product deleted successfully!");
+      return success(res, 200, result.view(true), "Product deleted successfully!");
     }).catch((err) => {
+      console.log(err);
       if (err.kind === "ObjectId" || err.name === "NotFound") {
         return notFound(res, `Product not found with id ${productId}\r\n${err.message}`);
       }

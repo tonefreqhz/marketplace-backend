@@ -23,7 +23,35 @@ const LanguageSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+LanguageSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      word_id: this.word_id,
+      word: this.word,
+      english: this.english,
+      french: this.french,
+      spanish: this.spanish,
+      bangla: this.bangla,
+      arabic: this.arabic,
+      chinese: this.chinese,
+      updatedAt: this.updatedAt,
+      createdAt: this.createdAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Language = mongoose.model("Language", LanguageSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

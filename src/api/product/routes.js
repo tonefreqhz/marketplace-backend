@@ -70,7 +70,7 @@ router.post("/products", isValidVendor, product.create);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
 
-router.get("/vendor/:vendorDomain/products", product.findAll);
+// router.get("/vendor/:vendorDomain/products", product.findAll);
 
 /**
  * @api {get} vendor/:vendorDomain/products/kind/:kind Retrieve kinds of products
@@ -82,7 +82,7 @@ router.get("/vendor/:vendorDomain/products", product.findAll);
  * @apiSuccess {Object[]} rows List of products.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/vendor/:vendorDomain/products/:kind", product.findAll);
+router.get("/vendor/:vendorDomain/products/?:kind", product.findAll);
 
 /**
  * @api {get} /products/:id Retrieve any product.
