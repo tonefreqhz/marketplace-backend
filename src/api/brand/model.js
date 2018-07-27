@@ -22,7 +22,34 @@ const BrandSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+BrandSchema.methods = {
+  view(full) {
+    const view = {
+      // simple view
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      icon: this.icon,
+      banner: this.banner,
+      vendor: this.vendor,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      view_count: this.view_count,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
 
 const Brand = mongoose.model("Brand", BrandSchema);
 export default Brand;

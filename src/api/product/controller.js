@@ -4,34 +4,33 @@ import { success, fail, notFound } from "../../services/response/index";
 
 // Create and Save a new Product
 exports.create = (req, res) => {
-  const { data } = req.body;
+  const data = req.body;
   // Validate request
   if (!data.name) {
     return fail(res, 400, "Product name can not be empty");
   }
-
   // Create a Product
   const product = new Product({
     code: data.code,
     sku: data.sku,
     upc: data.upc,
     name: data.name,
-    vendor: data.name,
+    vendor: data.vendor_id,
     category: {
       main: data.category.main,
       sub: data.category.sub,
     },
-    brand: data.category.brand,
+    brand: data.brand,
     description: {
-      color: data.description.color,
+      color: data.description.color || [],
       unit: data.description.unit,
-      long: data.description.long,
-      short: data.description.short,
-      tag: data.description.tag,
+      long: data.description.long || "",
+      short: data.description.short || "",
+      tag: data.description.tag || [],
     },
     variety: {
-      options: data.description.options,
-      parent: data.description.parent,
+      options: data.variety.options || false,
+      parent: data.variety.parent || "",
     },
     price: {
       deal: data.price.deal,
@@ -58,13 +57,10 @@ exports.create = (req, res) => {
     },
     download: {
       downloadable: data.download.downloadable,
-      name: data.download.name,
+      download_name: data.download.download_name,
     },
-    extra_fields: [{
-      name: data.extra_fields.name,
-      value: data.extra_fields.value,
-    }],
-    standing: data.standing,
+    extra_fields: data.extra_fields,
+    vendor: res.locals.id,
   });
 
   // Save Product in the database
@@ -80,7 +76,7 @@ exports.create = (req, res) => {
 
 // Retrieve and return all products from the database.
 exports.findAll = (req, res) => Product
-  .find()
+  .find({})
   .then((result) => {
     if (!result) {
       return notFound(res, "Error: product not found");
@@ -104,7 +100,7 @@ exports.findOne = (req, res) => {
       if (!result) {
         return fail(res, 404, `Error: product not found with id ${productId}`);
       }
-      return success(res, 200, result, "product(s) retrieved successfully!");
+      return success(res, 200, result.veiw(true), "product(s) retrieved successfully!");
     })
     .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
@@ -116,25 +112,24 @@ exports.findOne = (req, res) => {
 
 // Update a product identified by the productId in the request
 exports.update = (req, res) => {
-  const { data } = req.body;
-  const { productId } = req.params.productId;
+  const data = req.body;
+  const productId = req.params.productId;
 
   // Validate request
   if (!productId) return fail(res, 400, "Invalid Product Id as request parameter");
   if (!data.name) return fail(res, 400, "Product name can not be empty");
 
   // Create a Product
-  const product = new Product({
+  const product = {
     code: data.code,
     sku: data.sku,
     upc: data.upc,
     name: data.name,
-    vendor: data.name,
     category: {
       main: data.category.main,
       sub: data.category.sub,
     },
-    brand: data.category.brand,
+    brand: data.brand,
     description: {
       color: data.description.color,
       unit: data.description.unit,
@@ -143,8 +138,8 @@ exports.update = (req, res) => {
       tag: data.description.tag,
     },
     variety: {
-      options: data.description.options,
-      parent: data.description.parent,
+      options: data.variety.options,
+      parent: data.variety.parent,
     },
     price: {
       deal: data.price.deal,
@@ -173,24 +168,22 @@ exports.update = (req, res) => {
       downloadable: data.download.downloadable,
       name: data.download.name,
     },
-    extra_fields: [{
-      name: data.extra_fields.name,
-      value: data.extra_fields.value,
-    }],
-    standing: data.standing,
-  });
+    extra_fields: data.extra_fields,
+    standing: data.standing || "suspended",
+  };
 
 
   // Find product and update it with the request body
   return Product.findByIdAndUpdate(productId, product, { new: true })
     .then((result) => {
       if (!result) {
-        return notFound(res, `Product not found with id ${productId}`);
+        return notFound(res, `Product not found with id ${productId} first`);
       }
-      return success(res, 200, result, "Product deleted successfully!");
+      return success(res, 200, result.view(true), "Product deleted successfully!");
     }).catch((err) => {
+      console.log(err);
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        return notFound(res, `Product not found with id ${productId}`);
+        return notFound(res, `Product not found with id ${productId} second`);
       }
       return fail(res, 500, `Error updating product with id ${productId}`);
     });

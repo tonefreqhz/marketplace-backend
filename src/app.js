@@ -31,6 +31,7 @@ if (env === "development") {
 // Configuring the database
 mongoose.Promise = global.Promise;
 
+
 // Connecting to the database
 mongoose.connect(database)
   .then(() => {

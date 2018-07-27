@@ -59,7 +59,7 @@ router.post("/products", isValidVendor, product.create);
  * @apiSuccess {Object[]} rows List of products.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/products", isValidAdmin, product.findAll);
+router.get("/products", isValidVendor, product.findAll);
 
 /**
  * @api {get} /products/:id Retrieve product
@@ -124,6 +124,6 @@ router.put("/products/:productId", isValidVendor, product.update);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.delete("/products/:productId", isValidAdmin, product.delete);
+router.delete("/products/:productId", isValidVendor, product.delete);
 
 export default router;
