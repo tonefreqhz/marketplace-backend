@@ -5,7 +5,7 @@
 import express from "express";
 import * as admin from "./controller";
 import * as init from "./init";
-import { isValidAdmin } from "../auth/controller";
+import { isValidAdmin, isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -59,32 +59,32 @@ router.put("/admins/:adminId", isValidAdmin, admin.update);
 router.delete("/admins/:adminId", isValidAdmin, admin.delete);
 
 
-router.get("/init/admin", isValidAdmin, init.initAdmin);
-router.get("/init/blog", isValidAdmin, init.initBlog);
-router.get("/init/brand", isValidAdmin, init.initBrand);
-router.get("/init/category", isValidAdmin, init.initCategory);
-router.get("/init/coupon", isValidAdmin, init.initCoupon);
-router.get("/init/currency", isValidAdmin, init.initCurrency);
-router.get("/init/customer", isValidAdmin, init.initCustomer);
-router.get("/init/language-list", isValidAdmin, init.initLanguageList);
-router.get("/init/language", isValidAdmin, init.initLanguage);
-router.get("/init/mail", isValidAdmin, init.initMail);
-router.get("/init/media", isValidAdmin, init.initMedia);
-router.get("/init/message", isValidAdmin, init.initMessage);
-router.get("/init/order", isValidAdmin, init.initOrder);
-router.get("/init/product", isValidAdmin, init.initProduct);
-router.get("/init/review", isValidAdmin, init.initReview);
-router.get("/init/setting", isValidAdmin, init.initSetting);
-router.get("/init/slider", isValidAdmin, init.initSlider);
-router.get("/init/stock", isValidAdmin, init.initStock);
-router.get("/init/subscriber", isValidAdmin, init.initSubscriber);
-router.get("/init/template", isValidAdmin, init.initTemplate);
-router.get("/init/ticket", isValidAdmin, init.initTicket);
-router.get("/init/vendor", isValidAdmin, init.initVendor);
+router.get("/init/admin", isValidVendor, init.initAdmin);
+router.get("/init/blog", isValidVendor, init.initBlog);
+router.get("/init/brand", isValidVendor, init.initBrand);
+router.get("/init/category", isValidVendor, init.initCategory);
+router.get("/init/coupon", isValidVendor, init.initCoupon);
+router.get("/init/currency", isValidVendor, init.initCurrency);
+router.get("/init/customer", isValidVendor, init.initCustomer);
+router.get("/init/language-list", isValidVendor, init.initLanguageList);
+router.get("/init/language", isValidVendor, init.initLanguage);
+router.get("/init/mail", isValidVendor, init.initMail);
+router.get("/init/media", isValidVendor, init.initMedia);
+router.get("/init/message", isValidVendor, init.initMessage);
+router.get("/init/order", isValidVendor, init.initOrder);
+router.get("/init/product", isValidVendor, init.initProduct);
+router.get("/init/review", isValidVendor, init.initReview);
+router.get("/init/setting", isValidVendor, init.initSetting);
+router.get("/init/slider", isValidVendor, init.initSlider);
+router.get("/init/stock", isValidVendor, init.initStock);
+router.get("/init/subscriber", isValidVendor, init.initSubscriber);
+router.get("/init/template", isValidVendor, init.initTemplate);
+router.get("/init/ticket", isValidVendor, init.initTicket);
+router.get("/init/vendor", isValidVendor, init.initVendor);
 
 /*
 router.get("/user/:id", (req, res, next) => {
-  console.log("ID:", req.params.id);
+  console.log("\r\n ******************* Test Admin Routes **********\r\n");
   next();
 }, (req, res, next) => {
   res.send("User Info");

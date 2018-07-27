@@ -1,6 +1,6 @@
 
 import Brand from "./model";
-import { success, notFound, fail } from "./../../services/response/";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Brand
 exports.create = (req, res) => {
@@ -25,31 +25,30 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all brands from the database.
-exports.findAll = (req, res) => {
-  Brand.find()
-    .then((brands) => {
-      return success(res, 200, brands)
-    }).catch((err) => {
-      return fail(res, 500, err.message)
-    });
-};
 
-// Find a single brand with a brandId
-exports.findOne = (req, res) => {
-  Brand.findById(req.params.brandId)
-    .then((brand) => {
-      if (!brand) {
-        notFound(res, "Sorry, Product Brand does not exist")
-      }
-      return success(res, 200, brand)
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Brand.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
+
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.brandId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Brand.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, 404, "Error record not found.");
+      return success(res, 200, result, "retrieving record was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        notFound(res, "Product Brand not found");
+        notFound(res, 404, `Error retrieving record.\r\n${err.message}`);
       }
-      return fail(res, 500, "Error retreiving Product Brand");
+      return fail(res, 500, `Error retrieving record.\r\n${err.message}`);
     });
-};
+}
 
 // Update a brand identified by the brandId in the request
 exports.update = (req, res) => {
@@ -78,16 +77,18 @@ exports.update = (req, res) => {
 
 // Delete a brand with the specified brandId in the request
 exports.delete = (req, res) => {
-  Brand.findByIdAndRemove(req.params.brandId)
-    .then((brand) => {
-      if (!brand) {
-        notFound(res, "Sorry, Product Brand does not exist")
-      }
-      return success(res, 200, [], "You have successfully deleted the product brand");
-    }).catch((err) => {
+  const recordId = req.params.brandId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Brand.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        notFound(res, "Sorry, Product Brand does not exist")
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      return fail(res, 500, "Error deleting Product Brand")
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

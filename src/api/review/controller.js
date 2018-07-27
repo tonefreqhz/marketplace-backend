@@ -1,5 +1,6 @@
 
 import Review from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Review
 exports.create = (req, res) => {
@@ -41,51 +42,29 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all reviews from the database.
-exports.findAll = (req, res) => {
-  Review.find()
-    .then((reviews) => {
-      res.status(200)
-        .json({
-          success: true,
-          data: reviews,
-          message: "Record(s)",
-        });
-    }).catch((err) => {
-      res.status(500)
-        .json({
-          success: false,
-          data: [],
-          message: err.message || "Some error occurred while retrieving the Review.",
-        });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Review.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single review with a reviewId
-exports.findOne = (req, res) => {
-  Review.findById(req.params.reviewId)
-    .then((review) => {
-      if (!review) {
-        return res.status(404)
-          .json({
-            success: false,
-            data: [],
-            message: `Review not found with id ${req.params.reviewId}`,
-          });
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.reviewId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Review.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
+    }).catch((err) => {
+      if (err.kind === "ObjectId") {
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      return res.status(200)
-        .json({
-          success: true,
-          data: review,
-          message: "Record(s)",
-        });
-    }).catch(err => res.status(404)
-      .json({
-        success: false,
-        data: [],
-        message: err.message || `Review not found with id ${req.params.reviewId}`,
-      }));
-};
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
+    });
+}
 
 // Update a review identified by the reviewId in the request
 exports.update = (req, res) => {
@@ -134,36 +113,18 @@ exports.update = (req, res) => {
 
 // Delete a review with the specified reviewId in the request
 exports.delete = (req, res) => {
-  Review.findByIdAndRemove(req.params.reviewId)
-    .then((review) => {
-      if (!review) {
-        res.status(404)
-          .json({
-            success: false,
-            data: [],
-            message: `Review not found with id ${req.params.reviewId}`,
-          });
-      }
-      res.status(200)
-        .json({
-          success: true,
-          data: [],
-          message: "Review deleted successfully!",
-        });
-    }).catch((err) => {
+  const recordId = req.params.reviewId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Review.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404)
-          .json({
-            success: false,
-            data: [],
-            message: err.message || `Review not found with id ${req.params.reviewId}`,
-          });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500)
-        .json({
-          success: false,
-          data: [],
-          message: `Could not delete review with id ${req.params.reviewId}`,
-        });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

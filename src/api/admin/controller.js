@@ -60,17 +60,18 @@ export function update(req, res) {
 
 // Delete a admin with the specified adminId in the request
 exports.delete = (req, res) => {
-  Admin.findByIdAndRemove(req.params.adminId)
-    .then((admin) => {
-      if (!admin) {
-        return notFound(res, `Admin not found with id ${req.params.adminId}`);
-      }
-      return success(res, 200, [], "Admin deleted successfully!");
+  const recordId = req.params.adminId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Admin.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
     })
     .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        return notFound(res, `Admin not found with id ${req.params.adminId}`);
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      return fail(res, 500, `Could not delete admin with id ${req.params.adminId}`);
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

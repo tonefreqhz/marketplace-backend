@@ -8,15 +8,16 @@ import mongoose, { Schema } from "mongoose";
 import Category from "../category/model";
 import Vendor from "../vendor/model";
 import Brand from "../brand/model";
+import { randomNonce } from "./../../services/helpers";
 
 const ProductSchema = new Schema({
-  code: { type: String, unique: true, required: [false, "Why no Code?"], max: 50 },
+  code: { type: String, unique: true, required: [true, "Why no Code?"], default: randomNonce() },
   sku: { type: String, required: [false, "Why no Sku?"], max: 50 },
   upc: { type: String, required: [false, "Why no Upc?"], max: 50 },
   name: { type: String, required: [true, "Why no Product name?"], max: 200 },
-  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor", required: [true, "Why no vendor?"] },
   category: {
-    main: { type: Schema.Types.ObjectId, ref: "Category" },
+    main: { type: Schema.Types.ObjectId, ref: "Category", required: [true, "Why no category?"] },
     sub: { type: Schema.Types.ObjectId, ref: "Category" },
   },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
@@ -75,17 +76,20 @@ const ProductSchema = new Schema({
     value: { type: String, max: 100 },
   }],
   analytics: {
-    featured: { type: Boolean, default: false },
+    feature: { type: Boolean, default: false },
     view_date: { type: Date, default: Date.now },
     view_count: { type: Number, default: 1 },
   },
   standing: {
     type: String,
-    enum: ["active", "suspended", "trashed"],
-    default: "active",
-    required: [false, "Why no status?"],
+    enum: ["active", "pending", "remove", "restore", "trash"],
+    default: "pending",
   },
   updated: { type: Date, default: Date.now },
+  action: {
+    type: Boolean,
+    default: true,
+  },
 }, {
   timestamps: true,
   toJSON: {

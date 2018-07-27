@@ -1,5 +1,6 @@
 
 import Order from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Order
 exports.create = (req, res) => {
@@ -47,39 +48,29 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all orders from the database.
-exports.findAll = (req, res) => {
-  Order.find()
-    .then((orders) => {
-      res.send(orders);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving orders.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Order.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single order with a orderId
-exports.findOne = (req, res) => {
-  Order.findById(req.params.orderId)
-    .then((order) => {
-      if (!order) {
-        res.status(404).send({
-          message: `Order not found with id ${req.params.orderId}`,
-        });
-      }
-      res.send(order);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.orderId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Order.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Order not found with id ${req.params.orderId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving order with id ${req.params.orderId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a order identified by the orderId in the request
 exports.update = (req, res) => {
@@ -136,22 +127,18 @@ exports.update = (req, res) => {
 
 // Delete a order with the specified orderId in the request
 exports.delete = (req, res) => {
-  Order.findByIdAndRemove(req.params.orderId)
-    .then((order) => {
-      if (!order) {
-        res.status(404).send({
-          message: `Order not found with id ${req.params.orderId}`,
-        });
-      }
-      res.send({ message: "Order deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.orderId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Order.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Order not found with id ${req.params.orderId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete order with id ${req.params.orderId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

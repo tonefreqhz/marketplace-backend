@@ -93,14 +93,15 @@ const VendorSchema = new Schema({
     ipAddress: { type: String, min: 15, max: 45 },
   }],
   account: {
-    type: Array,
-    default: { complete_profile: false, email_verified: false, domain_name_set: false, business_verified: false },
+    complete_profile: { type: Boolean, default: false },
+    email_verified: { type: Boolean, default: false },
+    domain_name_set: { type: Boolean, default: false },
+    business_verified: { type: Boolean, default: false },
   },
   standing: {
     type: String,
     enum: ["active", "unverified", "suspended", "trashed"],
     default: "unverified",
-    required: [false, "Why no status?"],
   },
   updated: { type: Date, default: Date.now },
   approvedBy: { type: String },
@@ -134,8 +135,8 @@ VendorSchema.methods = {
 VendorSchema
   .virtual("url")
   .get(function () {
-    if (this.domain_name_set) return `/shop/${this.domain_name}`;
-    return "/shop/default";
+    if (this.domain_name_set) return `https://${this.domain_name}.bezop.com`;
+    return "https://default-shop.bezop.com";
   });
 
 const Vendor = mongoose.model("Vendor", VendorSchema);

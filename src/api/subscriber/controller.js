@@ -1,5 +1,6 @@
 
 import Subscriber from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Subscriber
 exports.create = (req, res) => {
@@ -28,39 +29,29 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve and return all subscribers from the database.
-exports.findAll = (req, res) => {
-  Subscriber.find()
-    .then((subscribers) => {
-      res.send(subscribers);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving subscribers.",
-      });
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Subscriber.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single subscriber with a subscriberId
-exports.findOne = (req, res) => {
-  Subscriber.findById(req.params.subscriberId)
-    .then((subscriber) => {
-      if (!subscriber) {
-        res.status(404).send({
-          message: `Subscriber not found with id ${req.params.subscriberId}`,
-        });
-      }
-      res.send(subscriber);
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.subscriberId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Subscriber.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
+      return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Subscriber not found with id ${req.params.subscriberId}`,
-        });
+        notFound(res, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving subscriber with id ${req.params.subscriberId}`,
-      });
+      return fail(res, 500, `Error retrieving record with id ${recordId}.\r\n${err.message}`);
     });
-};
+}
 
 // Update a subscriber identified by the subscriberId in the request
 exports.update = (req, res) => {
@@ -98,22 +89,18 @@ exports.update = (req, res) => {
 
 // Delete a subscriber with the specified subscriberId in the request
 exports.delete = (req, res) => {
-  Subscriber.findByIdAndRemove(req.params.subscriberId)
-    .then((subscriber) => {
-      if (!subscriber) {
-        res.status(404).send({
-          message: `Subscriber not found with id ${req.params.subscriberId}`,
-        });
-      }
-      res.send({ message: "Subscriber deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.subscriberId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Subscriber.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Subscriber not found with id ${req.params.subscriberId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete subscriber with id ${req.params.subscriberId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

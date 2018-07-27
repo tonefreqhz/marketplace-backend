@@ -1,136 +1,194 @@
 import Media from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Media
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.subject) {
-    res.status(400).send({
-      message: "Media subject can not be empty",
-    });
+// Create and Save a new Product
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
   }
+
+  // Validate request
+  if (!data.media_type) return fail(res, 422, "media_type can not be empty and must be alphanumeric.");
+
+  if (!data.vendor) return fail(res, 422, "vendor can not be empty and must be alphanumeric.");
+
+  if (!data.purpose) return fail(res, 422, 'purpose can not be empty and must be either "slide", "picture", "banner", "background"');
+
+  const mediaObject = {};
+  mediaObject.vendor = vendorId;
+  if (data.vendor) mediaObject.vendor = data.vendor;
+  if (data.purpose) mediaObject.purpose = data.purpose;
+
+  mediaObject.page = {};
+  if ((data.page.product && typeof data.page.product === "boolean") ||
+  (data.page.product).toLowerCase() === "true" ||
+  (data.page.product).toLowerCase() === "true") {
+    mediaObject.page.product = data.page.product;
+  }
+  if ((data.page.stock && typeof data.page.stock === "boolean") ||
+  (data.page.stock).toLowerCase() === "true" ||
+  (data.page.stock).toLowerCase() === "true") {
+    mediaObject.page.stock = data.page.stock;
+  }
+  if ((data.page.vendor && typeof data.page.vendor === "boolean") ||
+  (data.page.vendor).toLowerCase() === "true" ||
+  (data.page.vendor).toLowerCase() === "true") {
+    mediaObject.page.vendor = data.page.vendor;
+  }
+  if ((data.page.brand && typeof data.page.brand === "boolean") ||
+  (data.page.brand).toLowerCase() === "true" ||
+  (data.page.brand).toLowerCase() === "true") {
+    mediaObject.page.brand = data.page.brand;
+  }
+  if ((data.page.category && typeof data.page.category === "boolean") ||
+  (data.page.category).toLowerCase() === "true" ||
+  (data.page.category).toLowerCase() === "true") {
+    mediaObject.page.category = data.page.category;
+  }
+  if ((data.page.blog && typeof data.page.blog === "boolean") ||
+  (data.page.blog).toLowerCase() === "true" ||
+  (data.page.blog).toLowerCase() === "true") {
+    mediaObject.page.blog = data.page.blog;
+  }
+
+  if (data.place) mediaObject.place = data.place;
+  if (data.num) mediaObject.num = data.num;
+  if (data.url) mediaObject.url = data.url;
+  if (data.title) mediaObject.title = data.title;
+  if (data.description) mediaObject.description = data.description;
+  if (data.style) mediaObject.style = data.style;
 
   // Create a Media
-  const media = new Media({
-    title: req.body.title || "Untitled Media",
-    description: req.body.description,
-    media_type: req.body.media_type,
-    vendor_id: req.body.vendor_id,
-    purpose: req.body.purpose,
-    subject: req.body.subject,
-    page: req.body.page,
-    place: req.body.place,
-    num: req.body.num,
-    status: req.body.status,
-    url: req.body.url,
-    style: req.body.style,
-  });
+  const media = new Media(mediaObject);
 
-  // Save Media in the database
-  media.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Media.",
-      });
-    });
-};
+  // Save Product in the database
+  return media.save()
+    .then((result) => {
+      if (!result) return fail(res, 404, "Error not found newly added record");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
-// Retrieve and return all medias from the database.
-exports.findAll = (req, res) => {
-  Media.find()
-    .then((medias) => {
-      res.send(medias);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving medias.",
-      });
-    });
-};
 
-// Find a single media with a mediaId
-exports.findOne = (req, res) => {
-  Media.findById(req.params.mediaId)
-    .then((media) => {
-      if (!media) {
-        res.status(404).send({
-          message: `Media not found with id ${req.params.mediaId}`,
-        });
-      }
-      res.send(media);
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Media.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
+
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.mediaId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Media.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, 404, "Error record not found.");
+      return success(res, 200, result, "retrieving record was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Media not found with id ${req.params.mediaId}`,
-        });
+        notFound(res, 404, `Error retrieving record.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error retrieving media with id ${req.params.mediaId}`,
-      });
+      return fail(res, 500, `Error retrieving record.\r\n${err.message}`);
     });
-};
+}
 
 // Update a media identified by the mediaId in the request
-exports.update = (req, res) => {
+export function update(req, res) {
   // Validate Request
-  if (!req.body.content) {
-    res.status(400).send({
-      message: "Media content can not be empty",
-    });
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
   }
 
+  const mediaObject = {};
+  mediaObject.vendor = vendorId;
+  if (data.vendor) mediaObject.vendor = data.vendor;
+  if (data.purpose) mediaObject.purpose = data.purpose;
+
+  mediaObject.page = {};
+  if ((data.page.product && typeof data.page.product === "boolean") ||
+  (data.page.product).toLowerCase() === "true" ||
+  (data.page.product).toLowerCase() === "true") {
+    mediaObject.page.product = data.page.product;
+  }
+  if ((data.page.stock && typeof data.page.stock === "boolean") ||
+  (data.page.stock).toLowerCase() === "true" ||
+  (data.page.stock).toLowerCase() === "true") {
+    mediaObject.page.stock = data.page.stock;
+  }
+  if ((data.page.vendor && typeof data.page.vendor === "boolean") ||
+  (data.page.vendor).toLowerCase() === "true" ||
+  (data.page.vendor).toLowerCase() === "true") {
+    mediaObject.page.vendor = data.page.vendor;
+  }
+  if ((data.page.brand && typeof data.page.brand === "boolean") ||
+  (data.page.brand).toLowerCase() === "true" ||
+  (data.page.brand).toLowerCase() === "true") {
+    mediaObject.page.brand = data.page.brand;
+  }
+  if ((data.page.category && typeof data.page.category === "boolean") ||
+  (data.page.category).toLowerCase() === "true" ||
+  (data.page.category).toLowerCase() === "true") {
+    mediaObject.page.category = data.page.category;
+  }
+  if ((data.page.blog && typeof data.page.blog === "boolean") ||
+  (data.page.blog).toLowerCase() === "true" ||
+  (data.page.blog).toLowerCase() === "true") {
+    mediaObject.page.blog = data.page.blog;
+  }
+
+  if (data.place) mediaObject.place = data.place;
+  if (data.num) mediaObject.num = data.num;
+  if (data.url) mediaObject.url = data.url;
+  if (data.title) mediaObject.title = data.title;
+  if (data.description) mediaObject.description = data.description;
+  if (data.style) mediaObject.style = data.style;
+
+  // Create a Media
+  const media = new Media(mediaObject);
+
   // Find media and update it with the request body
-  Media.findByIdAndUpdate(req.params.mediaId, {
-    title: req.body.title || "Untitled Media",
-    description: req.body.description,
-    media_type: req.body.media_type,
-    vendor_id: req.body.vendor_id,
-    purpose: req.body.purpose,
-    subject: req.body.subject,
-    page: req.body.page,
-    place: req.body.place,
-    num: req.body.num,
-    status: req.body.status,
-    url: req.body.url,
-    style: req.body.style,
-  }, { new: true })
-    .then((media) => {
-      if (!media) {
-        res.status(404).send({
-          message: `Media not found with id ${req.params.mediaId}`,
-        });
-      }
-      res.send(media);
+  return Media.findByIdAndUpdate(req.params.mediaId, media, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, 404, `Error record not found ${req.params.mediaId}`);
+      return success(res, 200, result, "updating record(s) was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Media not found with id ${req.params.mediaId}`,
-        });
+        notFound(res, 404, `Error updating record with id ${req.params.mediaId}.\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Error updating media with id ${req.params.mediaId}`,
-      });
+      return fail(res, 500, `Error updating record with id ${req.params.mediaId}.\r\n${err.message}`);
     });
-};
+}
 
 // Delete a media with the specified mediaId in the request
 exports.delete = (req, res) => {
-  Media.findByIdAndRemove(req.params.mediaId)
-    .then((media) => {
-      if (!media) {
-        res.status(404).send({
-          message: `Media not found with id ${req.params.mediaId}`,
-        });
-      }
-      res.send({ message: "Media deleted successfully!" });
-    }).catch((err) => {
+  const recordId = req.params.mediaId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Media.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        res.status(404).send({
-          message: `Media not found with id ${req.params.mediaId}`,
-        });
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      res.status(500).send({
-        message: `Could not delete media with id ${req.params.mediaId}`,
-      });
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

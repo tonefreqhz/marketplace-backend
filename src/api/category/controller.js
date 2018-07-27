@@ -1,6 +1,6 @@
 
-import { success, notFound, fail } from "./../../services/response/";
 import Category from "./model";
+import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Category
 export const create = (req, res, next) => {
@@ -21,16 +21,6 @@ export const create = (req, res, next) => {
     .catch(next);
 }
   
-
-export const index = ({ querymen: { query, select, cursor } }, res, next) =>
-  Category.count(query)
-    .then(count => Category.find(query, select, cursor)
-      .then(categorys => ({
-        count,
-        rows: categorys.map(category => category.view()),
-      })), )
-    .then(success(res))
-    .catch(next);
 
 export const show = ({ params }, res, next) =>
   Category.findById(params.id)
@@ -54,32 +44,30 @@ export const destroy = ({ params }, res, next) =>
     .then(success(res, 200, [], "You have successfully deleted Product Category"))
     .catch(next);
 
-// Retrieve and return all categorys from the database.
-export const findAll = (req, res) => {
-  Category.find({})
-    .then((categories) => {
-      success(res, 200, categories);
-      
-    }).catch((err) => {
-      fail(res, 500, err.message);
-    });
-};
+// Retrieve and return all records from the database.
+export function findAll(req, res) {
+  return Category.find()
+    .then(result => success(res, 200, result, "retrieving record(s) was successfully!"))
+    .catch(err => fail(res, 500, `Error retrieving record(s).\r\n${err.message}`));
+}
 
-// Find a single category with a categoryId
-exports.findOne = (req, res) => {
-  Category.findById(req.params.categoryId)
-    .then((category) => {
-      if (!category) {
-        notFound(res, "Sorry, Product Category does not exist")
-      }
-      success(res, 200, category)
+// Retrieve a single record with a given recordId
+export function findOne(req, res) {
+  const recordId = req.params.categoryId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Category.findById(req.params.recordId)
+    .then((result) => {
+      if (!result) return notFound(res, 404, "Error record not found.");
+      return success(res, 200, result, "retrieving record was successfully!");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        notFound(res, "Sorry, Product Brand does not exist")
+        notFound(res, 404, `Error retrieving record.\r\n${err.message}`);
       }
-      fail(res, 500, "Error occur trying to fetch product category");
+      return fail(res, 500, `Error retrieving record.\r\n${err.message}`);
     });
-};
+}
+
 
 // Update a category identified by the categoryId in the request
 exports.update = (req, res) => {
@@ -110,16 +98,18 @@ exports.update = (req, res) => {
 
 // Delete a category with the specified categoryId in the request
 exports.delete = (req, res) => {
-  Category.findByIdAndRemove(req.params.categoryId)
-    .then((category) => {
-      if (!category) {
-        notFound(res, "Sorry, Product Category does not exist")
-      }
-      success(res, 200, [], "You have successfully deleted product category")
-    }).catch((err) => {
+  const recordId = req.params.categoryId || "";
+  // Validate request
+  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  return Category.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
       if (err.kind === "ObjectId" || err.name === "NotFound") {
-        notFound(res, "Sorry, Product Category does not exist")
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
       }
-      fail(res, 500, "Error ocuured while deleting product category")
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
     });
 };

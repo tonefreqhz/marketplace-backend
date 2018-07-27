@@ -15,7 +15,7 @@ const router = express.Router();
  * @apiSuccess {Object[]} rows List of Vendors.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/vendors", auth.isValidAdmin, vendor.findAll);
+router.get("/vendors", vendor.findAll);
 
 /**
  * @api {get} /vendors/:id Retrieve vendor
@@ -83,6 +83,6 @@ router.put("/vendors/:vendorId", auth.isValidVendor, vendor.update);
  * @apiError 404 Vendor not found.
  * @apiError 401 master access only.
  */
-router.delete("/vendors/:vendorId", auth.isValidAdmin, vendor.delete);
+router.delete("/vendors/:vendorId", vendor.delete);
 
 export default router;
