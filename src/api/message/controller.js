@@ -2,40 +2,50 @@
 import Message, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Message
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.kind) {
-    res.status(400).send({
-      message: "Message kind can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  let { userId, userType } = res.locals;
+  const newObject = {};
+
+  switch (userType) {
+    case "admin": newObject.admin = userId; newObject.sentBy = "admin"; break;
+    case "vendor": newObject.vendor = userId; newObject.sentBy = "vendor"; break;
+    case "customer": newObject.customer = userId; newObject.sentBy = "customer"; break;
+    default: newObject.sentBy = "visitor";
+      userType = "visitor";
+      userId = "123456789100";
+      if (!data.visitorName) return fail(res, 422, "visitor name cannot be empty. Please login if you have an account");
+      if (!data.visitorEmail) return fail(res, 422, "visitor email cannot be empty. Please login if you have an account");
   }
+  // Validate request
+  if (!data.kind) return fail(res, 422, 'kind cannot be empty either "arbitration", "chat", "contact", "ticket"');
+  if (!data.messageSession) return fail(res, 422, "messageSession cannot be empty.");
+  if (!data.messageBetween) return fail(res, 422, '"visitor_vendor", "customer_vendor", "customer_admin", "vendor_admin"');
+  if (!data.subject) return fail(res, 422, "subject cannot be empty.");
+  if (!data.message) return fail(res, 422, "message cannot be empty.");
 
-  // Create a Message
-  const message = new Message({
-    kind: req.body.kind,
-    message_session: req.body.message_session,
-    message_between: req.body.message_between,
-    visitor_name: req.body.visitor_name,
-    visitor_email: req.body.visitor_email,
-    subject: req.body.subject,
-    message: req.body.message,
-    customer_id: req.body.customer_id,
-    vendor_id: req.body.vendor_id,
-    admin_id: req.body.admin_id,
-    sent_by: req.body.sent_by,
-  });
 
-  // Save Message in the database
-  message.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Message.",
-      });
-    });
-};
+  if (data.kind) newObject.kind = data.kind;
+  if (data.messageSession) newObject.messageSession = data.messageSession;
+  if (data.messageBetween) newObject.messageBetween = data.messageBetween;
+  if (data.visitorName) newObject.visitorName = data.visitorName;
+  if (data.visitorEmail) newObject.visitorEmail = data.visitorEmail;
+  if (data.subject) newObject.subject = data.subject;
+  if (data.message) newObject.message = data.message;
+
+  // Create a record
+  const record = new Message(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
+
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -61,47 +71,51 @@ export function findOne(req, res) {
     });
 }
 
-// Update a message identified by the messageId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.kind) {
-    res.status(400).send({
-      message: "Message kind can not be empty",
-    });
-  }
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.mailId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  let { userId, userType } = res.locals;
+  const newObject = {};
 
-  // Find message and update it with the request body
-  Message.findByIdAndUpdate(req.params.messageId, {
-    kind: req.body.kind,
-    message_session: req.body.message_session,
-    message_between: req.body.message_between,
-    visitor_name: req.body.visitor_name,
-    visitor_email: req.body.visitor_email,
-    subject: req.body.subject,
-    message: req.body.message,
-    customer_id: req.body.customer_id,
-    vendor_id: req.body.vendor_id,
-    admin_id: req.body.admin_id,
-    sent_by: req.body.sent_by,
-  }, { new: true })
-    .then((message) => {
-      if (!message) {
-        res.status(404).send({
-          message: `Message not found with id ${req.params.messageId}`,
-        });
-      }
-      res.send(message);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Message not found with id ${req.params.messageId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating message with id ${req.params.messageId}`,
-      });
-    });
-};
+  switch (userType) {
+    case "admin": newObject.admin = userId; newObject.sentBy = "admin"; break;
+    case "vendor": newObject.vendor = userId; newObject.sentBy = "vendor"; break;
+    case "customer": newObject.customer = userId; newObject.sentBy = "customer"; break;
+    default: newObject.sentBy = "visitor";
+      userType = "visitor";
+      userId = "123456789100";
+      if (!data.visitorName) return fail(res, 422, "visitor name cannot be empty. Please login if you have an account");
+      if (!data.visitorEmail) return fail(res, 422, "visitor email cannot be empty. Please login if you have an account");
+  }
+  // Validate request
+  if (!data.kind) return fail(res, 422, 'kind cannot be empty either "arbitration", "chat", "contact", "ticket"');
+  if (!data.messageSession) return fail(res, 422, "messageSession cannot be empty.");
+  if (!data.messageBetween) return fail(res, 422, '"visitor_vendor", "customer_vendor", "customer_admin", "vendor_admin"');
+  if (!data.subject) return fail(res, 422, "subject cannot be empty.");
+  if (!data.message) return fail(res, 422, "message cannot be empty.");
+
+
+  if (data.kind) newObject.kind = data.kind;
+  if (data.messageSession) newObject.messageSession = data.messageSession;
+  if (data.messageBetween) newObject.messageBetween = data.messageBetween;
+  if (data.visitorName) newObject.visitorName = data.visitorName;
+  if (data.visitorEmail) newObject.visitorEmail = data.visitorEmail;
+  if (data.subject) newObject.subject = data.subject;
+  if (data.message) newObject.message = data.message;
+
+
+  // Find record and update it with id
+  return Message.findByIdAndUpdate(recordId, { newObject }, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
+
 
 // Delete a message with the specified messageId in the request
 exports.delete = (req, res) => {
