@@ -3,9 +3,10 @@
 */
 
 import mongoose, { Schema } from "mongoose";
+import Admin from "../vendor/model";
 
 const LanguageSchema = new Schema({
-  word_id: { type: Number, required: [true, "Why no word id?"] },
+  admin: { type: Schema.Types.ObjectId, ref: "Admin" },
   word: { type: String, required: [true, "Why no word key?"] },
   english: { type: String, required: [true, "Why no english?"] },
   french: { type: String, required: [true, "Why no french?"] },

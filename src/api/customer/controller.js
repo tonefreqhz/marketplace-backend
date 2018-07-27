@@ -89,17 +89,21 @@ export function update(req, res) {
     newObject.cart = fieldArray;
   }
 
-  newObject.preferences = {};
-  if (data.preferences.currency) newObject.preferences.currency = data.preferences.currency;
-  if (data.preferences.language) newObject.preferences.language = data.preferences.language;
+  if ((data.preferences.currency) || (data.preferences.language)) {
+    newObject.preferences = {};
+    if (data.preferences.currency) newObject.preferences.currency = data.preferences.currency;
+    if (data.preferences.language) newObject.preferences.language = data.preferences.language;
+  }
 
-  newObject.shipping = {};
-  if (data.shipping.country) newObject.shipping.country = data.shipping.country;
-  if (data.shipping.state) newObject.shipping.state = data.shipping.state;
-  if (data.shipping.city) newObject.shipping.city = data.shipping.city;
-  if (data.shipping.street) newObject.shipping.street = data.shipping.street;
-  if (data.shipping.building) newObject.shipping.building = data.shipping.building;
-  if (data.shipping.zip) newObject.shipping.zip = data.shipping.zip;
+  if ((data.shipping.zip) && (data.shipping.city) && (data.shipping.street)) {
+    newObject.shipping = {};
+    if (data.shipping.country) newObject.shipping.country = data.shipping.country;
+    if (data.shipping.state) newObject.shipping.state = data.shipping.state;
+    if (data.shipping.city) newObject.shipping.city = data.shipping.city;
+    if (data.shipping.street) newObject.shipping.street = data.shipping.street;
+    if (data.shipping.building) newObject.shipping.building = data.shipping.building;
+    if (data.shipping.zip) newObject.shipping.zip = data.shipping.zip;
+  }
 
   if (data.phone) newObject.phone = data.phone;
   if (data.email) newObject.email = data.email;
@@ -122,11 +126,9 @@ export function update(req, res) {
     newObject.notifications = {};
     newObject.notifications = fieldArray;
   }
-  // Create a record
-  const record = new Customer(newObject);
 
   // Find record and update it with id
-  return Customer.findByIdAndUpdate(recordId, { record }, { new: true })
+  return Customer.findByIdAndUpdate(recordId, { newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

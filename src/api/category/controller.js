@@ -89,11 +89,8 @@ export function update(req, res) {
   if (data.kind) newObject.kind = data.kind;
   if (data.parent) newObject.parent = data.parent;
 
-  // Create a record
-  const record = new Category(newObject);
-
   // Find record and update it with id
-  return Category.findByIdAndUpdate(recordId, { record }, { new: true })
+  return Category.findByIdAndUpdate(recordId, { newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");
