@@ -7,10 +7,8 @@ import Vendor from "../vendor/model";
 import Customer from "../customer/model";
 
 const ReviewSchema = new Schema({
-  customer_id: { type: String, required: [true, "Why no Customer?"] },
   customer: { type: Schema.Types.ObjectId, ref: "Customer" },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  vendor_id: { type: String, required: [true, "Why no vendor id?"] },
   subject: {
     type: String,
     enum: ["product", "category", "brand", "vendor", "stock", "order"],

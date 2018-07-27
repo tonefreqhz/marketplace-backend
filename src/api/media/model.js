@@ -8,7 +8,7 @@ import mongoose, { Schema } from "mongoose";
 import Vendor from "../vendor/model";
 
 const MediaSchema = new Schema({
-  media_type: { type: String, required: [true, "Why no media type?"] },
+  mediaType: { type: String, required: [true, "Why no media type?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   purpose: {
     type: String,

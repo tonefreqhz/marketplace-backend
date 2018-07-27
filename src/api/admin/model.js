@@ -14,7 +14,6 @@ const AdminSchema = new mongoose.Schema({
   publicAddress: {
     type: String,
     unique: true,
-    lowercase: true,
     required: [true, "Why no MetaMask address?"],
   },
   username: { type: String, default: "" },
@@ -29,7 +28,6 @@ const AdminSchema = new mongoose.Schema({
   email: {
     type: String,
     lowercase: true,
-    unique: true,
   },
   notifications: [{
     date: { type: Date, default: Date.now },
