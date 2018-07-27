@@ -100,11 +100,8 @@ export function update(req, res) {
   if (data.content) newObject.content = data.content;
   if (data.tag) newObject.tag = data.tag;
 
-  // Create a record
-  const record = new Blog(newObject);
-
   // Find blog and update it with the request body
-  return Blog.findByIdAndUpdate(recordId, { record }, { new: true })
+  return Blog.findByIdAndUpdate(recordId, { newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

@@ -2,37 +2,48 @@
 import Language, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Language
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.word) {
-    res.status(400).send({
-      message: "Language word can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let adminId;
+
+  if (userType === "admin") {
+    adminId = userId;
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Create a Language
-  const language = new Language({
-    word: req.body.word || "Empty Word",
-    english: req.body.english,
-    french: req.body.french,
-    spanish: req.body.spanish,
-    bangla: req.body.bangla,
-    arabic: req.body.arabic,
-    chinese: req.body.chinese,
-  });
+  // Validate request
+  if (!data.word) return fail(res, 422, "word cannot be empty.");
+  if (!data.english) return fail(res, 422, "english cannot be empty.");
+  if (!data.french) return fail(res, 422, "french cannot be empty.");
+  if (!data.spanish) return fail(res, 422, "spanish cannot be empty.");
+  if (!data.bangla) return fail(res, 422, "bangla cannot be empty.");
+  if (!data.arabic) return fail(res, 422, "arabic cannot be empty.");
+  if (!data.chinese) return fail(res, 422, "chinese cannot be empty.");
 
-  // Save Language in the database
-  language.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Language.",
-      });
-    });
-};
+  const newObject = {};
+  newObject.admin = adminId;
+  if (data.word) newObject.word = data.word;
+  if (data.english) newObject.english = data.english;
+  if (data.french) newObject.french = data.french;
+  if (data.spanish) newObject.spanish = data.spanish;
+  if (data.bangla) newObject.bangla = data.bangla;
+  if (data.arabic) newObject.arabic = data.arabic;
+  if (data.chinese) newObject.chinese = data.chinese;
 
+  // Create a record
+  const record = new Language(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -58,43 +69,48 @@ export function findOne(req, res) {
     });
 }
 
-// Update a language identified by the languageId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.word) {
-    res.status(400).send({
-      message: "Language word can not be empty",
-    });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.couponId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let adminId;
+
+  if (userType === "admin") {
+    adminId = userId;
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Find language and update it with the request body
-  Language.findByIdAndUpdate(req.params.languageId, {
-    word: req.body.word || "Empty Word",
-    english: req.body.english,
-    french: req.body.french,
-    spanish: req.body.spanish,
-    bangla: req.body.bangla,
-    arabic: req.body.arabic,
-    chinese: req.body.chinese,
-  }, { new: true })
-    .then((language) => {
-      if (!language) {
-        res.status(404).send({
-          message: `Language not found with id ${req.params.languageId}`,
-        });
-      }
-      res.send(language);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Language not found with id ${req.params.languageId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating language with id ${req.params.languageId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.word) return fail(res, 422, "word cannot be empty.");
+  if (!data.english) return fail(res, 422, "english cannot be empty.");
+  if (!data.french) return fail(res, 422, "french cannot be empty.");
+  if (!data.spanish) return fail(res, 422, "spanish cannot be empty.");
+  if (!data.bangla) return fail(res, 422, "bangla cannot be empty.");
+  if (!data.arabic) return fail(res, 422, "arabic cannot be empty.");
+  if (!data.chinese) return fail(res, 422, "chinese cannot be empty.");
+
+  const newObject = {};
+  newObject.admin = adminId;
+  if (data.word) newObject.word = data.word;
+  if (data.english) newObject.english = data.english;
+  if (data.french) newObject.french = data.french;
+  if (data.spanish) newObject.spanish = data.spanish;
+  if (data.bangla) newObject.bangla = data.bangla;
+  if (data.arabic) newObject.arabic = data.arabic;
+  if (data.chinese) newObject.chinese = data.chinese;
+
+  // Find record and update it with id
+  return Language.findByIdAndUpdate(recordId, { newObject }, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
 
 // Delete a language with the specified languageId in the request
 exports.delete = (req, res) => {
