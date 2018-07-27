@@ -48,7 +48,7 @@ export function create(req, res) {
 
   if (!data.description.long) return fail(res, 422, "Product description can not be empty and must be alphanumeric.");
 
-  if (!data.price.unit_price) return fail(res, 422, "Product unit price can not be empty and must be numeric.");
+  if (!data.price.unitPrice) return fail(res, 422, "Product unit price can not be empty and must be numeric.");
 
   const newObject = {};
   newObject.vendor = vendorId;
@@ -102,54 +102,54 @@ export function create(req, res) {
   (data.price.valuation).toUpperCase() === "FIFO" || (data.price.valuation).toUpperCase() === "AVCO")) {
     newObject.price.valuation = (data.price.valuation).toUpperCase();
   }
-  if (data.price.unit_price && typeof data.price.unit_price === "number") {
-    newObject.price.unit_price = data.price.unit_price;
+  if (data.price.unitPrice && typeof data.price.unitPrice === "number") {
+    newObject.price.unitPrice = data.price.unitPrice;
   }
-  if (data.price.cost_price && typeof data.price.cost_price === "number") {
-    newObject.price.cost_price = data.price.cost_price;
+  if (data.price.costPrice && typeof data.price.costPrice === "number") {
+    newObject.price.costPrice = data.price.costPrice;
   }
-  if (data.price.slash_price && typeof data.price.slash_price === "number") {
-    newObject.price.slash_price = data.price.slash_price;
+  if (data.price.slashPrice && typeof data.price.slashPrice === "number") {
+    newObject.price.slashPrice = data.price.slashPrice;
   }
   if (data.price.discount && typeof data.price.discount === "number") {
     newObject.price.discount = data.price.discount;
   }
-  if (data.price.discount_type && ((data.price.discount_type).toLowerCase() === "fixed" ||
-  (data.price.discount_type).toLowerCase() === "percent")) {
-    newObject.price.discount_type = (data.price.discount_type).toLowerCase();
+  if (data.price.discountType && ((data.price.discountType).toLowerCase() === "fixed" ||
+  (data.price.discountType).toLowerCase() === "percent")) {
+    newObject.price.discountType = (data.price.discountType).toLowerCase();
   }
   if (data.price.tax && typeof data.price.tax === "number") {
     newObject.price.tax = data.price.tax;
   }
-  if (data.price.tax_type && ((data.price.tax_type).toLowerCase() === "fixed" ||
-  (data.price.tax_type).toLowerCase() === "percent")) {
-    newObject.price.tax_type = (data.price.tax_type).toLowerCase();
+  if (data.price.taxType && ((data.price.taxType).toLowerCase() === "fixed" ||
+  (data.price.taxType).toLowerCase() === "percent")) {
+    newObject.price.taxType = (data.price.taxType).toLowerCase();
   }
 
-  newObject.shipping_details = {};
-  if (data.shipping_details.cost) newObject.shipping_details.cost = data.shipping_details.cost;
-  if (data.shipping_details.weight) {
-    newObject.shipping_details.weight = data.shipping_details.weight;
+  newObject.shippingDetails = {};
+  if (data.shippingDetails.cost) newObject.shippingDetails.cost = data.shippingDetails.cost;
+  if (data.shippingDetails.weight) {
+    newObject.shippingDetails.weight = data.shippingDetails.weight;
   }
-  if (data.shipping_details.length) {
-    newObject.shipping_details.length = data.shipping_details.length;
+  if (data.shippingDetails.length) {
+    newObject.shippingDetails.length = data.shippingDetails.length;
   }
-  if (data.shipping_details.width) {
-    newObject.shipping_details.width = data.shipping_details.width;
+  if (data.shippingDetails.width) {
+    newObject.shippingDetails.width = data.shippingDetails.width;
   }
-  if (data.shipping_details.height) {
-    newObject.shipping_details.height = data.shipping_details.height;
+  if (data.shippingDetails.height) {
+    newObject.shippingDetails.height = data.shippingDetails.height;
   }
 
-  newObject.manufacture_details = {};
-  if (data.manufacture_details.make) {
-    newObject.manufacture_details.make = data.manufacture_details.make;
+  newObject.manufactureDetails = {};
+  if (data.manufactureDetails.make) {
+    newObject.manufactureDetails.make = data.manufactureDetails.make;
   }
-  if (data.manufacture_details.model_number) {
-    newObject.manufacture_details.model_number = data.manufacture_details.model_number;
+  if (data.manufactureDetails.modelNumber) {
+    newObject.manufactureDetails.modelNumber = data.manufactureDetails.modelNumber;
   }
-  if (data.manufacture_details.release_date) {
-    newObject.manufacture_details.release_date = data.manufacture_details.release_date;
+  if (data.manufactureDetails.releaseDate) {
+    newObject.manufactureDetails.releaseDate = data.manufactureDetails.releaseDate;
   }
 
   newObject.download = {};
@@ -159,24 +159,24 @@ export function create(req, res) {
     (data.download.downloadable).toLowerCase() === "false")) {
     newObject.download.downloadable = Boolean(data.download.downloadable);
   }
-  if (data.download.download_name) {
-    newObject.download.download_name = data.download.download_name;
+  if (data.download.downloadName) {
+    newObject.download.downloadName = data.download.downloadName;
   }
 
-  if (data.extra_fields && typeof data.extra_fields === "object" && data.extra_fields[0].name &&
-   data.extra_fields[0].value) {
+  if (data.extraFields && typeof data.extraFields === "object" && data.extraFields[0].name &&
+   data.extraFields[0].value) {
     let fieldName;
     let fieldValue;
     const fieldArray = [];
-    data.extra_fields.forEach((item, index, array) => {
+    data.extraFields.forEach((item, index, array) => {
       if (typeof item === "object" && item.name && item.value) {
-        fieldName = data.extra_fields[index].name;
-        fieldValue = data.extra_fields[index].value;
+        fieldName = data.extraFields[index].name;
+        fieldValue = data.extraFields[index].value;
         fieldArray.push({ name: fieldName, value: fieldValue });
       }
     });
-    newObject.extra_fields = {};
-    newObject.extra_fields = fieldArray;
+    newObject.extraFields = {};
+    newObject.extraFields = fieldArray;
   }
 
   // Create a Product
@@ -205,8 +205,11 @@ export async function findAll(req, res) {
 
   const vendor = await findVendorByDomain(vendorDomain);
 
-  if (vendor && vendor.id) vendorId = vendor.id;
-  if (vendor && vendor._id) vendorId = vendor._id;
+  if (vendor && vendor.id) {
+    vendorId = vendor.id;
+  } else {
+    return fail(res, 422, "Error: unkown vendor.");
+  }
 
   // console.log("\r\n vendor", vendor);
   let page = req.query.page || 0;
@@ -332,7 +335,7 @@ export function update(req, res) {
 
   if (!data.description.long) return fail(res, 422, "Product description can not be empty and must be alphanumeric.");
 
-  if (!data.price.unit_price) return fail(res, 422, "Product unit price can not be empty and must be numeric.");
+  if (!data.price.unitPrice) return fail(res, 422, "Product unit price can not be empty and must be numeric.");
 
   const newObject = {};
   newObject.vendor = vendorId;
@@ -386,54 +389,54 @@ export function update(req, res) {
   (data.price.valuation).toUpperCase() === "FIFO" || (data.price.valuation).toUpperCase() === "AVCO")) {
     newObject.price.valuation = (data.price.valuation).toUpperCase();
   }
-  if (data.price.unit_price && typeof data.price.unit_price === "number") {
-    newObject.price.unit_price = data.price.unit_price;
+  if (data.price.unitPrice && typeof data.price.unitPrice === "number") {
+    newObject.price.unitPrice = data.price.unitPrice;
   }
-  if (data.price.cost_price && typeof data.price.cost_price === "number") {
-    newObject.price.cost_price = data.price.cost_price;
+  if (data.price.costPrice && typeof data.price.costPrice === "number") {
+    newObject.price.costPrice = data.price.costPrice;
   }
-  if (data.price.slash_price && typeof data.price.slash_price === "number") {
-    newObject.price.slash_price = data.price.slash_price;
+  if (data.price.slashPrice && typeof data.price.slashPrice === "number") {
+    newObject.price.slashPrice = data.price.slashPrice;
   }
   if (data.price.discount && typeof data.price.discount === "number") {
     newObject.price.discount = data.price.discount;
   }
-  if (data.price.discount_type && ((data.price.discount_type).toLowerCase() === "fixed" ||
-  (data.price.discount_type).toLowerCase() === "percent")) {
-    newObject.price.discount_type = (data.price.discount_type).toLowerCase();
+  if (data.price.discountType && ((data.price.discountType).toLowerCase() === "fixed" ||
+  (data.price.discountType).toLowerCase() === "percent")) {
+    newObject.price.discountType = (data.price.discountType).toLowerCase();
   }
   if (data.price.tax && typeof data.price.tax === "number") {
     newObject.price.tax = data.price.tax;
   }
-  if (data.price.tax_type && ((data.price.tax_type).toLowerCase() === "fixed" ||
-  (data.price.tax_type).toLowerCase() === "percent")) {
-    newObject.price.tax_type = (data.price.tax_type).toLowerCase();
+  if (data.price.taxType && ((data.price.taxType).toLowerCase() === "fixed" ||
+  (data.price.taxType).toLowerCase() === "percent")) {
+    newObject.price.taxType = (data.price.taxType).toLowerCase();
   }
 
-  newObject.shipping_details = {};
-  if (data.shipping_details.cost) newObject.shipping_details.cost = data.shipping_details.cost;
-  if (data.shipping_details.weight) {
-    newObject.shipping_details.weight = data.shipping_details.weight;
+  newObject.shippingDetails = {};
+  if (data.shippingDetails.cost) newObject.shippingDetails.cost = data.shippingDetails.cost;
+  if (data.shippingDetails.weight) {
+    newObject.shippingDetails.weight = data.shippingDetails.weight;
   }
-  if (data.shipping_details.length) {
-    newObject.shipping_details.length = data.shipping_details.length;
+  if (data.shippingDetails.length) {
+    newObject.shippingDetails.length = data.shippingDetails.length;
   }
-  if (data.shipping_details.width) {
-    newObject.shipping_details.width = data.shipping_details.width;
+  if (data.shippingDetails.width) {
+    newObject.shippingDetails.width = data.shippingDetails.width;
   }
-  if (data.shipping_details.height) {
-    newObject.shipping_details.height = data.shipping_details.height;
+  if (data.shippingDetails.height) {
+    newObject.shippingDetails.height = data.shippingDetails.height;
   }
 
-  newObject.manufacture_details = {};
-  if (data.manufacture_details.make) {
-    newObject.manufacture_details.make = data.manufacture_details.make;
+  newObject.manufactureDetails = {};
+  if (data.manufactureDetails.make) {
+    newObject.manufactureDetails.make = data.manufactureDetails.make;
   }
-  if (data.manufacture_details.model_number) {
-    newObject.manufacture_details.model_number = data.manufacture_details.model_number;
+  if (data.manufactureDetails.modelNumber) {
+    newObject.manufactureDetails.modelNumber = data.manufactureDetails.modelNumber;
   }
-  if (data.manufacture_details.release_date) {
-    newObject.manufacture_details.release_date = data.manufacture_details.release_date;
+  if (data.manufactureDetails.releaseDate) {
+    newObject.manufactureDetails.releaseDate = data.manufactureDetails.releaseDate;
   }
 
 
@@ -451,20 +454,20 @@ export function update(req, res) {
     if (data.download.name) newObject.download.name = data.download.name;
   }
 
-  if (data.extra_fields && typeof data.extra_fields === "object" && data.extra_fields[0].name &&
-   data.extra_fields[0].value) {
+  if (data.extraFields && typeof data.extraFields === "object" && data.extraFields[0].name &&
+   data.extraFields[0].value) {
     let fieldName;
     let fieldValue;
     const fieldArray = [];
-    data.extra_fields.forEach((item, index, array) => {
+    data.extraFields.forEach((item, index, array) => {
       if (typeof item === "object" && item.name && item.value) {
-        fieldName = data.extra_fields[index].name;
-        fieldValue = data.extra_fields[index].value;
+        fieldName = data.extraFields[index].name;
+        fieldValue = data.extraFields[index].value;
         fieldArray.push({ name: fieldName, value: fieldValue });
       }
     });
-    newObject.extra_fields = {};
-    newObject.extra_fields = fieldArray;
+    newObject.extraFields = {};
+    newObject.extraFields = fieldArray;
   }
 
   newObject.updated = Date.now();

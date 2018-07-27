@@ -34,22 +34,22 @@ const OrderSchema = new Schema({
     state: { type: String, max: 50 },
     city: { type: String, max: 50 },
     street: { type: String, max: 50 },
-    Building: { type: String, max: 50 },
+    building: { type: String, max: 50 },
     zip: { type: Number, min: 5, max: 5 },
     phone: { type: String },
     email: { type: String },
-    delivery_note: { type: String, default: "Leave it at house", max: 200 },
+    deliveryNote: { type: String, default: "Leave it at house", max: 200 },
   },
   trackingDetails: {
     company: { type: String, required: [true, "Why no Tracking Number?"] },
     code: { type: String, required: [true, "Why no Tracking Number?"] },
     standing: { type: String, enum: ["pending", "dispatched", "arrived", "delivered"] },
-    estimated_delivery: { type: Date },
+    estimatedDelivery: { type: Date },
   },
 
   orderStatus: {
     type: String,
-    num: ["paid", "delivered", "closed"],
+    num: ["pending", "paid", "delivered", "closed"],
     required: [true, "Why no Order status?"],
   },
   standing: {

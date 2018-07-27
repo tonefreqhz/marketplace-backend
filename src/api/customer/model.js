@@ -17,18 +17,18 @@ const CustomerSchema = new Schema({
     quantity: { type: Number, default: 1, required: true },
   }],
   wishlist: [{
-    names: { type: String, unique: true, trim: true, max: 100, min: [2, "Too short name"] },
+    names: { type: String, trim: true, max: 100, min: [2, "Too short name"] },
     carts: [{
       product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
       quantity: { type: Number, default: 1, required: true },
     }],
   }],
   fullname: { type: String, default: "" },
-  username: { type: String, unique: true },
+  username: { type: String },
   gender: { type: String, enum: ["m", "f"] },
   phone: { type: String, default: "" },
   password: { type: String, default: "" },
-  email: { type: String, unique: true, default: "" },
+  email: { type: String },
   recoveryCode: { type: String, trim: true, default: "" },
   profile: { type: String, default: "recommendation system" },
   preferences: {

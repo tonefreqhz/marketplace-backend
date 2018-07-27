@@ -3,10 +3,11 @@
 */
 
 import mongoose, { Schema } from "mongoose";
+import Vendor from "../vendor/model";
 
 const SliderSchema = new Schema({
   name: { type: String, required: [true, "Why no slider name?"] },
-  vendorId: { type: String, required: [true, "Why no vendor?"] },
+  vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   kind: {
     type: String,
     enum: ["image", "text"],
