@@ -61,7 +61,44 @@ const CustomerSchema = new Schema({
 
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+CustomerSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      nonce: this.nonce,
+      publicAddress: this.publicAddress,
+      wallet: this.wallet,
+      cart: this.cart,
+      wishlist: this.wishlist,
+      fullname: this.fullname,
+      username: this.username,
+      gender: this.gender,
+      phone: this.phone,
+      password: this.password,
+      email: this.email,
+      recoveryCode: this.recoveryCode,
+      profile: this.profile,
+      preferences: this.preferences,
+      shipping: this.shipping,
+      notifications: this.notifications,
+      lastAccess: this.lastAccess,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Customer = mongoose.model("Customer", CustomerSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

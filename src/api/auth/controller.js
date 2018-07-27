@@ -244,7 +244,6 @@ export function isValidVendor(req, res, next) {
 
   const { payload: { id, publicAddress } } = jwtDecode(accessToken);
   console.log(`\r\n-id: ${id}`);
-
   return Vendor.findOne({ publicAddress }).exec()
   // Step 1: Get the vendor with the given publicAddress
     .then((vendor) => {

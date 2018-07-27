@@ -1,5 +1,6 @@
 /*
 * @author 4Dcoder
+* @author Odewale Ifeoluwa
 */
 
 import express from "express";
@@ -85,7 +86,7 @@ router.get("/media/:mediaId", media.findOne);
  * @apiError 404 Media not found.
  * @apiError 401 master access only.
  */
-router.put("/media/:mediaId", isValidVendor, media.update);
+router.put("/media/:mediaId", isValidVendor, media.updateImg);
 
 /**
  * @api {delete} /media/:id Delete media

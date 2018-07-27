@@ -26,7 +26,36 @@ const StockSchema = new Schema({
 
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+StockSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      vendor: this.vendor,
+      product: this.product,
+      orderNum: this.orderNum,
+      kind: this.kind,
+      quantity: this.quantity,
+      available: this.available,
+      unitCost: this.unitCost,
+      unitPrice: this.unitPrice,
+      description: this.description,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Stock = mongoose.model("Stock", StockSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

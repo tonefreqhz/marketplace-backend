@@ -22,7 +22,7 @@ const ProductSchema = new Schema({
   },
   brand: { type: Schema.Types.ObjectId, ref: "Brand" },
   description: {
-    color: { type: String, default: "" },
+    color: { type: Array, default: [] },
     unit: { type: String, default: "" },
     long: { type: String, required: [true, "Why no Description?"], max: 5000 },
     short: { type: String, required: [true, "Why no Short description?"], max: 500 },
@@ -92,7 +92,43 @@ const ProductSchema = new Schema({
   },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+
+ProductSchema.methods = {
+  view(full) {
+    const view = {
+      // simple view
+      id: this.id,
+      code: this.code,
+      sku: this.sku,
+      upc: this.upc,
+      name: this.name,
+      vendor: this.vendor,
+      category: this.category,
+      brand: this.brand,
+      description: this.description,
+      variety: this.variety,
+      price: this.price,
+      images: this.images,
+      shippingDetails: this.shippingDetails,
+      manufactureDetails: this.manufactureDetails,
+      download: this.download,
+      extraFields: this.extraFields,
+      analytics: this.analytics,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
 
 const Product = mongoose.model("Product", ProductSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

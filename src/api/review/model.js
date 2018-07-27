@@ -29,7 +29,31 @@ const ReviewSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+ReviewSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      customer: this.customer,
+      vendor: this.vendor,
+      subject: this.subject,
+      subjectId: this.subjectId,
+      comment: this.comment,
+      rating: this.rating,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
 
 const Review = mongoose.model("Review", ReviewSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

@@ -10,7 +10,7 @@ import { randomNonce } from "./../../services/helpers";
 const VendorSchema = new Schema({
   nonce: { type: Number, default: randomNonce(), required: [true, "Why no authentication nonce?"] },
   publicAddress: { type: String, unique: true, max: 42, required: [true, "Why no MetaMask address?"] },
-  businessName: { type: String, unique: true, max: 200, trim: true },
+  businessName: { type: String, max: 200, trim: true },
   domainName: { type: String, unique: true, lowercase: true, max: 100, trim: true },
   email: { type: String, lowercase: true, max: 100, trim: true, unique: true },
   password: { type: String, lowercase: true, trim: true },
@@ -99,12 +99,32 @@ VendorSchema.methods = {
       id: this.id,
       fullname: this.fullname,
       email: this.email,
-
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
 
     return full ? {
       ...view,
       // add prpoerties for a full view
+      nonce: this.nonce,
+      publicAddress: this.publicAddress,
+      businessName: this.businessName,
+      domainName: this.domainName,
+      password: this.password,
+      recoveryCode: this.recoveryCode,
+      phone: this.phone,
+      profile: this.profile,
+      address: this.address,
+      preferences: this.preferences,
+      products: this.products,
+      viewCount: this.viewCount,
+      lastAccess: this.lastAccess,
+      account: this.account,
+      notifications: this.notifications,
+      standing: this.standing,
+      updated: this.updated,
+      approvedBy: this.approvedBy,
+      approvedAt: this.approvedAt,
     } : view;
   },
 };

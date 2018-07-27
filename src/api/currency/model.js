@@ -24,7 +24,33 @@ const CurrencySchema = new mongoose.Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
+
+CurrencySchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      name: this.name,
+      code: this.code,
+      description: this.description,
+      kind: this.kind,
+      symbol: this.symbol,
+      exchange: this.exchange,
+      icon: this.icon,
+      standing: this.standing,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
 
 const Currency = mongoose.model("Currency", CurrencySchema);
 export const { ObjectId } = mongoose.Types.ObjectId;

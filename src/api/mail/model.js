@@ -23,7 +23,35 @@ const MailSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transfrom: (obj, ret) => { delete ret._id; },
+  },
 });
+
+MailSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      name: this.name,
+      kind: this.kind,
+      language: this.language,
+      mailSubject: this.mailSubject,
+      mailBody: this.mailBody,
+      recipient: this.recipient,
+      createdType: this.createdType,
+      createdBy: this.createdBy,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
 
 const Mail = mongoose.model("Mail", MailSchema);
 export const { ObjectId } = mongoose.Types.ObjectId;
