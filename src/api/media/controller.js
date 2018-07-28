@@ -26,56 +26,56 @@ export function create(req, res) {
   }
 
   // Validate request
-  if (!data.media_type) return fail(res, 422, "media_type can not be empty and must be alphanumeric.");
+  if (!data.media_type) return fail(res, 422, "media type can not be empty and must be alphanumeric.");
   if (!data.vendor) return fail(res, 422, "vendor can not be empty and must be alphanumeric.");
   if (!data.purpose) return fail(res, 422, 'purpose can not be empty and must be either "slide", "picture", "banner", "background"');
 
-  const mediaObject = {};
-  mediaObject.vendor = vendorId;
-  if (data.vendor) mediaObject.vendor = data.vendor;
-  if (data.purpose) mediaObject.purpose = data.purpose;
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.vendor) newObject.vendor = data.vendor;
+  if (data.purpose) newObject.purpose = data.purpose;
 
-  mediaObject.page = {};
+  newObject.page = {};
   if ((data.page.product && typeof data.page.product === "boolean") ||
   (data.page.product).toLowerCase() === "true" ||
   (data.page.product).toLowerCase() === "true") {
-    mediaObject.page.product = data.page.product;
+    newObject.page.product = data.page.product;
   }
   if ((data.page.stock && typeof data.page.stock === "boolean") ||
   (data.page.stock).toLowerCase() === "true" ||
   (data.page.stock).toLowerCase() === "true") {
-    mediaObject.page.stock = data.page.stock;
+    newObject.page.stock = data.page.stock;
   }
   if ((data.page.vendor && typeof data.page.vendor === "boolean") ||
   (data.page.vendor).toLowerCase() === "true" ||
   (data.page.vendor).toLowerCase() === "true") {
-    mediaObject.page.vendor = data.page.vendor;
+    newObject.page.vendor = data.page.vendor;
   }
   if ((data.page.brand && typeof data.page.brand === "boolean") ||
   (data.page.brand).toLowerCase() === "true" ||
   (data.page.brand).toLowerCase() === "true") {
-    mediaObject.page.brand = data.page.brand;
+    newObject.page.brand = data.page.brand;
   }
   if ((data.page.category && typeof data.page.category === "boolean") ||
   (data.page.category).toLowerCase() === "true" ||
   (data.page.category).toLowerCase() === "true") {
-    mediaObject.page.category = data.page.category;
+    newObject.page.category = data.page.category;
   }
   if ((data.page.blog && typeof data.page.blog === "boolean") ||
   (data.page.blog).toLowerCase() === "true" ||
   (data.page.blog).toLowerCase() === "true") {
-    mediaObject.page.blog = data.page.blog;
+    newObject.page.blog = data.page.blog;
   }
 
-  if (data.place) mediaObject.place = data.place;
-  if (data.num) mediaObject.num = data.num;
-  if (data.url) mediaObject.url = data.url;
-  if (data.title) mediaObject.title = data.title;
-  if (data.description) mediaObject.description = data.description;
-  if (data.style) mediaObject.style = data.style;
+  if (data.place) newObject.place = data.place;
+  if (data.num) newObject.num = data.num;
+  if (data.url) newObject.url = data.url;
+  if (data.title) newObject.title = data.title;
+  if (data.description) newObject.description = data.description;
+  if (data.style) newObject.style = data.style;
 
   // Create a Media
-  const media = new Media(mediaObject);
+  const media = new Media(newObject);
 
   // Save Product in the database
   return media.save()
@@ -126,52 +126,52 @@ export function update(req, res) {
     return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
   }
 
-  const mediaObject = {};
-  mediaObject.vendor = vendorId;
-  if (data.vendor) mediaObject.vendor = data.vendor;
-  if (data.purpose) mediaObject.purpose = data.purpose;
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (data.vendor) newObject.vendor = data.vendor;
+  if (data.purpose) newObject.purpose = data.purpose;
 
-  mediaObject.page = {};
+  newObject.page = {};
   if ((data.page.product && typeof data.page.product === "boolean") ||
   (data.page.product).toLowerCase() === "true" ||
-  (data.page.product).toLowerCase() === "true") {
-    mediaObject.page.product = data.page.product;
+  (data.page.product).toLowerCase() === "false") {
+    newObject.page.product = data.page.product;
   }
   if ((data.page.stock && typeof data.page.stock === "boolean") ||
   (data.page.stock).toLowerCase() === "true" ||
-  (data.page.stock).toLowerCase() === "true") {
-    mediaObject.page.stock = data.page.stock;
+  (data.page.stock).toLowerCase() === "false") {
+    newObject.page.stock = data.page.stock;
   }
   if ((data.page.vendor && typeof data.page.vendor === "boolean") ||
   (data.page.vendor).toLowerCase() === "true" ||
-  (data.page.vendor).toLowerCase() === "true") {
-    mediaObject.page.vendor = data.page.vendor;
+  (data.page.vendor).toLowerCase() === "false") {
+    newObject.page.vendor = data.page.vendor;
   }
   if ((data.page.brand && typeof data.page.brand === "boolean") ||
   (data.page.brand).toLowerCase() === "true" ||
-  (data.page.brand).toLowerCase() === "true") {
-    mediaObject.page.brand = data.page.brand;
+  (data.page.brand).toLowerCase() === "false") {
+    newObject.page.brand = data.page.brand;
   }
   if ((data.page.category && typeof data.page.category === "boolean") ||
   (data.page.category).toLowerCase() === "true" ||
-  (data.page.category).toLowerCase() === "true") {
-    mediaObject.page.category = data.page.category;
+  (data.page.category).toLowerCase() === "false") {
+    newObject.page.category = data.page.category;
   }
   if ((data.page.blog && typeof data.page.blog === "boolean") ||
   (data.page.blog).toLowerCase() === "true" ||
-  (data.page.blog).toLowerCase() === "true") {
-    mediaObject.page.blog = data.page.blog;
+  (data.page.blog).toLowerCase() === "false") {
+    newObject.page.blog = data.page.blog;
   }
 
-  if (data.place) mediaObject.place = data.place;
-  if (data.num) mediaObject.num = data.num;
-  if (data.url) mediaObject.url = data.url;
-  if (data.title) mediaObject.title = data.title;
-  if (data.description) mediaObject.description = data.description;
-  if (data.style) mediaObject.style = data.style;
+  if (data.place) newObject.place = data.place;
+  if (data.num) newObject.num = data.num;
+  if (data.url) newObject.url = data.url;
+  if (data.title) newObject.title = data.title;
+  if (data.description) newObject.description = data.description;
+  if (data.style) newObject.style = data.style;
 
   // Create a Media
-  const media = new Media(mediaObject);
+  const media = new Media(newObject);
 
   // Find media and update it with the request body
   return Media.findByIdAndUpdate(recordId, media, { new: true })

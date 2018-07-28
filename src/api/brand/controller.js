@@ -85,11 +85,8 @@ export function update(req, res) {
   if (data.name) newObject.order = data.name;
   if (data.description) newObject.title = data.description;
 
-  // Create a record
-  const record = new Brand(newObject);
-
   // Find brand and update it with the request body
-  return Brand.findByIdAndUpdate(recordId, { record }, { new: true })
+  return Brand.findByIdAndUpdate(recordId, { newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

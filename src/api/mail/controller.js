@@ -2,33 +2,48 @@
 import Mail, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Mail
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Mail name can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+
+  if (userType === "admin" || userType === "vendor") {
+    // ignore
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Create a Mail
-  const mail = new Mail({
-    name: req.body.name || "Untitled Mail",
-    mail_title: req.body.mail_title,
-    mail_subject: req.body.mail_subject,
-    mail_body: req.body.mail_body,
-  });
+  // Validate request
+  if (!data.name) return fail(res, 422, "name cannot be empty.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty.");
+  if (!data.language) return fail(res, 422, "language cannot be empty.");
+  if (!data.mailSubject) return fail(res, 422, "mailSubject cannot be empty.");
+  if (!data.mailBody) return fail(res, 422, "mailBody cannot be empty.");
+  if (!data.recipient) return fail(res, 422, "recipient cannot be empty.");
+  if (!data.language) return fail(res, 422, "language cannot be empty.");
 
-  // Save Mail in the database
-  mail.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Mail.",
-      });
-    });
-};
+  const newObject = {};
+  newObject.createdBy = userId;
+  newObject.createdType = userType;
+  if (data.name) newObject.name = data.name;
+  if (data.kind) newObject.kind = data.kind;
+  if (data.language) newObject.language = data.language;
+  if (data.mailSubject) newObject.mailSubject = data.mailSubject;
+  if (data.mailBody) newObject.mailBody = data.mailBody;
+  if (data.recipient) newObject.recipient = data.recipient;
+  if (data.language) newObject.language = data.language;
+
+  // Create a record
+  const record = new Mail(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -54,40 +69,48 @@ export function findOne(req, res) {
     });
 }
 
-// Update a mail identified by the mailId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Mail name can not be empty",
-    });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.mailId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+
+  if (userType === "admin" || userType === "vendor") {
+    // ignore
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Find mail and update it with the request body
-  Mail.findByIdAndUpdate(req.params.mailId, {
-    name: req.body.name || "Untitled Mail",
-    mail_title: req.body.mail_title,
-    mail_subject: req.body.mail_subject,
-    mail_body: req.body.mail_body,
-  }, { new: true })
-    .then((mail) => {
-      if (!mail) {
-        res.status(404).send({
-          message: `Mail not found with id ${req.params.mailId}`,
-        });
-      }
-      res.send(mail);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Mail not found with id ${req.params.mailId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating mail with id ${req.params.mailId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.name) return fail(res, 422, "name cannot be empty.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty.");
+  if (!data.language) return fail(res, 422, "language cannot be empty.");
+  if (!data.mailSubject) return fail(res, 422, "mailSubject cannot be empty.");
+  if (!data.mailBody) return fail(res, 422, "mailBody cannot be empty.");
+  if (!data.recipient) return fail(res, 422, "recipient cannot be empty.");
+  if (!data.language) return fail(res, 422, "language cannot be empty.");
+
+  const newObject = {};
+  newObject.createdBy = userId;
+  newObject.createdType = userType;
+  if (data.name) newObject.name = data.name;
+  if (data.kind) newObject.kind = data.kind;
+  if (data.language) newObject.language = data.language;
+  if (data.mailSubject) newObject.mailSubject = data.mailSubject;
+  if (data.mailBody) newObject.mailBody = data.mailBody;
+  if (data.recipient) newObject.recipient = data.recipient;
+  if (data.language) newObject.language = data.language;
+
+  // Find record and update it with id
+  return Mail.findByIdAndUpdate(recordId, { newObject }, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
 
 // Delete a mail with the specified mailId in the request
 exports.delete = (req, res) => {
