@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as review from "./controller";
-import { isValidAdmin, isValidCustomer } from "../auth/controller";
+import { isValidVendor, isValidCustomer } from "../auth/controller";
 
 const router = express.Router();
 

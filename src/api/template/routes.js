@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as template from "./controller";
-import { isValidAdmin } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ const router = express.Router();
  * @apiError 404 Template not found.
  * @apiError 401 master access only.
  */
-router.post("/templates", isValidAdmin, template.create);
+router.post("/templates", isValidVendor, template.create);
 
 /**
  * @api {get} /templates Retrieve templates
@@ -31,7 +31,7 @@ router.post("/templates", isValidAdmin, template.create);
  * @apiSuccess {Object[]} rows List of Templates.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/templates", isValidAdmin, template.findAll);
+router.get("/templates", isValidVendor, template.findAll);
 
 /**
  * @api {get} /templates/:id Retrieve template
@@ -41,7 +41,7 @@ router.get("/templates", isValidAdmin, template.findAll);
  * @apiError {Object} 400 Some parameters may contain invalid values.
  * @apiError 404 Product not found.
  */
-router.get("/templates/:templateId", isValidAdmin, template.findOne);
+router.get("/templates/:templateId", isValidVendor, template.findOne);
 
 /**
  * @api {put} /templates/:id Update template
@@ -70,6 +70,6 @@ router.put("/templates/:templateId", template.update);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.delete("/templates/:templateId", isValidAdmin, template.delete);
+router.delete("/templates/:templateId", isValidVendor, template.delete);
 
 export default router;

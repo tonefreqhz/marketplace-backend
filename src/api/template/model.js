@@ -23,7 +23,32 @@ const TemplateSchema = new Schema({
 
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
 
+TemplateSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      name: this.name,
+      page: this.page,
+      icon: this.icon,
+      style: this.style,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
+
 const Template = mongoose.model("Template", TemplateSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Template;

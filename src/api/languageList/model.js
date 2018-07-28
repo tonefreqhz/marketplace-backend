@@ -6,7 +6,7 @@ import mongoose, { Schema } from "mongoose";
 
 const LanguageListSchema = new Schema({
   name: { type: String, required: [true, "Why no name?"] },
-  db_field: { type: String, required: [true, "Why no langauge table field name?"] },
+  dbField: { type: String, required: [true, "Why no langauge table field name?"] },
   icon: { type: String, required: [false, "Why no image?"] },
   standing: {
     type: String,
@@ -17,7 +17,31 @@ const LanguageListSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
 
+LanguageListSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      name: this.name,
+      dbField: this.dbField,
+      icon: this.icon,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
+
 const LanguageList = mongoose.model("LanguageList", LanguageListSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default LanguageList;

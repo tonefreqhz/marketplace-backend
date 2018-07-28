@@ -9,12 +9,12 @@ import Vendor from "../vendor/model";
 const StockSchema = new Schema({
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   product: { type: Schema.Types.ObjectId, ref: "Product" },
-  order_num: { type: String, required: [true, "Why no order number?"] },
+  orderNum: { type: String, required: [true, "Why no order number?"] },
   kind: { type: String, enum: ["add", "destroy"], required: [true, "Why no kind?"] },
   quantity: { type: Number, required: [true, "Why no quantity?"] },
   available: { type: Number, default: 0 },
-  unit_cost: { type: Number, required: [true, "Why no unit cost?"] },
-  unit_price: { type: Number, required: [true, "Why no unit price?"] },
+  unitCost: { type: Number, required: [true, "Why no unit cost?"] },
+  unitPrice: { type: Number, required: [true, "Why no unit price?"] },
   description: { type: String, required: [true, "Why no description?"] },
   standing: {
     type: String,
@@ -26,7 +26,37 @@ const StockSchema = new Schema({
 
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
 
+StockSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      vendor: this.vendor,
+      product: this.product,
+      orderNum: this.orderNum,
+      kind: this.kind,
+      quantity: this.quantity,
+      available: this.available,
+      unitCost: this.unitCost,
+      unitPrice: this.unitPrice,
+      description: this.description,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
+
 const Stock = mongoose.model("Stock", StockSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Stock;

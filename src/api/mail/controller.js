@@ -1,5 +1,5 @@
 
-import Mail from "./model";
+import Mail, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Mail
@@ -40,9 +40,9 @@ export function findAll(req, res) {
 // Retrieve a single record with a given recordId
 export function findOne(req, res) {
   const recordId = req.params.mailId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
-  return Mail.findById(req.params.recordId)
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return Mail.findById(recordId)
     .then((result) => {
       if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
       return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);

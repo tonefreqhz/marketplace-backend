@@ -32,7 +32,7 @@ router.post("/categories", isValidVendor, category.create);
  * @apiSuccess {Object[]} rows List of Categorys.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/categories",category.findAll);
+router.get("/categories", category.findAll);
 
 
 /**

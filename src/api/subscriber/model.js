@@ -21,7 +21,29 @@ const SubscriberSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
 
+SubscriberSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      email: this.email,
+      frequency: this.frequency,
+      interest: this.interest,
+    };
+
+    return full ? {
+      ...view,
+      standing: this.standing,
+      updated: this.updated,
+    } : view;
+  },
+};
+
 const Subscriber = mongoose.model("Subscriber", SubscriberSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Subscriber;

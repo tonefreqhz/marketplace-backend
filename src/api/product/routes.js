@@ -5,7 +5,7 @@
 
 import express from "express";
 import * as product from "./controller";
-import { isValidAdmin, isValidVendor } from "../auth/controller";
+import { isValidVendor } from "../auth/controller";
 
 const router = express.Router();
 
@@ -163,7 +163,7 @@ router.get("/products/operations/:productIds(*)", product.findSome);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.put("/products/:productId", isValidAdmin, product.update);
+router.put("/products/:productId", isValidVendor, product.update);
 router.put("/vendor/products/:productId", isValidVendor, product.update);
 
 /**
@@ -176,7 +176,7 @@ router.put("/vendor/products/:productId", isValidVendor, product.update);
  * @apiError 404 Product not found.
  * @apiError 401 master access only.
  */
-router.delete("/products/:productId", isValidAdmin, product.delete);
+router.delete("/products/:productId", isValidVendor, product.delete);
 router.delete("/vendor/products/:productId", isValidVendor, product.delete);
 
 export default router;

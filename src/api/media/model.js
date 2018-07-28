@@ -38,7 +38,38 @@ const MediaSchema = new Schema({
   updated: { type: Date, default: Date.now },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
 
+MediaSchema.methods = {
+  view(full) {
+    const view = {
+      id: this.id,
+      media_type: this.media_type,
+      vendor: this.vendor,
+      purpose: this.purpose,
+      page: this.page,
+      place: this.place,
+      num: this.num,
+      url: this.url,
+      title: this.title,
+      description: this.description,
+      style: this.style,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    return full ? {
+      ...view,
+      updated: this.updated,
+      standing: this.standing,
+    } : view;
+  },
+};
+
 const Media = mongoose.model("Media", MediaSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Media;

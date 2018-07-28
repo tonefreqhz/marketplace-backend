@@ -4,7 +4,7 @@
 
 import express from "express";
 import * as customer from "./controller";
-import { isValidAdmin, isValidCustomer } from "../auth/controller";
+import { isValidVendor, isValidCustomer } from "../auth/controller";
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ const router = express.Router();
  * @apiSuccess {Object[]} rows List of Customers.
  * @apiError {Object} 400 Some parameters may contain invalid values.
  */
-router.get("/customers", isValidAdmin, customer.findAll);
+router.get("/customers", isValidVendor, customer.findAll);
 
 
 /**
@@ -68,6 +68,6 @@ router.put("/customers/:customerId", isValidCustomer, customer.update);
  * @apiError 404 Customer not found.
  * @apiError 401 master access only.
  */
-router.delete("/customers/:customerId", isValidAdmin, customer.delete);
+router.delete("/customers/:customerId", isValidVendor, customer.delete);
 
 export default router;

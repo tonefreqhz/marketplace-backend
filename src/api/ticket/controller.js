@@ -1,5 +1,5 @@
 
-import Ticket from "./model";
+import Ticket, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Ticket
@@ -43,9 +43,9 @@ export function findAll(req, res) {
 // Retrieve a single record with a given recordId
 export function findOne(req, res) {
   const recordId = req.params.ticketId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
-  return Ticket.findById(req.params.recordId)
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return Ticket.findById(recordId)
     .then((result) => {
       if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
       return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
@@ -98,8 +98,8 @@ exports.update = (req, res) => {
 // Delete a ticket with the specified ticketId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.ticketId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   return Ticket.findByIdAndRemove(recordId)
     .then((record) => {
       if (!record) return notFound(res, `Record not found with id ${recordId}`);

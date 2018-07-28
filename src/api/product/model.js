@@ -29,19 +29,19 @@ const ProductSchema = new Schema({
     tag: { type: Array, default: [] },
   },
   variety: {
-    options: { type: Boolean, required: [false, "Why no Deal?"], default: false },
+    options: { type: Boolean, default: false },
     parent: { type: String, default: "" },
   },
   price: {
     deal: { type: Boolean, required: [false, "Why no Deal?"], default: false },
     valuation: { type: String, enum: ["FIFO", "LIFO", "AVCO"], default: "LIFO", required: [true, "Why no valuation?"] },
-    unit_price: { type: Number, required: [true, "Why no Unit price?"] },
-    cost_price: { type: Number, required: [false, "Why no cost price?"] },
-    slash_price: { type: Number },
+    unitPrice: { type: Number, required: [true, "Why no Unit price?"] },
+    costPrice: { type: Number, required: [false, "Why no cost price?"] },
+    slashPrice: { type: Number },
     discount: { type: Number, required: [false, "Why no Discount?"], default: 0.0 },
-    discount_type: { type: String, enum: ["fixed", "percent"], default: "percent" },
+    discountType: { type: String, enum: ["fixed", "percent"], default: "percent" },
     tax: { type: Number, required: [false, "Why no Tax?"], default: 0.0 },
-    tax_type: { type: String, enum: ["fixed", "percent"], default: "percent" },
+    taxType: { type: String, enum: ["fixed", "percent"], default: "percent" },
   },
   images: {
     image_sm: { type: String, default: "default-product-sm-image.jpg" },
@@ -55,30 +55,30 @@ const ProductSchema = new Schema({
     image_left: { type: String, default: "default-product-left-image.jpg" },
     icon: { type: String, default: "default-product-icon.jpg" },
   },
-  shipping_details: {
+  shippingDetails: {
     cost: { type: Number, default: 0.0 },
     weight: { type: String, max: 20 },
     length: { type: String, max: 20 },
     width: { type: String, max: 20 },
     height: { type: String, max: 20 },
   },
-  manufacture_details: {
+  manufactureDetails: {
     make: { type: String, max: 100 },
-    model_number: { type: String, max: 100 },
-    release_date: { type: Date },
+    modelNumber: { type: String, max: 100 },
+    releaseDate: { type: Date },
   },
   download: {
     downloadable: { type: Boolean, required: [false, "Why no Download?"], default: false },
-    download_name: { type: String, default: "Bezop-Product-Download" },
+    downloadName: { type: String, default: "Bezop-Product-Download" },
   },
-  extra_fields: [{
-    name: { type: String, max: 20 },
-    value: { type: String, max: 100 },
+  extraFields: [{
+    name: { type: String, max: 200 },
+    value: { type: String, max: 500 },
   }],
   analytics: {
     feature: { type: Boolean, default: false },
-    view_date: { type: Date, default: Date.now },
-    view_count: { type: Number, default: 1 },
+    viewDate: { type: Date, default: Date.now },
+    viewCount: { type: Number, default: 1 },
   },
   standing: {
     type: String,
@@ -94,8 +94,8 @@ const ProductSchema = new Schema({
   timestamps: true,
   toJSON: {
     virtuals: true,
-    transform :(obj, ret) => { delete ret._id; },
-  }
+    transform: (obj, ret) => { delete ret._id; },
+  },
 });
 
 
@@ -115,10 +115,10 @@ ProductSchema.methods = {
       variety: this.variety,
       price: this.price,
       images: this.images,
-      shipping_details: this.shipping_details,
-      manufacture_details: this.manufacture_details,
+      shippingDetails: this.shippingDetails,
+      manufactureDetails: this.manufactureDetails,
       download: this.download,
-      extra_fields: this.extra_fields,
+      extraFields: this.extraFields,
       analytics: this.analytics,
     };
 
@@ -127,8 +127,9 @@ ProductSchema.methods = {
       standing: this.standing,
       updated: this.updated,
     } : view;
-  }
+  },
 };
 
 const Product = mongoose.model("Product", ProductSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Product;

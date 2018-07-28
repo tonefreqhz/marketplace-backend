@@ -58,4 +58,5 @@ categorySchema.methods = {
 const model = mongoose.model("Category", categorySchema);
 
 export const { schema } = model.schema;
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default model;

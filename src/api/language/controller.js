@@ -1,5 +1,5 @@
 
-import Language from "./model";
+import Language, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
 // Create and Save a new Language
@@ -44,9 +44,9 @@ export function findAll(req, res) {
 // Retrieve a single record with a given recordId
 export function findOne(req, res) {
   const recordId = req.params.languageId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
-  return Language.findById(req.params.recordId)
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return Language.findById(recordId)
     .then((result) => {
       if (!result) return notFound(res, `Error: record not found with id ${recordId}.`);
       return success(res, 200, result, `retrieving record was successfully with id ${recordId}.`);
@@ -99,8 +99,8 @@ exports.update = (req, res) => {
 // Delete a language with the specified languageId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.languageId || "";
-  // Validate request
-  if (!recordId) return fail(res, 400, "Invalid record Id as request parameter");
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   return Language.findByIdAndRemove(recordId)
     .then((record) => {
       if (!record) return notFound(res, `Record not found with id ${recordId}`);

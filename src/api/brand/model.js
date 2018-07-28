@@ -3,7 +3,6 @@
 */
 
 import mongoose, { Schema } from "mongoose";
-import Product from "../product/model";
 import Vendor from "../vendor/model";
 
 const BrandSchema = new Schema({
@@ -12,7 +11,7 @@ const BrandSchema = new Schema({
   icon: { type: String, required: [false, "Why no logo?"] },
   banner: { type: String, required: [false, "Why no banner?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
-  view_count: { type: Number, default: 1 },
+  viewCount: { type: Number, default: 1 },
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],
@@ -52,4 +51,5 @@ BrandSchema.methods = {
 };
 
 const Brand = mongoose.model("Brand", BrandSchema);
+export const { ObjectId } = mongoose.Types.ObjectId;
 export default Brand;
