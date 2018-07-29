@@ -202,16 +202,14 @@ exports.delete = (req, res) => {
 
 
 // The function that handle the upload of picture
-function updateImageUpload(Collection, req, res, collectionType, parent = null) {
+function updateImageUpload(Collection, req, res, collectionType) {
 // Get the document of the collection by id
   return Collection.findById(req.params.mediaId)
     .then((collection) => {
       // check if the document exit in the collection
       if (!collection) {
         // if the document doec not exit return collectionType not found
-        return res.status(404).send({
-          message: `${collectionType} not found with id ${req.params.collectionId}`,
-        });
+        return fail(res, 422, `${collectionType} with id ${req.params.mediaId} does not exist`);
       }
       // if it document exist
       // get the data url extension
@@ -223,58 +221,67 @@ function updateImageUpload(Collection, req, res, collectionType, parent = null) 
         return Jimp.read(Buffer.from(req.body.src.replace(/^data:image\/(png|jpeg);base64,/, ""), "base64"))
           .then((image) => {
             // create the filename
-            const filename = `/images/${req.params.collectionId}${FileSys.generateRandomFilename(imageExtension)}`;
+            const filename = `/images/media/${req.params.mediaId}${FileSys.generateRandomFilename(imageExtension)}`;
             // Reduce the size of the image and save using the above file name
             image.quality(60)
               .write(`public${filename}`);
+              //Check if the property has parent 
+              //by checking if | exist in the name
+              //If there is parent split the names
+              const names = req.body.label.split("|");
             // assign the file url to the feild of the document
-            if (parent !== null) {
-              collection[parent][req.body.label] = `${process.env.API_URL}${filename}`;
-            } else {
-              collection[req.body.label] = `${process.env.API_URL}${filename}`;
+            switch(names.length){
+              case 1:
+                  collection[names[0]] = `${process.env.API_URL}${filename}`;
+              break;
+              case 2:
+                  collection[names[1]][names[0]] = `${process.env.API_URL}${filename}`;
+              break
+              case 3:
+                  collection[names[2]][names[1]][names[0]] = `${process.env.API_URL}${filename}`;
+              break;
+              default:
+                  return fail(res, 422, "You have not specify the image");
             }
             // save the collection with the updated document
             collection.save()
               .then(data =>
               // return the new updated document
-                res.status(200)
-                  .send(data))
+              success(res, 200, data, "Image successfully uploaded"))
               .catch((err) => {
                 // if there is an error saving the document
                 // return the following feedback
                 if (err.kind === "ObjectId") {
-                  return res.status(404).send({
-                    message: "There was an error saving image",
-                  });
+                  return notFound(res, "There was an error saving image");
                 }
-                return res.status(404).send({
-                  message: "There was error save ",
-                });
+                return fail(res, 500, "There was as error saving the image");
               });
           });
       }
       // it the file is not either jpeg or png return
-      return res.status(404).send({
-        message: "only png, jpg and jpeg are allowed",
-      });
+      return fail(res, 422, "only png, jpg and jpeg are allowed");
     }).catch((err) => {
       if (err.kind === "ObjectId") {
-        return res.status(404).send({
-          message: `${collectionType} not found with id ${req.params.collectionId}`,
-        });
+        return notFound(res, `${collectionType} not found with id ${req.params.mediaId}`);
       }
-      return res.status(500).send({
-        message: `Error retrieving ${collectionType.toLowerCase()} with id ${req.params.collectionId}`,
-      });
+      return fail(res, 500, `Error retrieving ${collectionType.toLowerCase()} with id ${req.params.mediaId}`);
     });
 }
 
 
 export function updateImg(req, res) {
+
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
+  }
+
   if (!req.body.collection) {
-    res.status(400).send({
-      message: "image collection can not be empty",
-    });
+    fail(res, 422, "You have not specify where to load the image");
   }
 
 

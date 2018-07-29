@@ -32,7 +32,7 @@ export function create(req, res) {
   const data = req.body || {};
   const { userId, userType } = res.locals;
   let vendorId;
-
+  console.log(userType);
   if (userType === "vendor") {
     vendorId = userId;
   } else {
@@ -64,7 +64,10 @@ export function create(req, res) {
   if (data.brand) newObject.brand = data.brand;
 
   newObject.description = {};
-  if (data.description.color) newObject.description.color = data.description.color;
+  if (data.description.color && typeof data.description.color === "object"){
+    newObject.description.color = [];
+    newObject.description.color = data.description.color;
+  } 
   if (data.description.unit) newObject.description.unit = data.description.unit;
   if (data.description.long) newObject.description.long = data.description.long;
   if (data.description.short) newObject.description.short = data.description.short;
@@ -102,23 +105,23 @@ export function create(req, res) {
   (data.price.valuation).toUpperCase() === "FIFO" || (data.price.valuation).toUpperCase() === "AVCO")) {
     newObject.price.valuation = (data.price.valuation).toUpperCase();
   }
-  if (data.price.unitPrice && typeof data.price.unitPrice === "number") {
-    newObject.price.unitPrice = data.price.unitPrice;
+  if (data.price.unitPrice && !Number.isNaN(parseFloat(data.price.unitPrice))) {
+    newObject.price.unitPrice = parseFloat(data.price.unitPrice, 10);
   }
-  if (data.price.costPrice && typeof data.price.costPrice === "number") {
+  if (data.price.costPrice && !Number.isNaN(parseFloat(data.price.costPrice))) {
     newObject.price.costPrice = data.price.costPrice;
   }
-  if (data.price.slashPrice && typeof data.price.slashPrice === "number") {
+  if (data.price.slashPrice && !Number.isNaN(parseFloat(data.price.slashPrice ))) {
     newObject.price.slashPrice = data.price.slashPrice;
   }
-  if (data.price.discount && typeof data.price.discount === "number") {
+  if (data.price.discount && !Number.isNaN(parseFloat(data.price.discount))) {
     newObject.price.discount = data.price.discount;
   }
   if (data.price.discountType && ((data.price.discountType).toLowerCase() === "fixed" ||
   (data.price.discountType).toLowerCase() === "percent")) {
     newObject.price.discountType = (data.price.discountType).toLowerCase();
   }
-  if (data.price.tax && typeof data.price.tax === "number") {
+  if (data.price.tax && !Number.isNaN(parseFloat(data.price.tax))) {
     newObject.price.tax = data.price.tax;
   }
   if (data.price.taxType && ((data.price.taxType).toLowerCase() === "fixed" ||
@@ -206,7 +209,7 @@ export async function findAll(req, res) {
   if (vendor && vendor.id) {
     vendorId = vendor.id;
   } else {
-    return fail(res, 422, "Error: unkown vendor.");
+    return fail(res, 422, "Error: unknown vendor.");
   }
 
   // console.log("\r\n vendor", vendor);
@@ -238,7 +241,7 @@ export async function findAll(req, res) {
 
   const filter3 = {
     vendor: vendorId,
-    "analytics.deal": true,
+    "price.deal": true,
   };
 
   let sort = { createdAt: -1 };
