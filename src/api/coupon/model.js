@@ -39,9 +39,9 @@ CouponSchema.methods = {
       amount: this.amount,
       specArray: this.specArray,
       till: this.till,
-      standing: this.standing,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      standing: this.standing,
     };
 
     return full ? {

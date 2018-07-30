@@ -108,7 +108,7 @@ export function update(req, res) {
 
 
   // Find record and update it with id
-  return Message.findByIdAndUpdate(recordId, { newObject }, { new: true })
+  return Message.findByIdAndUpdate(recordId, { ...newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

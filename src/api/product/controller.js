@@ -474,7 +474,7 @@ export function update(req, res) {
   newObject.updated = Date.now();
 
   // Find product and update it with the request body
-  return Product.findByIdAndUpdate(productId, newObject, { new: true })
+  return Product.findByIdAndUpdate(productId, ...newObject, { new: true })
     .then((result) => {
       if (!result) {
         return notFound(res, `Product not found with id ${productId} first`);

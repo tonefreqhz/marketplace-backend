@@ -4,6 +4,8 @@
 
 import mongoose, { Schema } from "mongoose";
 import Product from "./../product/model";
+import Currency from "./../currency/model";
+import LanguageList from "./../languageList/model";
 import Template from "./../template/model";
 import { randomNonce } from "./../../services/helpers";
 

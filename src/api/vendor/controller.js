@@ -65,7 +65,7 @@ export function update(req, res) {
   }
 
   // Validate request
-  if (!data.username) return fail(res, 422, "username cannot be empty and must be alphanumeric.");
+  //if (!data.username) return fail(res, 422, "username cannot be empty and must be alphanumeric.");
   if (!data.email) return fail(res, 422, "email cannot be empty");
 
   const newObject = {};
