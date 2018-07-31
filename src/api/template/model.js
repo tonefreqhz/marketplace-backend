@@ -8,16 +8,20 @@ const TemplateSchema = new Schema({
   name: { type: String, required: [true, "Why no template name"] },
   page: {
     type: String,
-    enum: ["theme", "home", "profile", "product", "details", "invoice", "ticket"],
+    enum: ["theme", "home", "profile", "product", "details", "invoice", "ticket", "newsletter", "mail"],
     required: [true, "Why no page type?"],
   },
-  icon: { type: String, required: [true, "Why no template image"] },
+  icon: { type: String, required: [false, "Why no template image"] },
   style: { type: String, required: [true, "Why no stylesheet"] },
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],
     default: "active",
     required: [true, "Why no status?"],
+  },
+  placeholder: {
+    attribute: { type: String, required: [false, "Why no property name"] },
+    value: { type: String, required: [false, "Why no value name"] },
   },
   updated: { type: Date, default: Date.now },
 
