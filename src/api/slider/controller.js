@@ -2,36 +2,54 @@
 import Slider, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Slider
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Slider name can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
   }
 
-  // Create a Slider
-  const slider = new Slider({
-    name: req.body.name,
-    vendor_id: req.body.vendor_id,
-    kind: req.body.kind,
-    elements: req.body.elements,
-    place: req.body.place,
-    title: req.body.title,
-    style: req.body.style,
-  });
+  // Validate request
+  if (!data.vendor) return fail(res, 422, "vendor id cannot be empty.");
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid vendor Id");
+  if (!data.name) return fail(res, 422, "slide name cannot be empty.");
+  if (!data.kind) return fail(res, 422, "slide type cannot be empty");
+  if (!(["text", "image"].indexOf(data.kind) >= 0)) {
+    return fail(res, 422, "slide type must be either of image or text.");
+  }
+  if (!data.page) return fail(res, 422, "slide page cannot be empty");
+  if (!(["text", "image"].indexOf(data.page) >= 0)) {
+    return fail(res, 422, "slide page must be either of product, brand, category or blog.");
+  }
+  if (!data.place) return fail(res, 422, "slide position cannot be empty");
+  if (!data.elements) return fail(res, 422, "slide elements cannot be empty");
+  if (!data.elements.isArray) return fail(res, 422, "slide elements must be of type Array");
 
-  // Save Slider in the database
-  slider.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Slider.",
-      });
-    });
-};
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (!data.name) newObject.name = data.name;
+  if (!data.kind) newObject.kind = data.kind;
+  if (!data.page) newObject.page = data.page;
+  if (!data.place) newObject.place = data.place;
+  if (!data.elements) newObject.elements = data.elements;
+  if (!data.style) newObject.style = data.style;
+
+  // Create a record
+  const record = new Slider(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -57,38 +75,55 @@ export function findOne(req, res) {
     });
 }
 
-// Update a slider identified by the sliderId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.content) {
-    res.status(400).send({
-      message: "Slider content can not be empty",
-    });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.reviewId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
   }
 
-  // Find slider and update it with the request body
-  Slider.findByIdAndUpdate(req.params.sliderId, {
-    title: req.body.title || "Untitled Slider",
-    content: req.body.content,
-  }, { new: true })
-    .then((slider) => {
-      if (!slider) {
-        res.status(404).send({
-          message: `Slider not found with id ${req.params.sliderId}`,
-        });
-      }
-      res.send(slider);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Slider not found with id ${req.params.sliderId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating slider with id ${req.params.sliderId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.vendor) return fail(res, 422, "vendor id cannot be empty.");
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid vendor Id");
+  if (!data.name) return fail(res, 422, "slide name cannot be empty.");
+  if (!data.kind) return fail(res, 422, "slide type cannot be empty");
+  if (!(["text", "image"].indexOf(data.kind) >= 0)) {
+    return fail(res, 422, "slide type must be either of image or text.");
+  }
+  if (!data.page) return fail(res, 422, "slide page cannot be empty");
+  if (!(["text", "image"].indexOf(data.page) >= 0)) {
+    return fail(res, 422, "slide page must be either of product, brand, category or blog.");
+  }
+  if (!data.place) return fail(res, 422, "slide position cannot be empty");
+  if (!data.elements) return fail(res, 422, "slide elements cannot be empty");
+  if (!data.elements.isArray) return fail(res, 422, "slide elements must be of type Array");
+
+  const newObject = {};
+  newObject.vendor = vendorId;
+  if (!data.name) newObject.name = data.name;
+  if (!data.kind) newObject.kind = data.kind;
+  if (!data.page) newObject.page = data.page;
+  if (!data.place) newObject.place = data.place;
+  if (!data.elements) newObject.elements = data.elements;
+  if (!data.style) newObject.style = data.style;
+
+  // Find record and update it with id
+  return Slider.findByIdAndUpdate(recordId, newObject, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
+
 
 // Delete a slider with the specified sliderId in the request
 exports.delete = (req, res) => {
