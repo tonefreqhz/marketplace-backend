@@ -2,34 +2,47 @@
 import Setting, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Setting
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.kind) {
-    res.status(400).send({
-      message: "Setting kind can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let adminId;
+
+  if (userType === "admin") {
+    adminId = userId;
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Create a Setting
-  const setting = new Setting({
-    code: req.body.code,
-    kind: req.body.kind,
-    name: req.body.name,
-    value: req.body.value,
-    description: req.body.description,
-  });
+  // Validate request
+  if (!data.code) return fail(res, 422, "code cannot be empty.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty");
+  if (!(["system", "users", "operations"].indexOf(data.kind) >= 0)) {
+    return fail(res, 422, "kind must be either of system, users, operations.");
+  }
+  if (!data.name) return fail(res, 422, "name cannot be empty");
+  if (!data.value) return fail(res, 422, "value cannot be empty");
+  if (!data.description) return fail(res, 422, "description cannot be empty");
 
-  // Save Setting in the database
-  setting.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Setting.",
-      });
-    });
-};
+  const newObject = {};
+  newObject.admin = adminId;
+  if (!data.code) newObject.code = data.code;
+  if (!data.kind) newObject.kind = data.kind;
+  if (!data.name) newObject.name = data.name;
+  if (!data.value) newObject.value = data.value;
+  if (!data.description) newObject.description = data.description;
+
+  // Create a record
+  const record = new Setting(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 
 // Retrieve and return all records from the database.
@@ -56,38 +69,48 @@ export function findOne(req, res) {
     });
 }
 
-// Update a setting identified by the settingId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.content) {
-    res.status(400).send({
-      message: "Setting content can not be empty",
-    });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.reviewId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let adminId;
+
+  if (userType === "admin") {
+    adminId = userId;
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Find setting and update it with the request body
-  Setting.findByIdAndUpdate(req.params.settingId, {
-    title: req.body.title || "Untitled Setting",
-    content: req.body.content,
-  }, { new: true })
-    .then((setting) => {
-      if (!setting) {
-        res.status(404).send({
-          message: `Setting not found with id ${req.params.settingId}`,
-        });
-      }
-      res.send(setting);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Setting not found with id ${req.params.settingId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating setting with id ${req.params.settingId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.code) return fail(res, 422, "code cannot be empty.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty");
+  if (!(["system", "users", "operations"].indexOf(data.kind) >= 0)) {
+    return fail(res, 422, "kind must be either of system, users, operations.");
+  }
+  if (!data.name) return fail(res, 422, "name cannot be empty");
+  if (!data.value) return fail(res, 422, "value cannot be empty");
+  if (!data.description) return fail(res, 422, "description cannot be empty");
+
+  const newObject = {};
+  newObject.admin = adminId;
+  if (!data.code) newObject.code = data.code;
+  if (!data.kind) newObject.kind = data.kind;
+  if (!data.name) newObject.name = data.name;
+  if (!data.value) newObject.value = data.value;
+  if (!data.description) newObject.description = data.description;
+
+  // Find record and update it with id
+  return Setting.findByIdAndUpdate(recordId, newObject, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
+
 
 // Delete a setting with the specified settingId in the request
 exports.delete = (req, res) => {

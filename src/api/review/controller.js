@@ -2,45 +2,50 @@
 import Review, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Review
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.subject) {
-    res.status(404)
-      .json({
-        success: false,
-        data: [],
-        message: "Review content can not be empty",
-      });
+
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let customerId;
+
+  if (userType === "customer") {
+    customerId = userId;
+  } else {
+    return fail(res, 422, `Only customers are allowed to update this record not ${userType}`);
   }
 
-  // Create a Review
-  const newReview = new Review({
-    customer_id: req.body.customer_id,
-    subject: req.body.subject,
-    subject_id: req.body.subject_id,
-    comment: req.body.comment,
-    rating: req.body.rating,
-  });
+  // Validate request
+  if (!data.vendor) return fail(res, 422, "vendor id cannot be empty.");
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid vendor Id");
+  if (!data.subject) return fail(res, 422, "subject cannot be empty");
+  if (!(["product", "category", "brand", "vendor", "stock", "order"].indexOf(data.subject) >= 0)) {
+    return fail(res, 422, "subject must be either of product, category, brand, vendor, stock, or order");
+  }
+  if (!data.subjectId) return fail(res, 422, "subjectId cannot be empty");
+  if (!ObjectId.isValid(data.subjectId)) return fail(res, 422, "Invalid subject Id");
+  if (!data.rating) return fail(res, 422, "rating cannot be empty");
+  if (!(Number(data.rating) > 0 && Number(data.rating) < 6)) return fail(res, 422, "rating must be between [1 and 5].");
 
-  // Save Review in the database
-  newReview.save()
-    .then((review) => {
-      res.status(200)
-        .json({
-          success: true,
-          data: review,
-          message: "Record(s)",
-        });
-    }).catch((err) => {
-      res.status(500)
-        .json({
-          success: false,
-          data: [],
-          message: err.message || "Some error occurred while creating the Review.",
-        });
-    });
-};
+  const newObject = {};
+  newObject.customer = customerId;
+  if (!data.vendor) newObject.vendor = data.vendor;
+  if (!data.subject) newObject.subject = data.subject;
+  if (!data.subjectId) newObject.subjectId = data.subjectId;
+  if (!data.comment) newObject.comment = data.comment;
+  if (!data.rating) newObject.rating = data.rating;
+
+  // Create a record
+  const record = new Review(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -66,50 +71,50 @@ export function findOne(req, res) {
     });
 }
 
-// Update a review identified by the reviewId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.subject) {
-    res.status(400)
-      .json({
-        success: false,
-        data: [],
-        message: "Review subject can not be empty",
-      });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.reviewId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let customerId;
+
+  if (userType === "customer") {
+    customerId = userId;
+  } else {
+    return fail(res, 422, `Only customers are allowed to update this record not ${userType}`);
   }
 
-  // Find review and update it with the request body
-  Review.findByIdAndUpdate(req.params.reviewId, {
-    customer_id: req.body.customer_id,
-    subject: req.body.subject,
-    subject_id: req.body.subject_id,
-    comment: req.body.comment,
-    rating: req.body.rating,
-  }, { new: true })
-    .then((review) => {
-      if (!review) {
-        res.status(404)
-          .json({
-            success: false,
-            data: [],
-            message: `Review not found with id ${req.params.reviewId}`,
-          });
-      }
-      res.send(review);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404)
-          .json({
-            success: false,
-            data: [],
-            message: err.message || `Review not found with id ${req.params.reviewId}`,
-          });
-      }
-      res.status(500).send({
-        message: `Error updating review with id ${req.params.reviewId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.vendor) return fail(res, 422, "vendor id cannot be empty.");
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid vendor Id");
+  if (!data.subject) return fail(res, 422, "subject cannot be empty");
+  if (!(["product", "category", "brand", "vendor", "stock", "order"].indexOf(data.subject) >= 0)) {
+    return fail(res, 422, "subject must be either of product, category, brand, vendor, stock, or order");
+  }
+  if (!data.subjectId) return fail(res, 422, "subjectId cannot be empty");
+  if (!ObjectId.isValid(data.subjectId)) return fail(res, 422, "Invalid subject Id");
+  if (!data.rating) return fail(res, 422, "rating cannot be empty");
+  if (!(Number(data.rating) > 0 && Number(data.rating) < 6)) return fail(res, 422, "rating must be between [1 and 5].");
+
+  const newObject = {};
+  newObject.customer = customerId;
+  if (!data.vendor) newObject.vendor = data.vendor;
+  if (!data.subject) newObject.subject = data.subject;
+  if (!data.subjectId) newObject.subjectId = data.subjectId;
+  if (!data.comment) newObject.comment = data.comment;
+  if (!data.rating) newObject.rating = data.rating;
+
+  // Find record and update it with id
+  return Review.findByIdAndUpdate(recordId, newObject, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
+
 
 // Delete a review with the specified reviewId in the request
 exports.delete = (req, res) => {

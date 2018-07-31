@@ -64,10 +64,10 @@ export function create(req, res) {
   if (data.brand) newObject.brand = data.brand;
 
   newObject.description = {};
-  if (data.description.color && typeof data.description.color === "object"){
+  if (data.description.color && typeof data.description.color === "object") {
     newObject.description.color = [];
     newObject.description.color = data.description.color;
-  } 
+  }
   if (data.description.unit) newObject.description.unit = data.description.unit;
   if (data.description.long) newObject.description.long = data.description.long;
   if (data.description.short) newObject.description.short = data.description.short;
@@ -111,7 +111,7 @@ export function create(req, res) {
   if (data.price.costPrice && !Number.isNaN(parseFloat(data.price.costPrice))) {
     newObject.price.costPrice = data.price.costPrice;
   }
-  if (data.price.slashPrice && !Number.isNaN(parseFloat(data.price.slashPrice ))) {
+  if (data.price.slashPrice && !Number.isNaN(parseFloat(data.price.slashPrice))) {
     newObject.price.slashPrice = data.price.slashPrice;
   }
   if (data.price.discount && !Number.isNaN(parseFloat(data.price.discount))) {
