@@ -19,7 +19,6 @@ export function create(req, res) {
 
   // Validate request
   if (!data.kind) return fail(res, 422, "order cannot be empty and must be alphanumeric.");
-  if (!data.vendor) return fail(res, 422, "vendor cannot be empty and must be alphanumeric.");
   if (!data.title) return fail(res, 422, "title cannot be empty and must be alphanumeric");
   if (!data.summary) return fail(res, 422, "summary cannot be empty and must be alphanumeric");
   if (!data.content) return fail(res, 422, "content cannot be empty and must be alphanumeric");
@@ -86,7 +85,6 @@ export function update(req, res) {
 
   // Validate request
   if (!data.kind) return fail(res, 422, "order cannot be empty and must be alphanumeric.");
-  if (!data.vendor) return fail(res, 422, "vendor cannot be empty and must be alphanumeric.");
   if (!data.title) return fail(res, 422, "title cannot be empty and must be alphanumeric");
   if (!data.summary) return fail(res, 422, "summary cannot be empty and must be alphanumeric");
   if (!data.content) return fail(res, 422, "content cannot be empty and must be alphanumeric");

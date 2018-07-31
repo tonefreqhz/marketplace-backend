@@ -182,25 +182,6 @@ export function update(req, res) {
     .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
 }
 
-// Delete a media with the specified mediaId in the request
-exports.delete = (req, res) => {
-  const recordId = req.params.mediaId || "";
-  if (!recordId) return fail(res, 400, "No record Id as request parameter");
-  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
-  return Media.findByIdAndRemove(recordId)
-    .then((record) => {
-      if (!record) return notFound(res, `Record not found with id ${recordId}`);
-      return success(res, 200, [], "Record deleted successfully!");
-    })
-    .catch((err) => {
-      if (err.kind === "ObjectId" || err.name === "NotFound") {
-        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
-      }
-      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
-    });
-};
-
-
 // The function that handle the upload of picture
 function updateImageUpload(Collection, req, res, collectionType) {
 // Get the document of the collection by id
@@ -225,29 +206,31 @@ function updateImageUpload(Collection, req, res, collectionType) {
             // Reduce the size of the image and save using the above file name
             image.quality(60)
               .write(`public${filename}`);
-              //Check if the property has parent 
-              //by checking if | exist in the name
-              //If there is parent split the names
-              const names = req.body.label.split("|");
+            // Check if the property has parent
+            // by checking if | exist in the name
+            // If there is parent split the names
+            const names = req.body.label.split("|");
             // assign the file url to the feild of the document
-            switch(names.length){
+            switch (names.length) {
               case 1:
-                  collection[names[0]] = `${process.env.API_URL}${filename}`;
-              break;
+                collection[names[0]] = `${process.env.API_URL}${filename}`;
+                break;
               case 2:
-                  collection[names[1]][names[0]] = `${process.env.API_URL}${filename}`;
-              break
+                collection[names[1]][names[0]] = `${process.env.API_URL}${filename}`;
+                break;
               case 3:
-                  collection[names[2]][names[1]][names[0]] = `${process.env.API_URL}${filename}`;
-              break;
+                collection[names[2]][names[1]][names[0]] = `${process.env.API_URL}${filename}`;
+                break;
               default:
-                  return fail(res, 422, "You have not specify the image");
+                return fail(res, 422, "You have not specify the image");
             }
             // save the collection with the updated document
-            collection.save()
-              .then(data =>
-              // return the new updated document
-              success(res, 200, data, "Image successfully uploaded"))
+            return collection.save()
+              .then((data) => {
+                if (!data) return fail(res, 500, "There was as error saving the image");
+                // return the new updated document
+                return success(res, 200, data, "Image successfully uploaded");
+              })
               .catch((err) => {
                 // if there is an error saving the document
                 // return the following feedback
@@ -270,7 +253,6 @@ function updateImageUpload(Collection, req, res, collectionType) {
 
 
 export function updateImg(req, res) {
-
   const { userId, userType } = res.locals;
   let vendorId;
 
@@ -279,11 +261,14 @@ export function updateImg(req, res) {
   } else {
     return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
   }
+  if (!ObjectId.isValid(vendorId)) return fail(res, 422, "Invalid vendor Id as request parameter");
 
   if (!req.body.collection) {
-    fail(res, 422, "You have not specify where to load the image");
+    return fail(res, 422, "You have not specify where to load the image");
   }
-
+  if (!(["product", "category", "brand", "slider", "vendor", "blog", "customer"].indexOf(req.body.collection) >= 0)) {
+    return fail(res, 422, "subject must be either of product, category, brand, slider, vendor, blog, or customer");
+  }
 
   switch (req.body.collection) {
     case "product":
@@ -295,12 +280,31 @@ export function updateImg(req, res) {
     case "slider":
       return updateImageUpload(Slider, req, res, "Slider");
     case "vendor":
+      return updateImageUpload(Blog, req, res, "Blog");
+    case "blog":
       return updateImageUpload(Vendor, req, res, "Vendor");
     case "customer":
       return updateImageUpload(Customer, req, res, "Customer");
     default:
-      return res.status(400).send({
-        message: "image collection does not exist",
-      });
+      return notFound(res, "image collection does not exist");
   }
 }
+
+
+// Delete a media with the specified mediaId in the request
+exports.delete = (req, res) => {
+  const recordId = req.params.mediaId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  return Media.findByIdAndRemove(recordId)
+    .then((record) => {
+      if (!record) return notFound(res, `Record not found with id ${recordId}`);
+      return success(res, 200, [], "Record deleted successfully!");
+    })
+    .catch((err) => {
+      if (err.kind === "ObjectId" || err.name === "NotFound") {
+        return notFound(res, `Error: record not found with id ${recordId}\r\n${err.message}`);
+      }
+      return fail(res, 500, `Error: could not delete record with id ${recordId}\r\n${err.message}`);
+    });
+};
