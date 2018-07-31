@@ -2,33 +2,50 @@
 import Template, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Template
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.page) {
-    res.status(400).send({
-      message: "Template page can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let adminId;
+
+  if (userType === "admin") {
+    adminId = userId;
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Create a Template
-  const template = new Template({
-    name: req.body.name,
-    page: req.body.page,
-    icon: req.body.icon,
-    style: req.body.style,
-  });
+  // Validate request
+  if (!data.admin) return fail(res, 422, "admin id cannot be empty.");
+  if (!ObjectId.isValid(data.admin)) return fail(res, 422, "Invalid admin Id");
+  if (!data.name) return fail(res, 422, "Template name cannot be empty.");
+  if (!data.page) return fail(res, 422, "Template page cannot be empty");
+  if (!(["text", "image"].indexOf(data.page) >= 0)) {
+    return fail(res, 422, "slide page must be either of product, brand, category or blog.");
+  }
+  if (!data.icon) return fail(res, 422, "Template icon cannot be empty");
+  if (!data.style) return fail(res, 422, "Template style cannot be empty");
+  if (!data.placeholders) return fail(res, 422, "Template placeholders must be of type Array");
+  if (!data.placeholders.isArray()) return fail(res, 422, "Template placeholders must be of type Array");
 
-  // Save Template in the database
-  template.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Template.",
-      });
-    });
-};
+  const newObject = {};
+  newObject.admin = adminId;
+  if (!data.name) newObject.name = data.name;
+  if (!data.page) newObject.page = data.page;
+  if (!data.icon) newObject.icon = data.icon;
+  if (!data.style) newObject.style = data.style;
+  if (!data.placeholders) newObject.placeholders = data.placeholders;
+
+  // Create a record
+  const record = new Template(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -54,40 +71,50 @@ export function findOne(req, res) {
     });
 }
 
-// Update a template identified by the templateId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.page) {
-    res.status(400).send({
-      message: "Template page can not be empty",
-    });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.reviewId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let adminId;
+
+  if (userType === "admin") {
+    adminId = userId;
+  } else {
+    return fail(res, 422, `Only admins are allowed to update this record not ${userType}`);
   }
 
-  // Find template and update it with the request body
-  Template.findByIdAndUpdate(req.params.templateId, {
-    name: req.body.name,
-    page: req.body.page,
-    icon: req.body.icon,
-    style: req.body.style,
-  }, { new: true })
-    .then((template) => {
-      if (!template) {
-        res.status(404).send({
-          message: `Template not found with id ${req.params.templateId}`,
-        });
-      }
-      res.send(template);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Template not found with id ${req.params.templateId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating template with id ${req.params.templateId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.admin) return fail(res, 422, "admin id cannot be empty.");
+  if (!ObjectId.isValid(data.admin)) return fail(res, 422, "Invalid admin Id");
+  if (!data.name) return fail(res, 422, "Template name cannot be empty.");
+  if (!data.page) return fail(res, 422, "Template page cannot be empty");
+  if (!(["text", "image"].indexOf(data.page) >= 0)) {
+    return fail(res, 422, "slide page must be either of product, brand, category or blog.");
+  }
+  if (!data.icon) return fail(res, 422, "Template icon cannot be empty");
+  if (!data.style) return fail(res, 422, "Template style cannot be empty");
+  if (!data.placeholders) return fail(res, 422, "Template placeholders must be of type Array");
+  if (!data.placeholders.isArray()) return fail(res, 422, "Template placeholders must be of type Array");
+
+  const newObject = {};
+  newObject.admin = adminId;
+  if (!data.name) newObject.name = data.name;
+  if (!data.page) newObject.page = data.page;
+  if (!data.icon) newObject.icon = data.icon;
+  if (!data.style) newObject.style = data.style;
+  if (!data.placeholders) newObject.placeholders = data.placeholders;
+
+  // Find record and update it with id
+  return Template.findByIdAndUpdate(recordId, newObject, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
 
 // Delete a template with the specified templateId in the request
 exports.delete = (req, res) => {

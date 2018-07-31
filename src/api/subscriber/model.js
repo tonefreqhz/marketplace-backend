@@ -12,7 +12,7 @@ const SubscriberSchema = new Schema({
     default: "weekly",
     required: [true, "Why no sender?"],
   },
-  interest: { type: [], default: [] },
+  interest: { type: [] },
   standing: {
     type: String,
     enum: ["subscribed", "unsubscribed", "trashed"],

@@ -2,36 +2,44 @@
 import Ticket, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Ticket
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.kind) {
-    res.status(400).send({
-      ticket: "Ticket kind can not be empty",
-    });
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  const newObject = {};
+
+  if (userType === "vendor") {
+    newObject.vendor = userId;
+  } else if (userType === "customer") {
+    newObject.customer = userId;
+  } else {
+    return fail(res, 422, `Only vendors or customers are allowed, not ${userType}`);
   }
 
-  // Create a Ticket
-  const ticket = new Ticket({
-    ticketSession: req.body.ticket_session,
-    subject: req.body.subject,
-    ticket: req.body.ticket,
-    customer_id: req.body.customer_id,
-    vendor_id: req.body.vendor_id,
-    admin_id: req.body.admin_id,
-    raised_by: req.body.raised_by,
-  });
+  // Validate request
+  if (!data.person) return fail(res, 422, "person id cannot be empty.");
+  if (!ObjectId.isValid(data.personId)) return fail(res, 422, "Invalid person Id");
+  if (!data.subject) return fail(res, 422, "subject cannot be empty.");
+  if (!data.complain) return fail(res, 422, "complain cannot be empty");
 
-  // Save Ticket in the database
-  ticket.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        ticket: err.ticket || "Some error occurred while creating the Ticket.",
-      });
-    });
-};
+  newObject.person = data.person;
+  newObject.personId = data.personId;
+  newObject.subject = data.subject;
+  newObject.complain = data.complain;
+  if (!data.vendor) newObject.vendor = data.vendor;
+  if (!data.customer) newObject.customer = data.customer;
+
+  // Create a record
+  const record = new Ticket(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -57,43 +65,44 @@ export function findOne(req, res) {
     });
 }
 
-// Update a ticket identified by the ticketId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.kind) {
-    res.status(400).send({
-      ticket: "Ticket kind can not be empty",
-    });
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.reviewId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  const newObject = {};
+
+  if (userType === "vendor") {
+    newObject.vendor = userId;
+  } else if (userType === "customer") {
+    newObject.customer = userId;
+  } else {
+    return fail(res, 422, `Only vendors or customers are allowed, not ${userType}`);
   }
 
-  // Find ticket and update it with the request body
-  Ticket.findByIdAndUpdate(req.params.ticketId, {
-    ticket_session: req.body.ticket_session,
-    subject: req.body.subject,
-    ticket: req.body.ticket,
-    customer_id: req.body.customer_id,
-    vendor_id: req.body.vendor_id,
-    admin_id: req.body.admin_id,
-    raised_by: req.body.raised_by,
-  }, { new: true })
-    .then((ticket) => {
-      if (!ticket) {
-        res.status(404).send({
-          ticket: `Ticket not found with id ${req.params.ticketId}`,
-        });
-      }
-      res.send(ticket);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          ticket: `Ticket not found with id ${req.params.ticketId}`,
-        });
-      }
-      res.status(500).send({
-        ticket: `Error updating ticket with id ${req.params.ticketId}`,
-      });
-    });
-};
+  // Validate request
+  if (!data.person) return fail(res, 422, "person id cannot be empty.");
+  if (!ObjectId.isValid(data.personId)) return fail(res, 422, "Invalid person Id");
+  if (!data.subject) return fail(res, 422, "subject cannot be empty.");
+  if (!data.complain) return fail(res, 422, "complain cannot be empty");
+
+  newObject.person = data.person;
+  newObject.personId = data.personId;
+  newObject.subject = data.subject;
+  newObject.complain = data.complain;
+  if (!data.vendor) newObject.vendor = data.vendor;
+  if (!data.customer) newObject.customer = data.customer;
+
+  // Find record and update it with id
+  return Ticket.findByIdAndUpdate(recordId, newObject, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
 
 // Delete a ticket with the specified ticketId in the request
 exports.delete = (req, res) => {

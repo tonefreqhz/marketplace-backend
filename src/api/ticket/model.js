@@ -8,7 +8,8 @@ import Customer from "../customer/model";
 import Admin from "../admin/model";
 
 const TicketSchema = new Schema({
-  complainant: { type: String },
+  person: { type: String, enum: ["customer", "vendor"], required: [true, "Why no complainant?"] },
+  personId: { type: Schema.Types.ObjectId, ref: "Vendor" },
   subject: { type: String },
   complain: { type: String },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
@@ -32,7 +33,8 @@ TicketSchema.methods = {
   view(full) {
     const view = {
       id: this.id,
-      complainant: this.complainant,
+      person: this.person,
+      personId: this.personId,
       subject: this.subject,
       complain: this.complain,
       vendor: this.vendor,

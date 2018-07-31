@@ -15,7 +15,7 @@ const SliderSchema = new Schema({
     category: { type: Boolean, default: false },
     blog: { type: Boolean, default: false },
   },
-  place: { type: String, enum: ["top", "bottom"], required: [true, "Why no Slider location?"] },
+  place: { type: String, enum: ["top", "middle", "bottom"], default: "top", required: [true, "Why no Slider location?"] },
   elements: {
     element0: {
       active: { type: Boolean, default: false },

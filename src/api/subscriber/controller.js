@@ -2,32 +2,32 @@
 import Subscriber, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
 
-// Create and Save a new Subscriber
-exports.create = (req, res) => {
+// Create and Save a new record
+export function create(req, res) {
+  const data = req.body || {};
   // Validate request
-  if (!req.body.email) {
-    res.status(400).send({
-      message: "Subscriber email can not be empty",
-    });
-  }
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid vendor Id");
+  if (!data.email) return fail(res, 422, "Subscriber email cannot be empty.");
+  if (!data.frequency) return fail(res, 422, "Subscription frequency cannot be empty.");
+  if (!data.interest) return fail(res, 422, "Subscriber interest cannot be empty");
 
-  // Create a Subscriber
-  const subscriber = new Subscriber({
-    email: req.body.email,
-    frequency: req.body.frequency,
-    interest: req.body.interest,
-  });
+  const newObject = {};
+  newObject.vendor = data.vendor;
+  if (!data.email) newObject.email = data.email;
+  if (!data.frequency) newObject.frequency = data.frequency;
+  if (!data.interest) newObject.interest = data.interest;
 
-  // Save Subscriber in the database
-  subscriber.save()
-    .then((data) => {
-      res.send(data);
-    }).catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Subscriber.",
-      });
-    });
-};
+  // Create a record
+  const record = new Subscriber(newObject);
+
+  // Save Product in the database
+  return record.save()
+    .then((result) => {
+      if (!result) return notFound(res, "Error: newly submitted record not found");
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error creating record.\r\n${err.message}`));
+}
 
 // Retrieve and return all records from the database.
 export function findAll(req, res) {
@@ -53,39 +53,30 @@ export function findOne(req, res) {
     });
 }
 
-// Update a subscriber identified by the subscriberId in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body.email) {
-    res.status(400).send({
-      message: "Subscriber email can not be empty",
-    });
-  }
+// Update record identified by the Id in the request
+export function update(req, res) {
+  const recordId = req.params.reviewId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  // Validate request
+  if (!data.email) return fail(res, 422, "Subscriber email cannot be empty.");
+  if (!data.frequency) return fail(res, 422, "Subscription frequency cannot be empty.");
+  if (!data.interest) return fail(res, 422, "Subscriber interest cannot be empty");
 
-  // Find subscriber and update it with the request body
-  Subscriber.findByIdAndUpdate(req.params.subscriberId, {
-    email: req.body.email,
-    frequency: req.body.frequency,
-    interest: req.body.interest,
-  }, { new: true })
-    .then((subscriber) => {
-      if (!subscriber) {
-        res.status(404).send({
-          message: `Subscriber not found with id ${req.params.subscriberId}`,
-        });
-      }
-      res.send(subscriber);
-    }).catch((err) => {
-      if (err.kind === "ObjectId") {
-        res.status(404).send({
-          message: `Subscriber not found with id ${req.params.subscriberId}`,
-        });
-      }
-      res.status(500).send({
-        message: `Error updating subscriber with id ${req.params.subscriberId}`,
-      });
-    });
-};
+  const newObject = {};
+  if (!data.email) newObject.email = data.email;
+  if (!data.frequency) newObject.frequency = data.frequency;
+  if (!data.interest) newObject.interest = data.interest;
+
+  // Find record and update it with id
+  return Subscriber.findByIdAndUpdate(recordId, newObject, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
 
 // Delete a subscriber with the specified subscriberId in the request
 exports.delete = (req, res) => {

@@ -41,7 +41,7 @@ export function findVendorById(vendorId) {
 // Find a single vendor with a domainName
 export function findVendorByDomain(domainName) {
   return Vendor
-    .findOne({ domainName: domainName })
+    .findOne({ domainName })
     .then((vendor) => {
       if (!vendor) return false;
       return vendor;
@@ -65,7 +65,6 @@ export function update(req, res) {
   }
 
   // Validate request
-  //if (!data.username) return fail(res, 422, "username cannot be empty and must be alphanumeric.");
   if (!data.email) return fail(res, 422, "email cannot be empty");
 
   const newObject = {};
@@ -123,7 +122,6 @@ export function update(req, res) {
   if (data.address.street) newObject.address.street = data.address.street;
   if (data.address.building) newObject.address.building = data.address.building;
   if (data.address.zip) newObject.address.zip = data.address.zip;
-
 
 
   if (data.notifications && typeof data.notifications === "object" && data.notifications[0].date &&

@@ -5,6 +5,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const TemplateSchema = new Schema({
+  admin: { type: Schema.Types.ObjectId, ref: "Admin" },
   name: { type: String, required: [true, "Why no template name"] },
   page: {
     type: String,
@@ -13,15 +14,15 @@ const TemplateSchema = new Schema({
   },
   icon: { type: String, required: [false, "Why no template image"] },
   style: { type: String, required: [true, "Why no stylesheet"] },
+  placeholders: [{
+    attribute: { type: String, required: [false, "Why no property name"] },
+    value: { type: String, required: [false, "Why no value name"] },
+  }],
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],
     default: "active",
     required: [true, "Why no status?"],
-  },
-  placeholder: {
-    attribute: { type: String, required: [false, "Why no property name"] },
-    value: { type: String, required: [false, "Why no value name"] },
   },
   updated: { type: Date, default: Date.now },
 
@@ -37,10 +38,12 @@ TemplateSchema.methods = {
   view(full) {
     const view = {
       id: this.id,
+      admin: this.admin,
       name: this.name,
       page: this.page,
       icon: this.icon,
       style: this.style,
+      placeholders: this.placeholders,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };
