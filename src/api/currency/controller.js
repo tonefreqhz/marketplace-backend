@@ -101,11 +101,10 @@ export function update(req, res) {
   if (data.symbol) newObject.symbol = data.symbol;
   if (data.exchange) newObject.exchange = data.exchange;
 
-  // Create a record
-  const record = new Currency(newObject);
+
 
   // Find record and update it with id
-  return Currency.findByIdAndUpdate(recordId, { record }, { new: true })
+  return Currency.findByIdAndUpdate(recordId, { ...newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

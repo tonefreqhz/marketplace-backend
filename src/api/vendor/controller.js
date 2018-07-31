@@ -41,7 +41,7 @@ export function findVendorById(vendorId) {
 // Find a single vendor with a domainName
 export function findVendorByDomain(domainName) {
   return Vendor
-    .findOne({ domain_name: domainName })
+    .findOne({ domainName: domainName })
     .then((vendor) => {
       if (!vendor) return false;
       return vendor;
@@ -65,7 +65,7 @@ export function update(req, res) {
   }
 
   // Validate request
-  if (!data.username) return fail(res, 422, "username cannot be empty and must be alphanumeric.");
+  //if (!data.username) return fail(res, 422, "username cannot be empty and must be alphanumeric.");
   if (!data.email) return fail(res, 422, "email cannot be empty");
 
   const newObject = {};
@@ -77,8 +77,8 @@ export function update(req, res) {
   if (data.username) newObject.username = data.username;
   if (data.gender) newObject.gender = data.gender;
   if (data.wallet) newObject.wallet = data.wallet;
-  if (data.business_name) newObject.business_name = data.business_name;
-  if (data.domain_name) newObject.domain_name = data.domain_name;
+  if (data.businessName) newObject.businessName = data.businessName;
+  if (data.domainName) newObject.domainName = data.domainName;
   if (data.recoveryCode) newObject.recoveryCode = data.recoveryCode;
 
   if (data.wishlist && typeof data.wishlist === "object" && data.wishlist[0].names &&
@@ -116,16 +116,14 @@ export function update(req, res) {
   if (data.preferences.currency) newObject.preferences.currency = data.preferences.currency;
   if (data.preferences.language) newObject.preferences.language = data.preferences.language;
 
-  newObject.shipping = {};
-  if (data.shipping.country) newObject.shipping.country = data.shipping.country;
-  if (data.shipping.state) newObject.shipping.state = data.shipping.state;
-  if (data.shipping.city) newObject.shipping.city = data.shipping.city;
-  if (data.shipping.street) newObject.shipping.street = data.shipping.street;
-  if (data.shipping.building) newObject.shipping.building = data.shipping.building;
-  if (data.shipping.zip) newObject.shipping.zip = data.shipping.zip;
+  newObject.address = {};
+  if (data.address.country) newObject.address.country = data.address.country;
+  if (data.address.state) newObject.address.state = data.address.state;
+  if (data.address.city) newObject.address.city = data.address.city;
+  if (data.address.street) newObject.address.street = data.address.street;
+  if (data.address.building) newObject.address.building = data.address.building;
+  if (data.address.zip) newObject.address.zip = data.address.zip;
 
-  if (data.phone) newObject.phone = data.phone;
-  if (data.email) newObject.email = data.email;
 
 
   if (data.notifications && typeof data.notifications === "object" && data.notifications[0].date &&

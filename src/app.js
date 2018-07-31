@@ -6,6 +6,7 @@ import morgan from "morgan";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 
 // import routes
 import api from "./api";
@@ -15,10 +16,11 @@ dotenv.config();
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
+app.use(bodyParser.json({limit: "10mb"}));
 app.use(morgan("dev"));
 app.use(cors());
+app.use(express.static(path.join(__dirname, "../public")));
 
 const env = process.env.NODE_ENV;
 const PORT = process.env.PORT || 5000;

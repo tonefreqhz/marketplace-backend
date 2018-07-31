@@ -101,7 +101,7 @@ export function update(req, res) {
   if (data.verdict) newObject.verdict = data.verdict;
 
   // Find arbitration and update it with the request body
-  return Arbitration.findByIdAndUpdate(recordId, { newObject }, { new: true })
+  return Arbitration.findByIdAndUpdate(recordId, { ...newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

@@ -63,7 +63,7 @@ export function update(req, res) {
   if (data.email) newObject.email = data.email;
 
   // Find record and update it with id
-  return Admin.findByIdAndUpdate(recordId, { newObject }, { new: true })
+  return Admin.findByIdAndUpdate(recordId, { ...newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");

@@ -68,3 +68,7 @@ desktop.ini
 
 # dist
 /dist
+
+#public/images
+public/images/media/*
+!public/images/media/.gitkeep

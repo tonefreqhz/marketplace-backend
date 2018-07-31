@@ -13,7 +13,7 @@ exports.create = (req, res) => {
 
   // Create a Ticket
   const ticket = new Ticket({
-    ticket_session: req.body.ticket_session,
+    ticketSession: req.body.ticket_session,
     subject: req.body.subject,
     ticket: req.body.ticket,
     customer_id: req.body.customer_id,

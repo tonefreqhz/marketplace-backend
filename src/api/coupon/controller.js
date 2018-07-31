@@ -13,7 +13,6 @@ export function create(req, res) {
   } else {
     return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
   }
-
   // Validate request
   if (!data.title) return fail(res, 422, "title cannot be empty and must be alphanumeric.");
   if (!data.code) return fail(res, 422, "code cannot be empty and must be alphanumeric.");
@@ -21,6 +20,7 @@ export function create(req, res) {
   if (!data.till) return fail(res, 422, "Expiry date cannot be empty and must be in 'YYYY-MM-DD'.");
 
   const newObject = {};
+
   newObject.vendor = vendorId;
   if (data.title) newObject.title = data.title;
   if (data.code) newObject.code = data.code;
@@ -94,7 +94,6 @@ export function update(req, res) {
   } else {
     return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
   }
-
   // Validate request
   if (!data.title) return fail(res, 422, "title cannot be empty and must be alphanumeric.");
   if (!data.code) return fail(res, 422, "code cannot be empty and must be alphanumeric.");
@@ -123,9 +122,8 @@ export function update(req, res) {
     newObject.specArray = {};
     newObject.specArray = fieldArray;
   }
-
   // Find record and update it with id
-  return Coupon.findByIdAndUpdate(recordId, { newObject }, { new: true })
+  return Coupon.findByIdAndUpdate(recordId, { ...newObject }, { new: true })
     .then((result) => {
       if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
       return success(res, 200, result, "New record has been created successfully!");
