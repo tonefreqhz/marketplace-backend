@@ -7,16 +7,8 @@ import mongoose from "mongoose";
 import { randomNonce } from "./../../services/helpers";
 
 const AdminSchema = new mongoose.Schema({
-  nonce: {
-    type: Number,
-    default: randomNonce(),
-    required: [true, "Why no authentication nonce?"],
-  },
-  publicAddress: {
-    type: String,
-    unique: true,
-    required: [true, "Why no MetaMask address?"],
-  },
+  nonce: { type: Number, default: randomNonce(), required: [true, "Why no authentication nonce?"] },
+  publicAddress: { type: String, unique: true, max: 42, required: [true, "Why no MetaMask address?"] },
   username: { type: String, default: "" },
   role: { type: String, default: "" },
   lastAccess: [{

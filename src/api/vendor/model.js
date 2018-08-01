@@ -14,7 +14,7 @@ const VendorSchema = new Schema({
   publicAddress: { type: String, unique: true, max: 42, required: [true, "Why no MetaMask address?"] },
   businessName: { type: String, max: 200, trim: true },
   domainName: { type: String, unique: true, lowercase: true, max: 100, trim: true },
-  email: { type: String, lowercase: true, max: 100, trim: true, unique: true },
+  email: { type: String, lowercase: true, max: 100, trim: true },
   password: { type: String, lowercase: true, trim: true },
   recoveryCode: { type: String, max: 200, default: "" },
   fullname: { type: String, max: 200, default: "" },
