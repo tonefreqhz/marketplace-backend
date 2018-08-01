@@ -26,6 +26,22 @@ export function findOne(req, res) {
     });
 }
 
+// Retrieve a single record with a given domainName
+export function findOneDomain(req, res) {
+  const domainName = req.params.domainName || "";
+  if (!domainName) return fail(res, 400, "No record domain as request parameter");
+  return Vendor
+    .findOne({ domainName })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: record not found with domain ${domainName}.`);
+      return success(res, 200, result, `retrieving record was successfully with domain ${domainName}.`);
+    }).catch((err) => {
+      if (err.kind === "ObjectId") {
+        notFound(res, `Error retrieving record with domain ${domainName}.\r\n${err.message}`);
+      }
+      return fail(res, 500, `Error retrieving record with domain ${domainName}.\r\n${err.message}`);
+    });
+}
 
 // Find a single vendor with a vendorId
 export function findVendorById(vendorId) {
