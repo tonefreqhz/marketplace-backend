@@ -4,7 +4,7 @@
 import Jimp from "jimp";
 import Media, { ObjectId } from "./model";
 import { success, fail, notFound } from "./../../services/response";
-import FileSys from "../../helpers/FileSystem";
+import FileSys from "../../services/helpers/FileSystem";
 import Product from "../product/model";
 import Category from "../category/model";
 import Brand from "../brand/model";

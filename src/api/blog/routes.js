@@ -66,6 +66,7 @@ router.get("/blogs/:blogId", blog.findOne);
  * @apiError 401 master access only.
  */
 router.put("/blogs/:blogId", isValidVendor, blog.update);
+router.patch("/blog/:blogId/standing/:standing", isValidVendor, blog.modify);
 
 /**
  * @api {delete} /blogs/:id Delete blog

@@ -70,6 +70,7 @@ router.get("/arbitrations/:arbitrationId", arbitration.findOne);
  * @apiError 401 master access only.
  */
 router.put("/arbitrations/:arbitrationId", isValidVendor, arbitration.update);
+router.patch("/arbitrations/:arbitrationId/standing/:standing", isValidVendor, arbitration.modify);
 
 /**
  * @api {delete} /arbitrations/:id Delete arbitration

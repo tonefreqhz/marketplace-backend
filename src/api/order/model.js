@@ -7,26 +7,27 @@ import Product from "../product/model";
 import Vendor from "../vendor/model";
 import Customer from "../customer/model";
 import Coupon from "../coupon/model";
+import Transaction from "../transaction/model";
 import { randomNum } from "../../services/helpers";
 
 const OrderSchema = new Schema({
-  orderNum: { type: String, default: randomNum() },
+  orderNum: { type: String },
+  transaction: { type: Schema.Types.ObjectId, ref: "Transaction", required: [true, "Why no Transaction Id?"] },
   kind: { type: String, enum: ["digital", "physical"], required: [true, "Why no Product type?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   customer: { type: Schema.Types.ObjectId, ref: "Customer" },
   coupon: { type: Schema.Types.ObjectId, ref: "Coupon" },
   products: [{
-    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-    quantity: { type: Number, default: 1, required: true },
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: [true, "Why no Product(s)?"] },
+    quantity: { type: Number, default: 1, required: [true, "Why no Quantity?"] },
     sku: { type: String },
     name: { type: String, required: true },
     unitCost: { type: Number, required: true },
-    currency: { type: Schema.Types.ObjectId, ref: "Currency" },
     vat: { type: Number, required: [true, "Why no Value added tax?"] },
   }],
   paymentDetails: {
     amount: { type: Number, required: [true, "Why no amount payable?"] },
-    method: { type: String, enum: ["paypal", "metamask"], required: [true, "Why no Payment method?"] },
+    currency: { type: Schema.Types.ObjectId, ref: "Currency" },
     transaction: { type: String, required: [true, "Why no transaction id?"] },
   },
   shipmentDetails: {

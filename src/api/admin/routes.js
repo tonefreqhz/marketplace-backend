@@ -46,6 +46,8 @@ router.get("/admins/:adminId", isValidAdmin, admin.findOne);
  */
 router.put("/admins/:adminId", isValidAdmin, admin.update);
 
+router.patch("/admins/:adminId/standing/:standing", isValidAdmin, admin.update);
+
 /**
  * @api {delete} /admins/:id Delete admin
  * @apiName DeleteAdmin

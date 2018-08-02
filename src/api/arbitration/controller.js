@@ -109,6 +109,35 @@ export function update(req, res) {
     .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
 }
 
+// Update a record given by id
+export function modify(req, res) {
+  const recordId = req.params.arbitrationId || "";
+  if (!recordId) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
+  const data = req.body || {};
+  const { userId, userType } = res.locals;
+  let vendorId;
+
+  if (userType === "vendor") {
+    vendorId = userId;
+  } else {
+    return fail(res, 422, `Only vendors are allowed to add media not ${userType}`);
+  }
+
+  const newObject = {};
+  if (data.arbitrationStatus) newObject.arbitrationStatus = data.arbitrationStatus;
+  if (data.arbiter) newObject.arbiter = data.arbiter;
+  if (data.verdict) newObject.verdict = data.verdict;
+
+  // Find arbitration and update it with the request body
+  return Arbitration.findByIdAndUpdate(recordId, { ...newObject }, { new: true })
+    .then((result) => {
+      if (!result) return notFound(res, `Error: newly submitted record not found with id ${recordId}`);
+      return success(res, 200, result, "New record has been created successfully!");
+    })
+    .catch(err => fail(res, 500, `Error updating record with id ${recordId}.\r\n${err.message}`));
+}
+
 // Delete a arbitration with the specified arbitrationId in the request
 exports.delete = (req, res) => {
   const recordId = req.params.arbitrationId || "";

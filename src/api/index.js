@@ -24,6 +24,7 @@ import 	languageListRoute from "./languageList";
 import 	mailRoute from "./mail";
 import 	templateRoute from "./template";
 import 	ticketRoute from "./ticket";
+import 	transactionRoute from "./transaction";
 
 const router = express.Router();
 
@@ -52,5 +53,6 @@ router.use(languageListRoute);
 router.use(mailRoute);
 router.use(templateRoute);
 router.use(ticketRoute);
+router.use(transactionRoute);
 
 export default router;
