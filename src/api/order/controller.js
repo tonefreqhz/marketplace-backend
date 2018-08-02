@@ -7,28 +7,29 @@ import { success, fail, notFound } from "./../../services/response";
 export function create(req, res) {
   const data = req.body || {};
   const { userId, userType } = res.locals;
-  let vendorId;
+  let customerId;
 
-  if (userType === "vendor") {
-    vendorId = userId;
+  if (userType === "customer") {
+    customerId = userId;
   } else {
-    return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
+    return fail(res, 422, `Only customers are allowed to update this record not ${userType}`);
   }
 
   // Validate request
+  if (!data.vendor) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid record Id as request parameter");
   if (!data.title) return fail(res, 422, "title cannot be empty but either digital, physical.");
   if (!data.customer) return fail(res, 422, "customer cannot be empty and must be alphanumeric.");
   if (!data.products) return fail(res, 422, "order status cannot be empty and must be in pending, paid, delivered, closed");
   if (!data.shipmentDetails) return fail(res, 422, "shipment details cannot be empty and must array.");
   if (!data.trackingDetails) return fail(res, 422, "tracking details cannot be empty and must array.");
-  if (!data.orderStatus) return fail(res, 422, "order status cannot be empty and must be pending, paid, delivered, closed.");
+  if (!data.kind) return fail(res, 422, "order status cannot be empty and must be pending, paid, delivered, closed.");
 
   const newObject = {};
-  newObject.vendor = vendorId;
-  if (!data.orderNum) newObject.orderNum = data.orderNum;
-  if (!data.kind) newObject.kind = data.kind;
-  if (!data.customer) newObject.customer = data.customer;
-  if (!data.coupon) newObject.coupon = data.coupon;
+  newObject.customer = customerId;
+  newObject.vendor = data.vendor;
+  newObject.kind = data.kind;
+  if (data.coupon) newObject.coupon = data.coupon;
 
   if (data.products && typeof data.products === "object" && data.products[0].product &&
   data.products[0].quantity) {
@@ -65,52 +66,51 @@ export function create(req, res) {
   }
 
   newObject.shipmentDetails = {};
-  if (!data.shipmentDetails.recipient) {
+  if (data.shipmentDetails.recipient) {
     newObject.shipmentDetails.recipient = data.shipmentDetails.recipient;
   }
-  if (!data.shipmentDetails.country) {
+  if (data.shipmentDetails.country) {
     newObject.shipmentDetails.country = data.shipmentDetails.country;
   }
-  if (!data.shipmentDetails.state) {
+  if (data.shipmentDetails.state) {
     newObject.shipmentDetails.state = data.shipmentDetails.state;
   }
-  if (!data.shipmentDetails.city) {
+  if (data.shipmentDetails.city) {
     newObject.shipmentDetails.city = data.shipmentDetails.city;
   }
-  if (!data.shipmentDetails.street) {
+  if (data.shipmentDetails.street) {
     newObject.shipmentDetails.street = data.shipmentDetails.street;
   }
-  if (!data.shipmentDetails.building) {
+  if (data.shipmentDetails.building) {
     newObject.shipmentDetails.building = data.shipmentDetails.building;
   }
-  if (!data.shipmentDetails.zip) {
+  if (data.shipmentDetails.zip) {
     newObject.shipmentDetails.zip = data.shipmentDetails.zip;
   }
-  if (!data.shipmentDetails.phone) {
+  if (data.shipmentDetails.phone) {
     newObject.shipmentDetails.phone = data.shipmentDetails.phone;
   }
-  if (!data.shipmentDetails.email) {
+  if (data.shipmentDetails.email) {
     newObject.shipmentDetails.email = data.shipmentDetails.email;
   }
-  if (!data.shipmentDetails.deliveryNote) {
+  if (data.shipmentDetails.deliveryNote) {
     newObject.shipmentDetails.deliveryNote = data.shipmentDetails.deliveryNote;
   }
 
   newObject.trackingDetails = {};
-  if (!data.trackingDetails.company) {
+  if (data.trackingDetails.company) {
     newObject.trackingDetails.company = data.trackingDetails.company;
   }
-  if (!data.trackingDetails.code) {
+  if (data.trackingDetails.code) {
     newObject.trackingDetails.code = data.trackingDetails.code;
   }
-  if (!data.trackingDetails.standing) {
+  if (data.trackingDetails.standing) {
     newObject.trackingDetails.standing = data.trackingDetails.standing;
   }
-  if (!data.trackingDetails.estimatedDelivery) {
+  if (data.trackingDetails.estimatedDelivery) {
     newObject.trackingDetails.estimatedDelivery = data.trackingDetails.estimatedDelivery;
   }
 
-  if (!data.orderStatus) newObject.orderStatus = data.orderStatus;
 
   // Create a record
   const record = new Order(newObject);
@@ -156,28 +156,29 @@ export function update(req, res) {
   if (!ObjectId.isValid(recordId)) return fail(res, 422, "Invalid record Id as request parameter");
   const data = req.body || {};
   const { userId, userType } = res.locals;
-  let vendorId;
+  let customerId;
 
-  if (userType === "vendor") {
-    vendorId = userId;
+  if (userType === "customer") {
+    customerId = userId;
   } else {
-    return fail(res, 422, `Only vendors are allowed to update this record not ${userType}`);
+    return fail(res, 422, `Only customers are allowed to update this record not ${userType}`);
   }
 
   // Validate request
+  if (!data.vendor) return fail(res, 400, "No record Id as request parameter");
+  if (!ObjectId.isValid(data.vendor)) return fail(res, 422, "Invalid record Id as request parameter");
   if (!data.title) return fail(res, 422, "title cannot be empty but either digital, physical.");
   if (!data.customer) return fail(res, 422, "customer cannot be empty and must be alphanumeric.");
   if (!data.products) return fail(res, 422, "order status cannot be empty and must be in pending, paid, delivered, closed");
   if (!data.shipmentDetails) return fail(res, 422, "shipment details cannot be empty and must array.");
   if (!data.trackingDetails) return fail(res, 422, "tracking details cannot be empty and must array.");
-  if (!data.orderStatus) return fail(res, 422, "order status cannot be empty and must be pending, paid, delivered, closed.");
+  if (!data.kind) return fail(res, 422, "order status cannot be empty and must be pending, paid, delivered, closed.");
 
   const newObject = {};
-  newObject.vendor = vendorId;
-  if (!data.orderNum) newObject.orderNum = data.orderNum;
-  if (!data.kind) newObject.kind = data.kind;
-  if (!data.customer) newObject.customer = data.customer;
-  if (!data.coupon) newObject.coupon = data.coupon;
+  newObject.customer = customerId;
+  newObject.vendor = data.vendor;
+  newObject.kind = data.kind;
+  if (data.coupon) newObject.coupon = data.coupon;
 
   if (data.products && typeof data.products === "object" && data.products[0].product &&
   data.products[0].quantity) {
@@ -214,52 +215,52 @@ export function update(req, res) {
   }
 
   newObject.shipmentDetails = {};
-  if (!data.shipmentDetails.recipient) {
+  if (data.shipmentDetails.recipient) {
     newObject.shipmentDetails.recipient = data.shipmentDetails.recipient;
   }
-  if (!data.shipmentDetails.country) {
+  if (data.shipmentDetails.country) {
     newObject.shipmentDetails.country = data.shipmentDetails.country;
   }
-  if (!data.shipmentDetails.state) {
+  if (data.shipmentDetails.state) {
     newObject.shipmentDetails.state = data.shipmentDetails.state;
   }
-  if (!data.shipmentDetails.city) {
+  if (data.shipmentDetails.city) {
     newObject.shipmentDetails.city = data.shipmentDetails.city;
   }
-  if (!data.shipmentDetails.street) {
+  if (data.shipmentDetails.street) {
     newObject.shipmentDetails.street = data.shipmentDetails.street;
   }
-  if (!data.shipmentDetails.building) {
+  if (data.shipmentDetails.building) {
     newObject.shipmentDetails.building = data.shipmentDetails.building;
   }
-  if (!data.shipmentDetails.zip) {
+  if (data.shipmentDetails.zip) {
     newObject.shipmentDetails.zip = data.shipmentDetails.zip;
   }
-  if (!data.shipmentDetails.phone) {
+  if (data.shipmentDetails.phone) {
     newObject.shipmentDetails.phone = data.shipmentDetails.phone;
   }
-  if (!data.shipmentDetails.email) {
+  if (data.shipmentDetails.email) {
     newObject.shipmentDetails.email = data.shipmentDetails.email;
   }
-  if (!data.shipmentDetails.deliveryNote) {
+  if (data.shipmentDetails.deliveryNote) {
     newObject.shipmentDetails.deliveryNote = data.shipmentDetails.deliveryNote;
   }
 
   newObject.trackingDetails = {};
-  if (!data.trackingDetails.company) {
+  if (data.trackingDetails.company) {
     newObject.trackingDetails.company = data.trackingDetails.company;
   }
-  if (!data.trackingDetails.code) {
+  if (data.trackingDetails.code) {
     newObject.trackingDetails.code = data.trackingDetails.code;
   }
-  if (!data.trackingDetails.standing) {
+  if (data.trackingDetails.standing) {
     newObject.trackingDetails.standing = data.trackingDetails.standing;
   }
-  if (!data.trackingDetails.estimatedDelivery) {
+  if (data.trackingDetails.estimatedDelivery) {
     newObject.trackingDetails.estimatedDelivery = data.trackingDetails.estimatedDelivery;
   }
 
-  if (!data.orderStatus) newObject.orderStatus = data.orderStatus;
+  if (data.orderStatus) newObject.orderStatus = data.orderStatus;
 
   // Find record and update it with id
   return Order.findByIdAndUpdate(recordId, { ...newObject }, { new: true })

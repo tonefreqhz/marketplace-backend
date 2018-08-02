@@ -18,7 +18,7 @@ export function create(req, res) {
   }
 
   // Validate request
-  if (!data.kind) return fail(res, 422, "order cannot be empty and must be alphanumeric.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty and must be alphanumeric.");
   if (!data.title) return fail(res, 422, "title cannot be empty and must be alphanumeric");
   if (!data.summary) return fail(res, 422, "summary cannot be empty and must be alphanumeric");
   if (!data.content) return fail(res, 422, "content cannot be empty and must be alphanumeric");
@@ -26,7 +26,7 @@ export function create(req, res) {
 
   const newObject = {};
   newObject.vendor = vendorId;
-  if (data.kind) newObject.order = data.order;
+  if (data.kind) newObject.kind = data.kind;
   if (data.title) newObject.title = data.title;
   if (data.summary) newObject.summary = data.summary;
   if (data.content) newObject.content = data.content;
@@ -84,7 +84,7 @@ export function update(req, res) {
   }
 
   // Validate request
-  if (!data.kind) return fail(res, 422, "order cannot be empty and must be alphanumeric.");
+  if (!data.kind) return fail(res, 422, "kind cannot be empty and must be alphanumeric.");
   if (!data.title) return fail(res, 422, "title cannot be empty and must be alphanumeric");
   if (!data.summary) return fail(res, 422, "summary cannot be empty and must be alphanumeric");
   if (!data.content) return fail(res, 422, "content cannot be empty and must be alphanumeric");
@@ -92,7 +92,7 @@ export function update(req, res) {
 
   const newObject = {};
   newObject.vendor = vendorId;
-  if (data.kind) newObject.order = data.order;
+  if (data.kind) newObject.kind = data.kind;
   if (data.title) newObject.title = data.title;
   if (data.summary) newObject.summary = data.summary;
   if (data.content) newObject.content = data.content;

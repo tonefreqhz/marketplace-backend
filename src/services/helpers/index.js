@@ -1,4 +1,5 @@
 export const randomNonce = () => Math.floor(Math.random() * 1000000);
+export const randomNum = () => Math.floor(Math.random() * 1000000);
 export function addToAccess(obj, count, newItem) {
   const size = Object.keys(obj).length;
   if (size < count) {

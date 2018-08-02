@@ -7,9 +7,10 @@ import Product from "../product/model";
 import Vendor from "../vendor/model";
 import Customer from "../customer/model";
 import Coupon from "../coupon/model";
+import { randomNum } from "../../services/helpers";
 
 const OrderSchema = new Schema({
-  orderNum: { type: String, required: [true, "Why no Order Number?"] },
+  orderNum: { type: String, default: randomNum() },
   kind: { type: String, enum: ["digital", "physical"], required: [true, "Why no Product type?"] },
   vendor: { type: Schema.Types.ObjectId, ref: "Vendor" },
   customer: { type: Schema.Types.ObjectId, ref: "Customer" },
@@ -26,7 +27,7 @@ const OrderSchema = new Schema({
   paymentDetails: {
     amount: { type: Number, required: [true, "Why no amount payable?"] },
     method: { type: String, enum: ["paypal", "metamask"], required: [true, "Why no Payment method?"] },
-    transaction_id: { type: String, required: [true, "Why no transaction id?"] },
+    transaction: { type: String, required: [true, "Why no transaction id?"] },
   },
   shipmentDetails: {
     recipient: { type: String, required: [true, "Why no Shipment details?"] },
@@ -35,28 +36,27 @@ const OrderSchema = new Schema({
     city: { type: String, max: 50 },
     street: { type: String, max: 50 },
     building: { type: String, max: 50 },
-    zip: { type: Number, min: 5, max: 5 },
+    zip: { type: Number, min: 1000, max: 7777777 },
     phone: { type: String },
     email: { type: String },
     deliveryNote: { type: String, default: "Leave it at house", max: 200 },
   },
   trackingDetails: {
-    company: { type: String, required: [true, "Why no Tracking Number?"] },
-    code: { type: String, required: [true, "Why no Tracking Number?"] },
+    company: { type: String, required: [false, "Why no Tracking Number?"] },
+    code: { type: String, required: [false, "Why no Tracking Number?"] },
     standing: { type: String, enum: ["pending", "dispatched", "arrived", "delivered"] },
     estimatedDelivery: { type: Date },
   },
 
   orderStatus: {
     type: String,
-    num: ["pending", "paid", "delivered", "closed"],
-    required: [true, "Why no Order status?"],
+    enum: ["pending", "paid", "delivered", "cancel"],
+    default: "pending",
   },
   standing: {
     type: String,
     enum: ["active", "suspended", "trashed"],
     default: "active",
-    required: [true, "Why no status?"],
   },
   updated: { type: Date, default: Date.now },
 
